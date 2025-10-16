@@ -1,6 +1,6 @@
 <!doctypehtml>
 <head>
-    <title>Game Site - beta</title>
+    <title>DD Games - beta</title>
 </head>
 <style>
     /* Make the background gradient move in a loop */
@@ -68,7 +68,13 @@
       transform: scale(0.98);
     }
   </style>
+<script>
+    function OpenLink() {
+    javascript: var win = window.open();   win.document.body.style.margin = '0';   win.document.body.style.height = '100vh';   var iframe = win.document.createElement('iframe');   iframe.style.border = 'none';   iframe.style.width = '100%';   iframe.style.height = '100%';   iframe.style.margin = '0';   iframe.src = link;   win.document.body.appendChild(iframe);
+    }
+</script>
 <body>
-<h1>Welcome to Game Site!</h1>
+<h1>Welcome to DD Games!</h1>
     <p>This sites is all about games, unblocked, and ported to work on the web</p>
+    <button onclick="OpenLink()">Open Site</button>
 </body>
