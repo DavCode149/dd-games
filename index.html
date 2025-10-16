@@ -1,0 +1,74 @@
+<!doctypehtml>
+<head>
+    <title>Game Site - beta</title>
+</head>
+<style>
+    /* Make the background gradient move in a loop */
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background: linear-gradient(270deg, #89f7fe, #66a6ff, #f6d365, #fda085);
+      background-size: 800% 800%;
+      animation: gradientMove 12s ease infinite;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    /* Animate the gradient smoothly */
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Style the input box */
+    input[type="text"] {
+      width: 300px;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 15px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    /* Style the button */
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      transition: background-color 0.3s, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+  </style>
+<body>
+<h1>Welcome to Game Site!</h1>
+    <p>This sites is all about games, unblocked, and ported to work on the web</p>
+</body>
