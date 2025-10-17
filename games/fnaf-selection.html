@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gallery Page</title>
+  <style>
+    /* Same moving gradient background from before */
+   body {
+    margin: 0;
+    height: 100vh;
+    background: url('assets/fnaf-selection-bg.gif') center center / cover no-repeat;
+    background-attachment: fixed; /* keeps it still while scrolling */
+  }
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Container for all grid items */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      width: 90%;
+      max-width: 1000px;
+      padding: 20px;
+    }
+
+    /* Each grid item (card) */
+    .grid-item {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .grid-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    }
+
+    /* Image inside each card */
+    .grid-item img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+
+    /* Title text */
+    .grid-item h3 {
+      margin: 10px 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    /* Optional back button */
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #0056b3;
+    }
+
+  </style>
+</head>
+<body>
+  <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
+
+  <div class="grid-container">
+    <div class="grid-item">
+      <img src="https://via.placeholder.com/300x150" alt="Item 1">
+      <h3>Item 1</h3>
+    </div>
+    <div class="grid-item">
+      <img src="https://via.placeholder.com/300x150" alt="Item 2">
+      <h3>Item 2</h3>
+    </div>
+    <div class="grid-item">
+      <img src="https://via.placeholder.com/300x150" alt="Item 3">
+      <h3>Item 3</h3>
+    </div>
+    <div class="grid-item">
+      <img src="https://via.placeholder.com/300x150" alt="Item 4">
+      <h3>Item 4</h3>
+    </div>
+    <!-- You can duplicate these blocks to add more items -->
+  </div>
+</body>
+</html>
