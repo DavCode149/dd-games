@@ -12,6 +12,95 @@
 </head>
 
 <body>
+    <!-- ▼ Dropdown menu toggle -->
+<div class="menu-container">
+  <div class="menu-toggle" onclick="toggleMenu()">▼</div>
+  <div class="dropdown-menu" id="dropdownMenu">
+    <button onclick="window.location.href='/dd-games/games.html'">Return</button>
+  </div>
+</div>
+
+<style>
+  /* Position menu at top center */
+  .menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+
+  /* The arrow toggle */
+  .menu-toggle {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+
+  .menu-toggle:hover {
+    background-color: rgba(240, 240, 240, 0.95);
+    transform: scale(1.1);
+  }
+
+  /* Dropdown panel */
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    min-width: 120px;
+    text-align: center;
+    animation: dropdownFade 0.2s ease;
+  }
+
+  /* Animation for fade-in */
+  @keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-menu button {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .dropdown-menu button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+<script>
+  function toggleMenu() {
+    var menu = document.getElementById("dropdownMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
+  // Optional: Close menu when clicking outside
+  window.addEventListener("click", function(e) {
+    if (!e.target.closest(".menu-container")) {
+      document.getElementById("dropdownMenu").style.display = "none";
+    }
+  });
+</script>
+
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1">
     </canvas>
     <div id="pauseMenuContainer" hidden>
