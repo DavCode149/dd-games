@@ -1,0 +1,499 @@
+<html><head><style data-merge-styles="true"></style>
+	<style data-merge-styles="true"></style><style data-merge-styles="true"></style><meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>House of Hazards</title>
+	<script src="/js/all.min.js"></script>
+	<script>
+	window.config = {
+		loader: 'unity',
+		debug: false,
+		maxRatio: 16 / 9,
+		minRatio: 9 / 16,
+
+		title: 'House of Hazards',
+		thumbnail: 'patch/png/null.png?https:\/\/img.poki.com\/0609b0ba2889859b21cf47ca205818fe.png',
+		numScreenshots:  4 ,
+
+		unityVersion: '2019.3.10f1',
+		unityWebglBuildUrl: 'Build\/HouseOfHazardsPoki.json',
+
+		fileSize:  12 ,
+		cachedDecompressedFileSizes: {
+			'HouseOfHazardsPoki.data.unityweb':  6247832 ,
+			'HouseOfHazardsPoki.wasm.code.unityweb':  5830707 ,
+			'HouseOfHazardsPoki.wasm.framework.unityweb':  89458 ,
+		},
+	};
+	</script>
+<style type="text/css">* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #002B50;
+    font-family: Torus, Arial, Helvetica, sans-serif;
+    color: #fff;
+}
+
+#game-container {
+    position: absolute !important;
+    left: 50%;
+    top: 50%;
+    display: none;
+}
+
+#game,
+#game canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#loader {
+    width: 100%;
+    height: 100%;
+}
+
+/**
+   * Slideshow
+   */
+
+#slideshow {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    display: flex;
+    user-select: none;
+}
+
+@font-face {
+    font-family: Torus;
+    src:
+        url('patch/fonts/torus-bold-webfont.woff2') format('woff2'),
+        url('//a.poki.com/fonts/torus-bold-webfont.woff') format('woff');
+    font-style: bold;
+    font-weight: 700;
+}
+
+/**
+   * Slideshow - Top section
+   */
+#progress-spinner{
+    margin-left: 0;
+    margin-top: 0;
+    left: 0px;
+    display:none;
+    transform: translate(100%, -50%);
+    width:10vh;
+}
+#progress-spinner >div{
+    width:2vh;
+    height:2vh;
+}
+#thumbnail {
+    box-shadow: 0 1vh 2vh rgba(0, 0, 0, 0.4);
+    /* box-shadow: 0 6px 12px rgba(0, 0, 0, 0.24); */
+    border-radius: 16.667%;
+}
+
+#slideshow-top {
+    display: flex;
+    margin: 2.5vh 0;
+}
+
+#slideshow-top-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+#game-title, #progress-comment {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    font-size:2vh;
+}
+
+#progress-container {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    transition: 0.2s ease-out all;
+}
+
+#progress-container.done {
+    opacity: 0;
+}
+
+#progress-bar {
+    background: #fff;
+    width: 100%;
+    overflow: hidden;
+}
+
+#progress-fill {
+    background: #3CF7DC;
+    height: 100%;
+    transition: 0.2s ease-out all;
+    animation-name: fillColor;
+    animation-duration: 3.5s;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+}
+
+@keyframes fillColor {
+    0% {
+        background-color: #3CF7DC;
+    }
+
+    25% {
+        background-color: #FFA9BE;
+    }
+
+    50% {
+        background-color: #FFDC00;
+    }
+
+    75% {
+        background-color: #E0AEF5;
+    }
+
+    100% {
+        background-color: #3CF7DC;
+    }
+}
+
+@media (orientation: portrait) {
+    #thumbnail {
+        margin-right: 2.4vh;
+    }
+
+    #game-title h1 {
+        font-size: 2vh;
+    }
+
+    #slideshow-top {
+        width: 70vw;
+    }
+
+    #progress-bar {
+        height: 1vh;
+        border-radius: 0.5vh;
+    }
+
+    #progress-fill {
+        border-radius: 0.5vh;
+    }
+
+    #thumbnail {
+        width: 5vh;
+        height: 5vh;
+    }
+
+    #progress-amount {
+        font-size: 2vh;
+        margin-left: 1.5vh;
+        width: 3vh;
+    }
+}
+
+@media (orientation: landscape) {
+    #thumbnail {
+        margin-right: 3vh;
+    }
+
+    #game-title h1 {
+        font-size: 3vh;
+    }
+
+    #slideshow-top {
+        width: 50vw;
+    }
+
+    #progress-bar {
+        height: 1.2vh;
+        border-radius: 0.6vh;
+    }
+
+    #progress-fill {
+        border-radius: 0.6vh;
+    }
+
+    #thumbnail {
+        width: 7.5vh;
+        height: 7.5vh;
+    }
+
+    #progress-amount {
+        font-size: 2.5vh;
+        margin-left: 1.875vh;
+        width: 3.75vh;
+    }
+}
+
+/**
+   * Slideshow - Images section
+   */
+
+#slideshow-images {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+}
+
+#slideshow-images .image {
+    position: absolute;
+    box-shadow: 0 2.4vh 3.6vh rgba(0, 0, 0, 0.4);
+    transition-property: transform;
+    transition-timing-function: ease-in-out;
+    perspective: 1000px;
+    left: 0;
+    overflow: hidden;
+    /* border: 1vh solid; */
+}
+
+#slideshow-images .image img {
+    width: 100%;
+    height: 100%;
+}
+
+#slideshow-images .image:nth-of-type(1n) {
+    border-color: #3BE8B0;
+}
+
+#slideshow-images .image:nth-of-type(2n) {
+    border-color: #FF6D92;
+}
+
+#slideshow-images .image:nth-of-type(3n) {
+    border-color: #A177FF;
+}
+
+#slideshow-images .image:nth-of-type(4n) {
+    border-color: #FFD200;
+}
+
+#slideshow-images .left {
+    z-index: 2;
+}
+#slideshow-images .right {
+    z-index: 1;
+}
+
+#slideshow-images .middle {
+    z-index: 3;
+}
+
+#slideshow-images .left img,
+#slideshow-images .right img {
+    transform: scale(1.05);
+}
+
+#slideshow-images .left img,
+#slideshow-images .right img,
+#slideshow-images .fromLeft img,
+#slideshow-images .fromRight img {
+    filter: blur(1vh);
+}
+
+#slideshow-images .inactive {
+    display: none;
+}
+
+#slideshow-images .inactive.fromLeft,
+#slideshow-images .inactive.fromRight {
+    display: block;
+}
+
+/**
+   * Slideshow - Navigation section
+   */
+
+#slideshow-nav {
+    display: flex;
+    justify-content: center;
+    margin: 2.5vh 0;
+}
+
+#slideshow-nav .bullet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#slideshow-nav .bullet:after {
+    content: '';
+    background: #fff;
+    border-radius: 0.4vh;
+    width: 0.8vh;
+    height: 0.8vh;
+}
+
+#slideshow-nav .bullet.active:after {
+    background: #009CFF;
+}
+
+#slideshow-nav .bullet {
+    width: 2.5vh;
+    height: 2.5vh;
+}
+
+#slideshow-nav .bullet:after {
+    border-radius: 50%;
+    width: 50%;
+    height: 50%;
+}
+
+/**
+   * Pop-in animation
+   */
+
+#slideshow-nav,
+#slideshow-images {
+    opacity: 0;
+    transition: 0.4s all ease-out;
+    transform: translateY(2vh);
+    perspective: 1000px;
+    transition-delay: 400ms;
+}
+
+#slideshow-nav {
+    transition-delay: 600ms;
+}
+
+#slideshow.active #slideshow-images,
+#slideshow.active #slideshow-nav {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes bounceInDown {
+
+    from,
+    60%,
+    75%,
+    90%,
+    to {
+        animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+
+    0% {
+        transform: translate3d(0, -100vh, 0);
+    }
+
+    40% {
+        transform: translate3d(0, 0.5vh, 0);
+    }
+
+    65% {
+        transform: translate3d(0, -0.2vh, 0);
+    }
+
+    80% {
+        transform: translate3d(0, 0.1vh, 0);
+    }
+
+    to {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+#slideshow-top {
+    transform: translate3d(0, -20vh, 0);
+    opacity: 0;
+}
+
+#slideshow-top.active {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    animation-name: bounceInDown;
+    animation-duration: 0.5s;
+}
+
+/**
+   * Loading dots
+   */
+.spinner {
+    position: relative;
+    left: -9999px;
+    animation: dot-pulse 1.5s infinite linear;
+    animation-delay: .25s;
+    transform:translate(50vw, 50vh) translate(-130%, -130%);
+  }
+
+  .spinner:before, .spinner:after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+  }
+  .spinner, .spinner:before, .spinner:after{
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+  }
+
+  .spinner:before {
+    animation: dot-pulse 1.5s infinite linear;
+    animation-delay: 0s;
+    left:-20px;
+  }
+
+  .spinner:after {
+    animation: dot-pulse 1.5s infinite linear;
+    animation-delay: .5s;
+    left:20px;
+  }
+
+  @keyframes dot-pulse {
+    0% {
+      box-shadow: 9999px 0 0 -5px #FFF;
+    }
+    30% {
+      box-shadow: 9999px 0 0 2px #FFF;
+    }
+    60%,
+    100% {
+      box-shadow: 9999px 0 0 -5px #FFF;
+    }
+  }
+</style></head>
+<body>
+	<script src="patch/js/poki-master-loader.js"></script><script src="patch/js/poki-sdk.js"></script>
+
+
+<script src="https://v2202502255106315135.powersrv.de/games/houseofhazards/patch/js/poki-unity.js"></script><div id="loader"><div id="slideshow" class="active"><div id="slideshow-top" class="active"><img id="thumbnail" alt="House of Hazards" title="House of Hazards" src="patch/png/null.png?https://img.poki.com/0609b0ba2889859b21cf47ca205818fe.png"><div id="slideshow-top-container"><div id="game-title">House of Hazards</div><div id="progress-spinner" class="spinner"><div class="bounce0"></div><div class="bounce1"></div><div class="bounce2"></div></div><div id="progress-container"><div id="progress-bar"><div id="progress-fill" style="width: 17.6211%;"></div></div><div id="progress-amount" style="width: 12vh; white-space: nowrap;">17% of 12MB</div></div><div id="progress-comment">Loading...</div></div></div><div id="slideshow-images"><div class="image right" fullimageloaded="true" data-idx="0"><img src="https://v2202502255106315135.powersrv.de/games/houseofhazards/screenshots/1.jpg"></div><div class="image fromLeft inactive" data-idx="1" fullimageloaded="true"><img src="https://v2202502255106315135.powersrv.de/games/houseofhazards/screenshots/2.jpg"></div><div class="image left" data-idx="2" fullimageloaded="true"><img src="https://v2202502255106315135.powersrv.de/games/houseofhazards/screenshots/3.jpg"></div><div class="image middle" data-idx="3" fullimageloaded="true"><img src="https://v2202502255106315135.powersrv.de/games/houseofhazards/screenshots/4.jpg"></div></div><div id="slideshow-nav"><div class="bullet" data-idx="0"></div><div class="bullet" data-idx="1"></div><div class="bullet" data-idx="2"></div><div class="bullet active" data-idx="3"></div></div></div></div><div id="game-container" style="width: 766.222px; height: 431px; margin-left: 0px; margin-top: 0px;"><div id="game" style="padding: 0px; margin: 0px; border: 0px; position: relative; background: rgb(95, 222, 231);"><canvas id="#canvas" style="width: 100%; height: 100%;"></canvas></div></div><script src="patch/js/UnityLoader.2019.2.js"></script><style>
+		#slideshow-images {
+			height: 70vh;
+		}
+		#slideshow-images .image {
+			transition-duration: 0.5s;
+			width: 49.29094236047576vw;
+			height: 70vh;
+		}
+		#slideshow-images .middle {
+			transform: translateX(25.354528819762123vw);
+		}
+		#slideshow-images .left {
+			transform: translateX(-19.00731930466606vw) scale(0.8);
+		}
+		#slideshow-images .right {
+			transform: translateX(69.7163769441903vw) scale(0.8);
+		}
+		#slideshow-images .inactive.fromLeft {
+			transform: translateX(-49.29094236047576vw) scale(0.4);
+		}
+		#slideshow-images .inactive.fromRight {
+			transform: translateX(124.64547118023788vw) scale(0.4);
+		}
+	</style></body><editor-card style="position:absolute;top:0px;left:0px;z-index:auto;display: block !important"><div dir="ltr" style="all: initial;"><div style="color-scheme: initial; forced-color-adjust: initial; mask: initial; math-depth: initial; position: absolute; position-anchor: initial; text-size-adjust: initial; appearance: initial; color: initial; font: initial; font-palette: initial; font-synthesis: initial; position-area: initial; text-orientation: initial; text-rendering: initial; text-spacing-trim: initial; -webkit-font-smoothing: initial; -webkit-locale: initial; -webkit-text-orientation: initial; -webkit-writing-mode: initial; writing-mode: initial; zoom: initial; accent-color: initial; place-content: initial; place-items: initial; place-self: initial; alignment-baseline: initial; anchor-name: initial; anchor-scope: initial; animation-composition: initial; animation: initial; app-region: initial; aspect-ratio: initial; backdrop-filter: initial; backface-visibility: initial; background: initial; background-blend-mode: initial; baseline-shift: initial; baseline-source: initial; block-size: initial; border-block: initial; border: initial; border-radius: initial; border-collapse: initial; border-end-end-radius: initial; border-end-start-radius: initial; border-inline: initial; border-start-end-radius: initial; border-start-start-radius: initial; inset: initial; box-decoration-break: initial; box-shadow: initial; box-sizing: initial; break-after: initial; break-before: initial; break-inside: initial; buffered-rendering: initial; caption-side: initial; caret-animation: initial; caret-color: initial; clear: initial; clip: initial; clip-path: initial; clip-rule: initial; color-interpolation: initial; color-interpolation-filters: initial; color-rendering: initial; columns: initial; column-fill: initial; gap: initial; column-rule: initial; column-span: initial; contain: initial; contain-intrinsic-block-size: initial; contain-intrinsic-size: initial; contain-intrinsic-inline-size: initial; container: initial; content: initial; content-visibility: initial; corner-shape: initial; corner-block-end-shape: initial; corner-block-start-shape: initial; counter-increment: initial; counter-reset: initial; counter-set: initial; cursor: initial; cx: initial; cy: initial; d: initial; display: initial; dominant-baseline: initial; dynamic-range-limit: initial; empty-cells: initial; field-sizing: initial; fill: initial; fill-opacity: initial; fill-rule: initial; filter: initial; flex: initial; flex-flow: initial; float: initial; flood-color: initial; flood-opacity: initial; grid: initial; grid-area: initial; height: initial; hyphenate-character: initial; hyphenate-limit-chars: initial; hyphens: initial; image-orientation: initial; image-rendering: initial; initial-letter: initial; inline-size: initial; inset-block: initial; inset-inline: initial; interpolate-size: initial; isolation: initial; letter-spacing: initial; lighting-color: initial; line-break: initial; list-style: initial; margin-block: initial; margin: initial; margin-inline: initial; marker: initial; mask-type: initial; math-shift: initial; math-style: initial; max-block-size: initial; max-height: initial; max-inline-size: initial; max-width: initial; min-block-size: initial; min-height: initial; min-inline-size: initial; min-width: initial; mix-blend-mode: initial; object-fit: initial; object-position: initial; object-view-box: initial; offset: initial; opacity: initial; order: initial; orphans: initial; outline: initial; outline-offset: initial; overflow-anchor: initial; overflow-block: initial; overflow-clip-margin: initial; overflow-inline: initial; overflow-wrap: initial; overflow: initial; overlay: initial; overscroll-behavior-block: initial; overscroll-behavior-inline: initial; overscroll-behavior: initial; padding-block: initial; padding: initial; padding-inline: initial; page: initial; page-orientation: initial; paint-order: initial; perspective: initial; perspective-origin: initial; pointer-events: initial; position-try: initial; position-visibility: initial; print-color-adjust: initial; quotes: initial; r: initial; reading-flow: initial; reading-order: initial; resize: initial; rotate: initial; ruby-align: initial; ruby-position: initial; rx: initial; ry: initial; scale: initial; scroll-behavior: initial; scroll-initial-target: initial; scroll-margin-block: initial; scroll-margin: initial; scroll-margin-inline: initial; scroll-marker-group: initial; scroll-padding-block: initial; scroll-padding: initial; scroll-padding-inline: initial; scroll-snap-align: initial; scroll-snap-stop: initial; scroll-snap-type: initial; scroll-target-group: initial; scroll-timeline: initial; scrollbar-color: initial; scrollbar-gutter: initial; scrollbar-width: initial; shape-image-threshold: initial; shape-margin: initial; shape-outside: initial; shape-rendering: initial; size: initial; speak: initial; stop-color: initial; stop-opacity: initial; stroke: initial; stroke-dasharray: initial; stroke-dashoffset: initial; stroke-linecap: initial; stroke-linejoin: initial; stroke-miterlimit: initial; stroke-opacity: initial; stroke-width: initial; tab-size: initial; table-layout: initial; text-align: initial; text-align-last: initial; text-anchor: initial; text-autospace: initial; text-box: initial; text-combine-upright: initial; text-decoration: initial; text-decoration-skip-ink: initial; text-emphasis: initial; text-emphasis-position: initial; text-indent: initial; text-overflow: initial; text-shadow: initial; text-transform: initial; text-underline-offset: initial; text-underline-position: initial; text-wrap: initial; timeline-scope: initial; touch-action: initial; transform: initial; transform-box: initial; transform-origin: initial; transform-style: initial; transition: initial; translate: initial; user-select: initial; vector-effect: initial; vertical-align: initial; view-timeline: initial; view-transition-class: initial; view-transition-group: initial; view-transition-name: initial; visibility: initial; border-spacing: initial; -webkit-box-align: initial; -webkit-box-decoration-break: initial; -webkit-box-direction: initial; -webkit-box-flex: initial; -webkit-box-ordinal-group: initial; -webkit-box-orient: initial; -webkit-box-pack: initial; -webkit-box-reflect: initial; -webkit-line-break: initial; -webkit-line-clamp: initial; -webkit-mask-box-image: initial; -webkit-rtl-ordering: initial; -webkit-ruby-position: initial; -webkit-tap-highlight-color: initial; -webkit-text-combine: initial; -webkit-text-decorations-in-effect: initial; -webkit-text-fill-color: initial; -webkit-text-security: initial; -webkit-text-stroke: initial; -webkit-user-drag: initial; white-space-collapse: initial; widows: initial; width: initial; will-change: initial; word-break: initial; word-spacing: initial; x: initial; y: initial; z-index: 2147483647;"><link rel="stylesheet" href="chrome-extension://gpaiobkfhnonedkhhfjpmhdalgeoebfa/fonts/fabric-icons.css"><div style="all: initial;"></div></div><div style="color-scheme: initial; forced-color-adjust: initial; mask: initial; math-depth: initial; position: absolute; position-anchor: initial; text-size-adjust: initial; appearance: initial; color: initial; font: initial; font-palette: initial; font-synthesis: initial; position-area: initial; text-orientation: initial; text-rendering: initial; text-spacing-trim: initial; -webkit-font-smoothing: initial; -webkit-locale: initial; -webkit-text-orientation: initial; -webkit-writing-mode: initial; writing-mode: initial; zoom: initial; accent-color: initial; place-content: initial; place-items: initial; place-self: initial; alignment-baseline: initial; anchor-name: initial; anchor-scope: initial; animation-composition: initial; animation: initial; app-region: initial; aspect-ratio: initial; backdrop-filter: initial; backface-visibility: initial; background: initial; background-blend-mode: initial; baseline-shift: initial; baseline-source: initial; block-size: initial; border-block: initial; border: initial; border-radius: initial; border-collapse: initial; border-end-end-radius: initial; border-end-start-radius: initial; border-inline: initial; border-start-end-radius: initial; border-start-start-radius: initial; inset: initial; box-decoration-break: initial; box-shadow: initial; box-sizing: initial; break-after: initial; break-before: initial; break-inside: initial; buffered-rendering: initial; caption-side: initial; caret-animation: initial; caret-color: initial; clear: initial; clip: initial; clip-path: initial; clip-rule: initial; color-interpolation: initial; color-interpolation-filters: initial; color-rendering: initial; columns: initial; column-fill: initial; gap: initial; column-rule: initial; column-span: initial; contain: initial; contain-intrinsic-block-size: initial; contain-intrinsic-size: initial; contain-intrinsic-inline-size: initial; container: initial; content: initial; content-visibility: initial; corner-shape: initial; corner-block-end-shape: initial; corner-block-start-shape: initial; counter-increment: initial; counter-reset: initial; counter-set: initial; cursor: initial; cx: initial; cy: initial; d: initial; display: initial; dominant-baseline: initial; dynamic-range-limit: initial; empty-cells: initial; field-sizing: initial; fill: initial; fill-opacity: initial; fill-rule: initial; filter: initial; flex: initial; flex-flow: initial; float: initial; flood-color: initial; flood-opacity: initial; grid: initial; grid-area: initial; height: initial; hyphenate-character: initial; hyphenate-limit-chars: initial; hyphens: initial; image-orientation: initial; image-rendering: initial; initial-letter: initial; inline-size: initial; inset-block: initial; inset-inline: initial; interpolate-size: initial; isolation: initial; letter-spacing: initial; lighting-color: initial; line-break: initial; list-style: initial; margin-block: initial; margin: initial; margin-inline: initial; marker: initial; mask-type: initial; math-shift: initial; math-style: initial; max-block-size: initial; max-height: initial; max-inline-size: initial; max-width: initial; min-block-size: initial; min-height: initial; min-inline-size: initial; min-width: initial; mix-blend-mode: initial; object-fit: initial; object-position: initial; object-view-box: initial; offset: initial; opacity: initial; order: initial; orphans: initial; outline: initial; outline-offset: initial; overflow-anchor: initial; overflow-block: initial; overflow-clip-margin: initial; overflow-inline: initial; overflow-wrap: initial; overflow: initial; overlay: initial; overscroll-behavior-block: initial; overscroll-behavior-inline: initial; overscroll-behavior: initial; padding-block: initial; padding: initial; padding-inline: initial; page: initial; page-orientation: initial; paint-order: initial; perspective: initial; perspective-origin: initial; pointer-events: initial; position-try: initial; position-visibility: initial; print-color-adjust: initial; quotes: initial; r: initial; reading-flow: initial; reading-order: initial; resize: initial; rotate: initial; ruby-align: initial; ruby-position: initial; rx: initial; ry: initial; scale: initial; scroll-behavior: initial; scroll-initial-target: initial; scroll-margin-block: initial; scroll-margin: initial; scroll-margin-inline: initial; scroll-marker-group: initial; scroll-padding-block: initial; scroll-padding: initial; scroll-padding-inline: initial; scroll-snap-align: initial; scroll-snap-stop: initial; scroll-snap-type: initial; scroll-target-group: initial; scroll-timeline: initial; scrollbar-color: initial; scrollbar-gutter: initial; scrollbar-width: initial; shape-image-threshold: initial; shape-margin: initial; shape-outside: initial; shape-rendering: initial; size: initial; speak: initial; stop-color: initial; stop-opacity: initial; stroke: initial; stroke-dasharray: initial; stroke-dashoffset: initial; stroke-linecap: initial; stroke-linejoin: initial; stroke-miterlimit: initial; stroke-opacity: initial; stroke-width: initial; tab-size: initial; table-layout: initial; text-align: initial; text-align-last: initial; text-anchor: initial; text-autospace: initial; text-box: initial; text-combine-upright: initial; text-decoration: initial; text-decoration-skip-ink: initial; text-emphasis: initial; text-emphasis-position: initial; text-indent: initial; text-overflow: initial; text-shadow: initial; text-transform: initial; text-underline-offset: initial; text-underline-position: initial; text-wrap: initial; timeline-scope: initial; touch-action: initial; transform: initial; transform-box: initial; transform-origin: initial; transform-style: initial; transition: initial; translate: initial; user-select: initial; vector-effect: initial; vertical-align: initial; view-timeline: initial; view-transition-class: initial; view-transition-group: initial; view-transition-name: initial; visibility: initial; border-spacing: initial; -webkit-box-align: initial; -webkit-box-decoration-break: initial; -webkit-box-direction: initial; -webkit-box-flex: initial; -webkit-box-ordinal-group: initial; -webkit-box-orient: initial; -webkit-box-pack: initial; -webkit-box-reflect: initial; -webkit-line-break: initial; -webkit-line-clamp: initial; -webkit-mask-box-image: initial; -webkit-rtl-ordering: initial; -webkit-ruby-position: initial; -webkit-tap-highlight-color: initial; -webkit-text-combine: initial; -webkit-text-decorations-in-effect: initial; -webkit-text-fill-color: initial; -webkit-text-security: initial; -webkit-text-stroke: initial; -webkit-user-drag: initial; white-space-collapse: initial; widows: initial; width: initial; will-change: initial; word-break: initial; word-spacing: initial; x: initial; y: initial; z-index: 2147483647;"><link rel="stylesheet" href="chrome-extension://gpaiobkfhnonedkhhfjpmhdalgeoebfa/fonts/fabric-icons.css"></div></div></editor-card></html>
