@@ -14,7 +14,7 @@
     background-size: 400% 400%;
     animation: gradientMove 3s ease infinite;
     font-family: Arial, sans-serif;
-    overflow-y: auto; /* allows scrolling down */
+    overflow-y: auto; /* allows scrolling */
   }
 
   @keyframes gradientMove {
@@ -30,7 +30,7 @@
     gap: 20px;
     width: 90%;
     max-width: 1000px;
-    padding: 120px 20px 40px; /* top padding prevents top overlap */
+    padding: 120px 20px 40px; /* top padding prevents overlap */
     box-sizing: border-box;
   }
 
@@ -42,6 +42,14 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
     overflow: hidden;
+    opacity: 0; /* hidden until scrolled into view */
+    transform: translateY(30px); /* small slide-up */
+  }
+
+  .grid-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
   }
 
   .grid-item:hover {
@@ -64,7 +72,7 @@
   }
 
   .back-button {
-    position: fixed; /* stays in view while scrolling */
+    position: fixed;
     top: 20px;
     left: 20px;
     background-color: #007bff;
@@ -76,11 +84,25 @@
     font-size: 16px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     transition: background-color 0.3s;
-    z-index: 100; /* stays above everything */
+    z-index: 100;
   }
 
   .back-button:hover {
     background-color: #0056b3;
+
+    .version-number {
+  position: fixed;
+  bottom: 8px;
+  right: 12px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 6px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+  pointer-events: none; /* So it doesn't block clicks */
+}
   }
 </style>
 </head>
@@ -141,5 +163,20 @@
     </div>
     <!-- You can duplicate these blocks to add more items -->
   </div>
+  <div class="version-number">v1.12</div>
+  <script>
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // only animate once
+      }
+    });
+  }, { threshold: 0.2 }); // trigger when 20% visible
+
+  document.querySelectorAll('.grid-item').forEach(item => {
+    observer.observe(item);
+  });
+</script>
 </body>
 </html>
