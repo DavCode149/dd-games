@@ -34,37 +34,23 @@
     box-sizing: border-box;
   }
 
-.grid-item {
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  text-align: center;
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  cursor: pointer;
-  overflow: hidden;
-  opacity: 1; /* start visible in case JS hasn't loaded yet */
-  transform: translateY(0);
-}
+  .grid-item {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+    opacity: 0; /* hidden until scrolled into view */
+    transform: translateY(30px); /* small slide-up */
+  }
 
-.grid-item.fade-out {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.grid-item.fade-in {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.grid-item.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.grid-item.hidden {
-  opacity: 0;
-  transform: translateY(30px);
-}
+  .grid-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
 
   .grid-item:hover {
     transform: scale(1.05);
