@@ -59,7 +59,7 @@
 
   .grid-item img {
     width: 100%;
-    height: 150px;
+    height: 170px;
     object-fit: cover;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -196,19 +196,5 @@
       <h3>Minecraft</h3>
     </div>
     <!-- You can duplicate these blocks to add more items -->
-  <div class="version-number">v1.17</div>
-  <script>
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target); // only animate once
-      }
-    });
-  }, { threshold: 0.2 }); // trigger when 20% visible
-
-  document.querySelectorAll('.grid-item').forEach(item => {
-    observer.observe(item);
-  });
 </body>
 </html>
