@@ -246,17 +246,18 @@ Eagletcraft average RAM usage: 0.6 GB
     });
   }
 </script><div id="imaContainer" style="position: absolute; z-index: 10000; top: 0px; left: 0px; width: 100%; height: 100%; background-color: rgb(0, 0, 0); visibility: hidden; overflow: hidden;">
-<!-- Include Ably client -->
 <script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
-
-<!-- Active user tracker -->
 <script>
   // === ABLY CONFIG ===
-  const ABLY_API_KEY = "f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw"; // <-- replace with your public key
-  const CHANNEL_NAME = "site-active-users"; // shared channel name for all pages
+  const ABLY_API_KEY = "f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw";
+  const CHANNEL_NAME = "site-active-users";
 
-  // === CONNECT TO ABLY ===
-  const ably = new Ably.Realtime(ABLY_API_KEY);
+  // === CONNECT TO ABLY WITH RANDOM CLIENT ID ===
+  const ably = new Ably.Realtime({
+    key: ABLY_API_KEY,
+    clientId: 'webUser-' + Math.random().toString(36).substring(2, 9)
+  });
+
   const channel = ably.channels.get(CHANNEL_NAME);
 
   // === JOIN PRESENCE WHEN CONNECTED ===
@@ -264,34 +265,103 @@ Eagletcraft average RAM usage: 0.6 GB
     channel.presence.enter("online");
   });
 
-  // === CLEAN EXIT ON PAGE CLOSE ===
+  // === LEAVE ON PAGE CLOSE ===
   window.addEventListener("beforeunload", () => {
     channel.presence.leave("online");
   });
 
-  // === COUNT FUNCTION ===
-  async function updateCount() {
-    try {
-      const members = await channel.presence.get();
-      const counter = document.getElementById("userCount");
-      if (counter) {
-        counter.textContent = members.length;
+  // === OPTIONAL COUNTER SNIPPET ===
+  function createUserCounter() {
+    const counter = document.createElement("div");
+    counter.id = "userCounter";
+    counter.style.position = "fixed";
+    counter.style.bottom = "15px";
+    counter.style.right = "15px";
+    counter.style.display = "flex";
+    counter.style.alignItems = "center";
+    counter.style.gap = "8px";
+    counter.style.padding = "8px 14px";
+    counter.style.background = "linear-gradient(90deg, #2575fc, #6a11cb)";
+    counter.style.color = "white";
+    counter.style.fontFamily = "Arial, sans-serif";
+    counter.style.fontSize = "14px";
+    counter.style.borderRadius = "12px";
+    counter.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+    counter.style.zIndex = "999";
+    counter.style.opacity = "0.9";
+    counter.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+    counter.innerHTML = `
+      <div id="statusDot" style="
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: limegreen;
+        box-shadow: 0 0 6px 2px rgba(0,255,0,0.5);
+        animation: pulse 1.5s infinite;
+      "></div>
+      <span id="userText">Connecting...</span>
+    `;
+    document.body.appendChild(counter);
+
+    // Add pulse animation style
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.3); opacity: 0.7; }
       }
-    } catch (err) {
-      console.error("Error getting presence:", err);
-    }
+      @keyframes countChange {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Optional hover fade
+    counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
+    counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
+
+    return counter;
   }
 
-  // === LIVE UPDATES ===
+  // === CREATE COUNTER ONLY WHEN NEEDED ===
+  // Comment out this line on pages where you don't want the counter:
+  //const counter = createUserCounter();
+
+  // === UPDATE FUNCTION WITH PULSE ON CHANGE ===
+  let lastCount = null;
+  function updateCount() {
+    channel.presence.get((err, members) => {
+      if (err) return;
+      const count = members.length;
+
+      if (counter) {
+        const userText = document.getElementById("userText");
+        if (userText) {
+          userText.textContent = `${count} user${count !== 1 ? "s" : ""} online`;
+          if (lastCount !== null && count !== lastCount) {
+            counter.style.animation = "countChange 0.4s ease";
+            setTimeout(() => counter.style.animation = "", 400);
+          }
+        }
+      }
+      lastCount = count;
+    });
+  }
+
+  // === PRESENCE SUBSCRIPTIONS ===
   channel.presence.subscribe("enter", updateCount);
   channel.presence.subscribe("leave", updateCount);
-  setInterval(updateCount, 5000);
-  updateCount();
+
+  // Initial update
+  setTimeout(updateCount, 1000);
 </script>
   <!--
 HOW IT WORKS:
 Eagletcraft was made by distibuting the code of EaglercraftX into many seperate hosted files, then using the page you're on now as a sort of relay for all the seperate files to communicate with one another. This inherently creates latency, so all the files are loaded onto your PC's flash memory to combat this. When the files are loaded to your flash memory, you can turn off wifi and play offline.
 -->
+
 
 
 
