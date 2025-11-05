@@ -1,31 +1,104 @@
 <!--
-
-
-
 EaglercraftX 1.8 by lax1dude and ayunami2000 THIS CODE OPENS Eagletcraft IN A PROXY WITH FULLSCREEN
 
 Eagletcraft compiled by PlanetDoge w/ help from the PlanetGamez team SHARE THIS WITH EVERYONE!
 
 EaglercraftX average RAM usage: 1.2 GB
 Eagletcraft average RAM usage: 0.6 GB
-
-
-
-
-
-
-
-
-PlanetGamez: https://sites.google.com/view/planet-gamez/
-GitHub Link: https://github.com/PlanetDogeCodes/EagletcraftX/
-
 -->
 
 <body>
+  <!-- ▼ Dropdown menu toggle -->
+<div class="menu-container">
+  <div class="menu-toggle" onclick="toggleMenu()">▼</div>
+  <div class="dropdown-menu" id="dropdownMenu">
+    <button onclick="window.location.href='https://davcode149.github.io/dd-games/games.html'">Return</button>
+  </div>
+</div>
+
+<style>
+  /* Position menu at top center */
+  .menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+
+  /* The arrow toggle */
+  .menu-toggle {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+
+  .menu-toggle:hover {
+    background-color: rgba(240, 240, 240, 0.95);
+    transform: scale(1.1);
+  }
+
+  /* Dropdown panel */
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    min-width: 120px;
+    text-align: center;
+    animation: dropdownFade 0.2s ease;
+  }
+
+  /* Animation for fade-in */
+  @keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-menu button {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .dropdown-menu button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+<script>
+  function toggleMenu() {
+    var menu = document.getElementById("dropdownMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
+  // Optional: Close menu when clicking outside
+  window.addEventListener("click", function(e) {
+    if (!e.target.closest(".menu-container")) {
+      document.getElementById("dropdownMenu").style.display = "none";
+    }
+  });
+</script>
   <div id="container">
     <iframe id="fr" width="100%" height="100%" frameborder="0" allowfullscreen=""></iframe>
     <button class="play-button" type="button" onclick="PlayTo(this)">CLICK TO PLAY</button>
-    <button class="fullscreen-button" type="button" onclick="openFullscreen()">FULLSCREEN</button>
     <p id="unblocked-text"></p>
   </div>
 
@@ -197,3 +270,4 @@ GitHub Link: https://github.com/PlanetDogeCodes/EagletcraftX/
 HOW IT WORKS:
 Eagletcraft was made by distibuting the code of EaglercraftX into many seperate hosted files, then using the page you're on now as a sort of relay for all the seperate files to communicate with one another. This inherently creates latency, so all the files are loaded onto your PC's flash memory to combat this. When the files are loaded to your flash memory, you can turn off wifi and play offline.
 -->
+
