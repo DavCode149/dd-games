@@ -508,6 +508,8 @@ body {
   // === CONNECT TO ABLY ===
   const ably = new Ably.Realtime(ABLY_API_KEY);
   const channel = ably.channels.get(CHANNEL_NAME);
+	console.log("Connected to Ably")
+
 
   // === JOIN PRESENCE WHEN CONNECTED ===
   ably.connection.once("connected", () => {
