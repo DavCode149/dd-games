@@ -210,19 +210,21 @@
 <!-- Live User Counter -->
 <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
-  // Connect to Ably (replace with your key)
-  const ably = new Ably.Realtime('f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw');
+  // ✅ Connect with a clientId
+  const ably = new Ably.Realtime({
+    key: 'YOUR_ABLY_API_KEY_HERE',
+    clientId: 'webUser-' + Math.random().toString(36).substring(2, 9)
+  });
 
   // Create a presence channel
   const channel = ably.channels.get('user-tracker');
-  const userId = Math.random().toString(36).substring(2, 9);
 
-  // Enter presence channel
-  channel.presence.enter({ id: userId });
+  // Join the channel
+  channel.presence.enter();
 
   // Leave when the tab closes
   window.addEventListener("beforeunload", () => {
-    channel.presence.leave({ id: userId });
+    channel.presence.leave();
   });
 
   // Create counter container
@@ -267,7 +269,7 @@
   `;
   document.head.appendChild(style);
 
-  // Function to update live count
+  // Update function
   function updateCount() {
     channel.presence.get((err, members) => {
       if (err) return;
@@ -277,14 +279,14 @@
     });
   }
 
-  // Update when users join or leave
+  // Subscribe to presence changes
   channel.presence.subscribe('enter', updateCount);
   channel.presence.subscribe('leave', updateCount);
 
-  // Initial update
+  // Update once after connected
   setTimeout(updateCount, 1000);
 
-  // Optional hover fade-in/out
+  // Optional hover fade
   counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
   counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
 </script>
