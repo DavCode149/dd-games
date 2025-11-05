@@ -23,15 +23,14 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* Grid layout styles */
+   /* Grid layout styles */
   .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 20px;
     width: 90%;
     max-width: 1000px;
-    padding: 120px 20px 40px; /* top padding prevents overlap */
-    box-sizing: border-box;
+    padding: 20px;
   }
 
   .grid-item {
@@ -42,14 +41,6 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
     overflow: hidden;
-    opacity: 0; /* hidden until scrolled into view */
-    transform: translateY(30px); /* small slide-up */
-  }
-
-  .grid-item.visible {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
   }
 
   .grid-item:hover {
@@ -70,7 +61,7 @@
     font-size: 18px;
     color: #333;
   }
-
+  
   .back-button {
     position: fixed;
     top: 20px;
