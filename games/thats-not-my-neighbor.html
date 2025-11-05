@@ -224,6 +224,48 @@
             }
         };
     </script>
+    <!-- Include Ably client -->
+<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
+
+<!-- Active user tracker -->
+<script>
+  // === ABLY CONFIG ===
+  const ABLY_API_KEY = "f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw"; // <-- replace with your public key
+  const CHANNEL_NAME = "site-active-users"; // shared channel name for all pages
+
+  // === CONNECT TO ABLY ===
+  const ably = new Ably.Realtime(ABLY_API_KEY);
+  const channel = ably.channels.get(CHANNEL_NAME);
+
+  // === JOIN PRESENCE WHEN CONNECTED ===
+  ably.connection.once("connected", () => {
+    channel.presence.enter("online");
+  });
+
+  // === CLEAN EXIT ON PAGE CLOSE ===
+  window.addEventListener("beforeunload", () => {
+    channel.presence.leave("online");
+  });
+
+  // === COUNT FUNCTION ===
+  async function updateCount() {
+    try {
+      const members = await channel.presence.get();
+      const counter = document.getElementById("userCount");
+      if (counter) {
+        counter.textContent = members.length;
+      }
+    } catch (err) {
+      console.error("Error getting presence:", err);
+    }
+  }
+
+  // === LIVE UPDATES ===
+  channel.presence.subscribe("enter", updateCount);
+  channel.presence.subscribe("leave", updateCount);
+  setInterval(updateCount, 5000);
+  updateCount();
+</script>
 </body>
 
 </html>
