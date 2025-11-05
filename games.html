@@ -221,7 +221,7 @@
   });
 
   // Create a presence channel
-  const channel = ably.channels.get('user-tracker');
+  const channel = ably.channels.get('site-active-users');
 
   // Join the channel
   channel.presence.enter();
