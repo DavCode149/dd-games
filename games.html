@@ -35,22 +35,26 @@
   }
 
   .grid-item {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    text-align: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
-    overflow: hidden;
-    opacity: 0; /* hidden until scrolled into view */
-    transform: translateY(30px); /* small slide-up */
-  }
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  text-align: center;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, opacity 0.6s ease-out;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+}
 
-  .grid-item.visible {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
+.grid-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.grid-item.hidden {
+  opacity: 0;
+  transform: translateY(30px);
+}
 
   .grid-item:hover {
     transform: scale(1.05);
@@ -206,6 +210,21 @@
   document.querySelectorAll('.grid-item').forEach(item => {
     observer.observe(item);
   });
+  const items = document.querySelectorAll('.grid-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        entry.target.classList.remove('hidden');
+      } else {
+        entry.target.classList.add('hidden');
+        entry.target.classList.remove('visible');
+      }
+    });
+  }, { threshold: 0.1 }); // triggers fade when 10% visible
+
+  items.forEach(item => observer.observe(item));
 </script>
 </body>
 </html>
