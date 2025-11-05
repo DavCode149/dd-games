@@ -141,35 +141,19 @@ Eagletcraft average RAM usage: 0.6 GB
   </style>
 
 <script>
-  // Existing game SDK code...
-
-  function openFullscreen() {
-    const iframe = document.getElementById("fr");
-    if (iframe.requestFullscreen) {
-      iframe.requestFullscreen();
-    } else if (iframe.mozRequestFullScreen) { // Firefox
-      iframe.mozRequestFullScreen();
-    } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari and Opera
-      iframe.webkitRequestFullscreen();
-    } else if (iframe.msRequestFullscreen) { // IE/Edge
-      iframe.msRequestFullscreen();
-    }
-  }
-</script>
-<script>
   // GameMonetize SDK Entegrasyonu
   window.SDK_OPTIONS = {
     gameId: "jp112o3o4hzgrnc7zaewjkrfk282pul8",
     onEvent: function (a) {
       switch (a.name) {
         case "SDK_GAME_PAUSE":
-          console.log("Oyun duraklatıldı, reklam gösteriliyor...");
+          console.log("The game has been paused");
           break;
         case "SDK_GAME_START":
-          console.log("Reklam bitti, oyun devam ediyor...");
+          console.log("Eaglercraft is starting...");
           break;
         case "SDK_READY":
-          console.log("SDK hazır.");
+          console.log("SDK Ready");
           break;
       }
     }
@@ -243,7 +227,7 @@ Eagletcraft average RAM usage: 0.6 GB
       iframe.contentWindow.document.addEventListener('touchstart', showAdOnClick);
     }).catch((err) => {
       console.error('Error:', err);
-      alert('Oyun yüklenemedi.');
+      alert('An Error has Occurred.');
     });
   }
 
@@ -257,12 +241,10 @@ Eagletcraft average RAM usage: 0.6 GB
 
         newWindow.document.addEventListener('pointerdown', showAdOnClick);
         newWindow.document.addEventListener('touchstart', showAdOnClick);
-      } else {
-        alert('Tam ekran açılamadı.');
       }
     }).catch((err) => {
       console.error('Error:', err);
-      alert('Tam ekran yüklenemedi.');
+      alert('An error has occured');
     });
   }
 </script><div id="imaContainer" style="position: absolute; z-index: 10000; top: 0px; left: 0px; width: 100%; height: 100%; background-color: rgb(0, 0, 0); visibility: hidden; overflow: hidden;">
@@ -270,4 +252,5 @@ Eagletcraft average RAM usage: 0.6 GB
 HOW IT WORKS:
 Eagletcraft was made by distibuting the code of EaglercraftX into many seperate hosted files, then using the page you're on now as a sort of relay for all the seperate files to communicate with one another. This inherently creates latency, so all the files are loaded onto your PC's flash memory to combat this. When the files are loaded to your flash memory, you can turn off wifi and play offline.
 -->
+
 
