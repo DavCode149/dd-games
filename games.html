@@ -3,24 +3,24 @@
 <head>
   <title>Classroom</title>
 <style>
-  /* Blue to purple animated gradient background */
+  /* Blue to purple animated gradient background (vertical movement, no parallax) */
   body {
     margin: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(270deg, #6a11cb, #2575fc);
+    background: linear-gradient(180deg, #6a11cb, #2575fc);
     background-size: 400% 400%;
-    animation: gradientMove 3s ease infinite;
+    animation: gradientMove 6s ease infinite;
     font-family: Arial, sans-serif;
     overflow-y: auto; /* allows scrolling */
   }
 
   @keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% { background-position: 50% 0%; }
+    50% { background-position: 50% 100%; }
+    100% { background-position: 50% 0%; }
   }
 
   /* Grid layout styles */
