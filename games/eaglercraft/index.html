@@ -1,0 +1,199 @@
+<!--
+
+
+
+EaglercraftX 1.8 by lax1dude and ayunami2000 THIS CODE OPENS Eagletcraft IN A PROXY WITH FULLSCREEN
+
+Eagletcraft compiled by PlanetDoge w/ help from the PlanetGamez team SHARE THIS WITH EVERYONE!
+
+EaglercraftX average RAM usage: 1.2 GB
+Eagletcraft average RAM usage: 0.6 GB
+
+
+
+
+
+
+
+
+PlanetGamez: https://sites.google.com/view/planet-gamez/
+GitHub Link: https://github.com/PlanetDogeCodes/EagletcraftX/
+
+-->
+
+<body>
+  <div id="container">
+    <iframe id="fr" width="100%" height="100%" frameborder="0" allowfullscreen=""></iframe>
+    <button class="play-button" type="button" onclick="PlayTo(this)">CLICK TO PLAY</button>
+    <button class="fullscreen-button" type="button" onclick="openFullscreen()">FULLSCREEN</button>
+    <p id="unblocked-text"></p>
+  </div>
+
+  <style>
+    .play-button {
+      padding: 1600px 1080px;
+      background: #000;
+      color: #fff;
+      border: 2px solid #4a148c;
+      border-radius: 10px;
+      font: 24px Impact;
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1001;
+    }
+    .fullscreen-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 10px 20px;
+      background: #4a148c;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1002;
+    }
+    .play-button:hover {
+      background: #4a148c;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+    }
+  </style>
+
+<script>
+  // Existing game SDK code...
+
+  function openFullscreen() {
+    const iframe = document.getElementById("fr");
+    if (iframe.requestFullscreen) {
+      iframe.requestFullscreen();
+    } else if (iframe.mozRequestFullScreen) { // Firefox
+      iframe.mozRequestFullScreen();
+    } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari and Opera
+      iframe.webkitRequestFullscreen();
+    } else if (iframe.msRequestFullscreen) { // IE/Edge
+      iframe.msRequestFullscreen();
+    }
+  }
+</script>
+<script>
+  // GameMonetize SDK Entegrasyonu
+  window.SDK_OPTIONS = {
+    gameId: "jp112o3o4hzgrnc7zaewjkrfk282pul8",
+    onEvent: function (a) {
+      switch (a.name) {
+        case "SDK_GAME_PAUSE":
+          console.log("Oyun duraklatıldı, reklam gösteriliyor...");
+          break;
+        case "SDK_GAME_START":
+          console.log("Reklam bitti, oyun devam ediyor...");
+          break;
+        case "SDK_READY":
+          console.log("SDK hazır.");
+          break;
+      }
+    }
+  };
+
+  const DB_NAME = 'GameCacheDB';
+  const STORE_NAME = 'GameFiles';
+  const CACHE_DURATION = 90 * 24 * 60 * 60 * 1000; // 3 ay
+  const FILE_URL = 'https://cdn.jsdelivr.net/gh/PlanetDogeCodes/EagletcraftX@main/egcfixed.xml';
+  const SDK_URL = 'https://cdn.jsdelivr.net/gh/testamalame/sef@main/sedk.js';
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, 1);
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        db.createObjectStore(STORE_NAME, { keyPath: 'url' });
+      };
+      request.onsuccess = (event) => resolve(event.target.result);
+      request.onerror = (event) => reject(event.target.error);
+    });
+  }
+
+  async function saveToCache(url, content) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.put({ url: url, content: content, timestamp: Date.now() });
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(new Error('Cache error'));
+    });
+  }
+
+  async function getFileFromCache(url) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.get(url);
+      request.onsuccess = async (event) => {
+        const data = event.target.result;
+        if (data && (Date.now() - data.timestamp) < CACHE_DURATION) {
+          resolve(data.content);
+        } else {
+          try {
+            const response = await fetch(url);
+            const text = await response.text();
+            await saveToCache(url, text);
+            resolve(text);
+          } catch (err) {
+            reject(err);
+          }
+        }
+      };
+      request.onerror = () => reject(new Error('DB error'));
+    });
+  }
+
+
+  function PlayTo(button) {
+    const iframe = document.getElementById("fr");
+    getFileFromCache(FILE_URL).then((text) => {
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(text);
+      iframe.contentDocument.close();
+      iframe.style.display = "block";
+      button.style.display = "none";
+
+      iframe.contentWindow.document.addEventListener('pointerdown', showAdOnClick);
+      iframe.contentWindow.document.addEventListener('touchstart', showAdOnClick);
+    }).catch((err) => {
+      console.error('Error:', err);
+      alert('Oyun yüklenemedi.');
+    });
+  }
+
+  function openFullscreen() {
+    getFileFromCache(FILE_URL).then((text) => {
+      const newWindow = window.open("", "_blank");
+      if (newWindow) {
+        newWindow.document.open();
+        newWindow.document.write(text);
+        newWindow.document.close();
+
+        newWindow.document.addEventListener('pointerdown', showAdOnClick);
+        newWindow.document.addEventListener('touchstart', showAdOnClick);
+      } else {
+        alert('Tam ekran açılamadı.');
+      }
+    }).catch((err) => {
+      console.error('Error:', err);
+      alert('Tam ekran yüklenemedi.');
+    });
+  }
+</script><div id="imaContainer" style="position: absolute; z-index: 10000; top: 0px; left: 0px; width: 100%; height: 100%; background-color: rgb(0, 0, 0); visibility: hidden; overflow: hidden;">
+<!--
+HOW IT WORKS:
+Eagletcraft was made by distibuting the code of EaglercraftX into many seperate hosted files, then using the page you're on now as a sort of relay for all the seperate files to communicate with one another. This inherently creates latency, so all the files are loaded onto your PC's flash memory to combat this. When the files are loaded to your flash memory, you can turn off wifi and play offline.
+-->
