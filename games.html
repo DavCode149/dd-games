@@ -186,45 +186,52 @@
       <h3>Minecraft</h3>
     </div>
     <!-- You can duplicate these blocks to add more items -->
-    <!-- Live User Counter -->
+<!-- Live User Counter -->
 <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
-  // ✅ Connect with a clientId
+  // === Connect with a unique clientId ===
   const ably = new Ably.Realtime({
     key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
     clientId: 'webUser-' + Math.random().toString(36).substring(2, 9)
   });
 
-  // Create a presence channel
   const channel = ably.channels.get('site-active-users');
+  let hasEntered = false; // Prevents duplicate presence entries
 
-  // Join the channel
-  channel.presence.enter();
-
-  // Leave when the tab closes
-  window.addEventListener("beforeunload", () => {
-    channel.presence.leave();
+  // === Join the presence channel once ===
+  ably.connection.once("connected", () => {
+    if (!hasEntered) {
+      channel.presence.enter("online");
+      hasEntered = true;
+    }
   });
 
-  // Create counter container
+  // === Leave when the tab closes ===
+  window.addEventListener("beforeunload", () => {
+    if (hasEntered) channel.presence.leave("online");
+  });
+
+  // === Create counter container ===
   const counter = document.createElement("div");
   counter.id = "userCounter";
-  counter.style.position = "fixed";
-  counter.style.bottom = "15px";
-  counter.style.right = "15px";
-  counter.style.display = "flex";
-  counter.style.alignItems = "center";
-  counter.style.gap = "8px";
-  counter.style.padding = "8px 14px";
-  counter.style.background = "linear-gradient(90deg, #2575fc, #6a11cb)";
-  counter.style.color = "white";
-  counter.style.fontFamily = "Arial, sans-serif";
-  counter.style.fontSize = "14px";
-  counter.style.borderRadius = "12px";
-  counter.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
-  counter.style.zIndex = "999";
-  counter.style.opacity = "0.9";
-  counter.style.transition = "opacity 0.3s ease";
+  Object.assign(counter.style, {
+    position: "fixed",
+    bottom: "15px",
+    right: "15px",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "8px 14px",
+    background: "linear-gradient(90deg, #2575fc, #6a11cb)",
+    color: "white",
+    fontFamily: "Arial, sans-serif",
+    fontSize: "14px",
+    borderRadius: "12px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+    zIndex: "999",
+    opacity: "0.9",
+    transition: "opacity 0.3s ease"
+  });
   counter.innerHTML = `
     <div id="statusDot" style="
       width: 10px;
@@ -238,7 +245,7 @@
   `;
   document.body.appendChild(counter);
 
-  // Add pulsing glow animation
+  // === Add pulsing animation ===
   const style = document.createElement('style');
   style.textContent = `
     @keyframes pulse {
@@ -248,24 +255,24 @@
   `;
   document.head.appendChild(style);
 
-  // Update function
+  // === Update count ===
   function updateCount() {
     channel.presence.get((err, members) => {
-      if (err) return;
+      if (err) return console.error(err);
       const count = members.length;
       document.getElementById("userText").textContent =
         `${count} user${count !== 1 ? "s" : ""} online`;
     });
   }
 
-  // Subscribe to presence changes
-  channel.presence.subscribe('enter', updateCount);
-  channel.presence.subscribe('leave', updateCount);
+  // === Subscribe to presence changes ===
+  channel.presence.subscribe("enter", updateCount);
+  channel.presence.subscribe("leave", updateCount);
 
-  // Update once after connected
+  // === Initial update ===
   setTimeout(updateCount, 1000);
 
-  // Optional hover fade
+  // === Optional hover fade ===
   counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
   counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
 </script>
