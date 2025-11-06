@@ -247,30 +247,89 @@ Eagletcraft average RAM usage: 0.6 GB
     });
   }
 </script><div id="imaContainer" style="position: absolute; z-index: 10000; top: 0px; left: 0px; width: 100%; height: 100%; background-color: rgb(0, 0, 0); visibility: hidden; overflow: hidden;">
+<!-- Active User Tracker (No Display) -->
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
-  // === Connect to Ably with a random client ID ===
+  // === 1️⃣ Persistent browser ID ===
+  let browserId = localStorage.getItem('ablyBrowserId');
+  if (!browserId) {
+    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('ablyBrowserId', browserId);
+  }
+
+  // === 2️⃣ Connect to Ably ===
   const ably = new Ably.Realtime({
     key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
-    clientId: 'webUser-' + Math.random().toString(36).substring(2, 9)
+    clientId: browserId
   });
-
-  // === Use the shared presence channel ===
   const channel = ably.channels.get('site-active-users');
 
-  // === Join the presence channel when connected ===
-  ably.connection.once('connected', () => {
-    channel.presence.enter('online');
+  // === 3️⃣ Shared-tab logic (one connection per browser) ===
+  const isMainTabKey = "ablyMainTabActive";
+  const heartbeatKey = "ablyHeartbeat";
+  const heartbeatInterval = 3000; // ms
+
+  function setMainTab(active) {
+    if (active) {
+      localStorage.setItem(isMainTabKey, "true");
+      localStorage.setItem(heartbeatKey, Date.now());
+    } else {
+      localStorage.removeItem(isMainTabKey);
+      localStorage.removeItem(heartbeatKey);
+    }
+  }
+
+  function isMainTab() {
+    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
+    return Date.now() - lastBeat < heartbeatInterval * 2;
+  }
+
+  // === 4️⃣ Keep heartbeat alive for main tab ===
+  setInterval(() => {
+    if (localStorage.getItem(isMainTabKey) === "true") {
+      localStorage.setItem(heartbeatKey, Date.now());
+    }
+  }, heartbeatInterval);
+
+  // === 5️⃣ Only first tab joins presence ===
+  async function tryEnterPresence() {
+    if (!isMainTab()) {
+      setMainTab(true);
+      try {
+        await channel.attach();
+        channel.presence.enter("online");
+      } catch (err) {
+        console.error("Error entering presence:", err);
+      }
+    }
+  }
+
+  // === 6️⃣ Detect other tabs closing/opening ===
+  window.addEventListener("storage", async (event) => {
+    if (event.key === heartbeatKey) {
+      if (!isMainTab()) {
+        tryEnterPresence();
+      }
+    }
   });
 
-  // === Leave when the tab or window closes ===
-  window.addEventListener('beforeunload', () => {
-    channel.presence.leave('online');
+  // === 7️⃣ Leave presence when main tab closes ===
+  window.addEventListener("beforeunload", () => {
+    if (isMainTab()) {
+      channel.presence.leave("online");
+      setMainTab(false);
+    }
   });
+
+  // === 8️⃣ Connect ===
+  ably.connection.once("connected", tryEnterPresence);
 </script>
+
   <!--
 HOW IT WORKS:
 Eagletcraft was made by distibuting the code of EaglercraftX into many seperate hosted files, then using the page you're on now as a sort of relay for all the seperate files to communicate with one another. This inherently creates latency, so all the files are loaded onto your PC's flash memory to combat this. When the files are loaded to your flash memory, you can turn off wifi and play offline.
 -->
+
 
 
 
