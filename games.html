@@ -189,56 +189,67 @@
 <!-- Live User Counter -->
 <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
-  const ably = new Ably.Realtime({
-    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
-    clientId: 'webUser-' + Math.random().toString(36).substring(2, 9)
-  });
-
-  const channel = ably.channels.get('site-active-users');
-
-  // === Only enter presence if not already in ===
-  async function joinPresenceSafely() {
-    try {
-      const members = await channel.presence.get();
-      const alreadyIn = members.some(m => m.clientId === ably.auth.clientId);
-      if (!alreadyIn) {
-        channel.presence.enter('online');
-        console.log('Joined presence as', ably.auth.clientId);
-      } else {
-        console.log('Already in presence, skipping enter');
-      }
-    } catch (err) {
-      console.error('Presence check failed:', err);
-    }
+  // === 1️⃣ Make a unique, persistent ID per browser ===
+  let browserId = localStorage.getItem('ablyBrowserId');
+  if (!browserId) {
+    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('ablyBrowserId', browserId);
   }
 
-  ably.connection.once('connected', joinPresenceSafely);
+  // === 2️⃣ Setup Ably connection ===
+  const ably = new Ably.Realtime({
+    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
+    clientId: browserId
+  });
+  const channel = ably.channels.get('site-active-users');
 
-  // === Leave when tab closes ===
+  // === 3️⃣ Wait for Ably connection and safely join ===
+  ably.connection.once('connected', async () => {
+    try {
+      await channel.attach();
+      const members = await new Promise((resolve, reject) => {
+        channel.presence.get((err, members) => {
+          if (err) reject(err);
+          else resolve(members);
+        });
+      });
+
+      const alreadyIn = members.some(m => m.clientId === browserId);
+      if (!alreadyIn) {
+        channel.presence.enter('online', err => {
+          if (err) console.error('Error entering presence:', err);
+        });
+      }
+    } catch (err) {
+      console.error('Error attaching or getting presence:', err);
+    }
+  });
+
+  // === 4️⃣ Leave when closing ===
   window.addEventListener('beforeunload', () => {
     channel.presence.leave('online');
   });
 
-  // === Counter UI ===
-  const counter = document.createElement('div');
-  counter.id = 'userCounter';
+  // === 5️⃣ Create counter UI ===
+  const counter = document.createElement("div");
+  counter.id = "userCounter";
   Object.assign(counter.style, {
-    position: 'fixed',
-    bottom: '15px',
-    right: '15px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '8px 14px',
-    background: 'linear-gradient(90deg, #2575fc, #6a11cb)',
-    color: 'white',
-    fontFamily: 'Arial, sans-serif',
-    fontSize: '14px',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-    zIndex: '999',
-    opacity: '0.9',
-    transition: 'opacity 0.3s ease'
+    position: "fixed",
+    bottom: "15px",
+    right: "15px",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "8px 14px",
+    background: "linear-gradient(90deg, #2575fc, #6a11cb)",
+    color: "white",
+    fontFamily: "Arial, sans-serif",
+    fontSize: "14px",
+    borderRadius: "12px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+    zIndex: "999",
+    opacity: "0.9",
+    transition: "opacity 0.3s ease"
   });
   counter.innerHTML = `
     <div id="statusDot" style="
@@ -253,8 +264,8 @@
   `;
   document.body.appendChild(counter);
 
-  // === Add pulse animation ===
-  const style = document.createElement('style');
+  // === Add glow animation ===
+  const style = document.createElement("style");
   style.textContent = `
     @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 1; }
@@ -263,25 +274,25 @@
   `;
   document.head.appendChild(style);
 
-  // === Update user count ===
-  async function updateCount() {
-    try {
-      const members = await channel.presence.get();
-      const count = members.length;
-      document.getElementById('userText').textContent =
-        `${count} user${count !== 1 ? 's' : ''} online`;
-    } catch (err) {
-      console.error('Error updating count:', err);
-    }
+  // === 6️⃣ Update count function ===
+  function updateCount() {
+    channel.presence.get((err, members) => {
+      if (err) return;
+      const unique = new Set(members.map(m => m.clientId));
+      const count = unique.size;
+      document.getElementById("userText").textContent =
+        `${count} user${count !== 1 ? "s" : ""} online`;
+    });
   }
 
-  channel.presence.subscribe('enter', updateCount);
-  channel.presence.subscribe('leave', updateCount);
-  setInterval(updateCount, 5000);
+  channel.presence.subscribe("enter", updateCount);
+  channel.presence.subscribe("leave", updateCount);
+
+  // Run first update after 1.5s delay
   setTimeout(updateCount, 1500);
 
-  counter.addEventListener('mouseenter', () => counter.style.opacity = '1');
-  counter.addEventListener('mouseleave', () => counter.style.opacity = '0.9');
+  counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
+  counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
 </script>
 </body>
 </html>
