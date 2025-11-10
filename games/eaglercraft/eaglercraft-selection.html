@@ -99,39 +99,42 @@
       <h3>Coming Soon</h3>
     </div>
   <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
-  <script>
-    // === Setup Three.js Scene ===
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("bgCanvas") });
+ <script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
+  const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("bgCanvas") });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+
+  // Sphere with smoother geometry to reduce warping
+  const geometry = new THREE.SphereGeometry(500, 100, 80);
+  geometry.scale(-1, 1, 1);
+
+  const texture = new THREE.TextureLoader().load("images/panorama.jpg", (tex) => {
+    tex.mapping = THREE.EquirectangularReflectionMapping; // makes projection correct
+    tex.minFilter = THREE.LinearFilter;
+  });
+
+  const material = new THREE.MeshBasicMaterial({ map: texture });
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+
+  camera.position.set(0, 0, 0);
+
+  // Gentle rotation
+  function animate() {
+    requestAnimationFrame(animate);
+    sphere.rotation.y += 0.0005;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Handle resizing
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-
-    // === Create Sphere for Panorama ===
-    const geometry = new THREE.SphereGeometry(500, 60, 40);
-    geometry.scale(-1, 1, 1); // invert sphere so inside is visible
-
-    const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load("https://davcode149.github.io/dd-games/assets/mc-panorama2.png"); // your panorama image
-    const material = new THREE.MeshBasicMaterial({ map: texture });
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
-
-    camera.position.set(0, 0, 0);
-
-    // === Animate camera rotation ===
-    function animate() {
-      requestAnimationFrame(animate);
-      sphere.rotation.y += 0.0005; // Slow spin
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    // === Handle resize ===
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
