@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Classroom</title>
-
   <style>
     html, body {
       margin: 0;
-      padding: 0;
       height: 100%;
       overflow: hidden;
       font-family: Arial, sans-serif;
       color: white;
     }
 
-    /* === Panorama Background Canvas === */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -24,10 +20,9 @@
       height: 100%;
       z-index: -2;
       pointer-events: none;
-      filter: blur(2px) brightness(0.7); /* Slight blur and dimming for Minecraft vibe */
+      filter: blur(2px) brightness(0.7);
     }
 
-    /* === Dark Overlay for Depth === */
     #overlay {
       position: fixed;
       top: 0;
@@ -38,7 +33,6 @@
       z-index: -1;
     }
 
-    /* === Grid Layout === */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -49,11 +43,10 @@
       align-content: center;
       height: 100vh;
       box-sizing: border-box;
-      z-index: 10;
       position: relative;
+      z-index: 10;
     }
 
-    /* === Image Cards === */
     .grid-item {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 12px;
@@ -88,43 +81,43 @@
   </style>
 </head>
 <body>
-  <!-- === Panorama Background === -->
   <canvas id="bgCanvas"></canvas>
   <div id="overlay"></div>
-
   <!-- === Grid Content === -->
   <div class="grid-container">
     <div class="grid-item">
       <img src="https://davcode149.github.io/dd-games/assets/images/minecraft.png" alt="Item 1">
       <h3>1.8.8</h3>
     </div>
-    
-  <!-- === Three.js === -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
-
   <script>
-    // === Setup Scene ===
+    // === Setup Three.js Scene ===
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("bgCanvas") });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // === Load Panorama Texture ===
-    const loader = new THREE.TextureLoader();
-    loader.load("https://davcode149.github.io/dd-games/assets/mc-panorama.jpeg", (texture) => {
-      texture.mapping = THREE.EquirectangularReflectionMapping;
-      scene.background = texture;
-    });
+    // === Create Sphere for Panorama ===
+    const geometry = new THREE.SphereGeometry(500, 60, 40);
+    geometry.scale(-1, 1, 1); // invert sphere so inside is visible
 
-    // === Animate Slowly (Minecraft-style slow spin) ===
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load("https://davcode149.github.io/dd-games/assets/mc-panorama2.png"); // your panorama image
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+
+    camera.position.set(0, 0, 0);
+
+    // === Animate camera rotation ===
     function animate() {
       requestAnimationFrame(animate);
-      camera.rotation.y += 0.0003; // Slow, immersive spin
+      sphere.rotation.y += 0.0005; // Slow spin
       renderer.render(scene, camera);
     }
     animate();
 
-    // === Handle Resize ===
+    // === Handle resize ===
     window.addEventListener("resize", () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
