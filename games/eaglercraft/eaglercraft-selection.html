@@ -1,245 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Classroom</title>
-<style>
-  /* ---- Panorama Background ---- */
-body {
-  margin: 0;
-  height: 100vh;
-  overflow: hidden;
-  background: url("https://davcode149.github.io/dd-games/assets/mc-panorama.jpg") repeat-x center center;
-  background-size: cover;
-  animation: spinPanorama 120s linear infinite;
-  font-family: Arial, sans-serif;
-}
 
-/* ---- Animation Keyframes ---- */
-@keyframes spinPanorama {
-  0% {
-    background-position: 0 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
-}
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
 
-/* Optional: for content on top */
-.content {
-  position: relative;
-  z-index: 10;
-  color: white;
-  text-align: center;
-  font-family: Arial, sans-serif;
-  padding-top: 40vh;
-}
-  
-   /* Grid layout styles */
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
-    width: 90%;
-    max-width: 1000px;
-    padding: 20px;
-  }
+    /* === Panorama Background Canvas === */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+      filter: blur(2px) brightness(0.7); /* Slight blur and dimming for Minecraft vibe */
+    }
 
-  .grid-item {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    text-align: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
-    overflow: hidden;
-  }
+    /* === Dark Overlay for Depth === */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.8));
+      z-index: -1;
+    }
 
-  .grid-item:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-  }
+    /* === Grid Layout === */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      align-content: center;
+      height: 100vh;
+      box-sizing: border-box;
+      z-index: 10;
+      position: relative;
+    }
 
-  .grid-item img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
+    /* === Image Cards === */
+    .grid-item {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.25s ease, background 0.3s ease;
+      overflow: hidden;
+    }
 
-  .grid-item h3 {
-    margin: 10px 0;
-    font-size: 18px;
-    color: #333;
-  }
-  
-  .back-button {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-    transition: background-color 0.3s;
-    z-index: 100;
-  }
+    .grid-item img {
+      width: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+      aspect-ratio: 1 / 1;
+      transition: transform 0.3s ease;
+    }
 
-  .back-button:hover {
-    background-color: #0056b3;
-  }
-</style>
+    .grid-item:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .grid-item:hover img {
+      transform: scale(1.08);
+    }
+
+    .grid-item h3 {
+      margin-top: 10px;
+      font-size: 1.1em;
+    }
+  </style>
 </head>
 <body>
-  <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
+  <!-- === Panorama Background === -->
+  <canvas id="bgCanvas"></canvas>
+  <div id="overlay"></div>
 
+  <!-- === Grid Content === -->
+  <div class="grid-container">
     <div class="grid-item">
-      <img src="https://davcode149.github.io/dd-games/assets/images/minecraft.png" onclick="window.location.href='games/eaglercraft/index.html'" alt="Item 23">
-      <h3>1.8</h3>
-    <!-- You can duplicate these blocks to add more items -->
-<!-- Live User Counter -->
-<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
-<script>
-  // === 1️⃣ Unique persistent browser ID ===
-  let browserId = localStorage.getItem('ablyBrowserId');
-  if (!browserId) {
-    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
-    localStorage.setItem('ablyBrowserId', browserId);
-  }
+      <img src="https://davcode149.github.io/dd-games/assets/images/minecraft.png" alt="Item 1">
+      <h3>1.8.8</h3>
+    </div>
+    
+  <!-- === Three.js === -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
-  // === 2️⃣ Setup Ably connection ===
-  const ably = new Ably.Realtime({
-    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
-    clientId: browserId
-  });
-  const channel = ably.channels.get('site-active-users');
+  <script>
+    // === Setup Scene ===
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("bgCanvas") });
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-  // === 3️⃣ Shared-tab logic ===
-  const isMainTabKey = "ablyMainTabActive";
-  const heartbeatKey = "ablyHeartbeat";
-  const heartbeatInterval = 3000; // ms
-
-  function setMainTab(active) {
-    if (active) {
-      localStorage.setItem(isMainTabKey, "true");
-      localStorage.setItem(heartbeatKey, Date.now());
-    } else {
-      localStorage.removeItem(isMainTabKey);
-      localStorage.removeItem(heartbeatKey);
-    }
-  }
-
-  function isMainTab() {
-    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
-    return Date.now() - lastBeat < heartbeatInterval * 2;
-  }
-
-  // === 4️⃣ Keep heartbeat alive if this is the main tab ===
-  setInterval(() => {
-    if (localStorage.getItem(isMainTabKey) === "true") {
-      localStorage.setItem(heartbeatKey, Date.now());
-    }
-  }, heartbeatInterval);
-
-  // === 5️⃣ Only the first tab enters Ably presence ===
-  async function tryEnterPresence() {
-    if (!isMainTab()) {
-      setMainTab(true);
-      try {
-        await channel.attach();
-        channel.presence.enter("online");
-      } catch (err) {
-        console.error("Error entering presence:", err);
-      }
-    }
-  }
-
-  // === 6️⃣ Listen for other tabs closing/opening ===
-  window.addEventListener("storage", async (event) => {
-    if (event.key === heartbeatKey) {
-      if (!isMainTab()) {
-        tryEnterPresence();
-      }
-    }
-  });
-
-  // === 7️⃣ Leave presence when tab is closed ===
-  window.addEventListener("beforeunload", () => {
-    if (isMainTab()) {
-      channel.presence.leave("online");
-      setMainTab(false);
-    }
-  });
-
-  // === 8️⃣ Create counter element ===
-  const counter = document.createElement("div");
-  counter.id = "userCounter";
-  Object.assign(counter.style, {
-    position: "fixed",
-    bottom: "15px",
-    right: "15px",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "8px 14px",
-    background: "linear-gradient(90deg, #2575fc, #6a11cb)",
-    color: "white",
-    fontFamily: "Arial, sans-serif",
-    fontSize: "14px",
-    borderRadius: "12px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-    zIndex: "999",
-    opacity: "0.9",
-    transition: "opacity 0.3s ease"
-  });
-  counter.innerHTML = `
-    <div id="statusDot" style="
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: limegreen;
-      box-shadow: 0 0 6px 2px rgba(0,255,0,0.5);
-      animation: pulse 1.5s infinite;
-    "></div>
-    <span id="userText">Connecting...</span>
-  `;
-  document.body.appendChild(counter);
-
-  // === 9️⃣ Glow animation ===
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.7; }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // === 🔟 Count updater ===
-  function updateCount() {
-    channel.presence.get((err, members) => {
-      if (err) return;
-      const unique = new Set(members.map(m => m.clientId));
-      const count = unique.size;
-      document.getElementById("userText").textContent =
-        `${count} user${count !== 1 ? "s" : ""} online`;
+    // === Load Panorama Texture ===
+    const loader = new THREE.TextureLoader();
+    loader.load("https://davcode149.github.io/dd-games/assets/mc-panorama.jpeg", (texture) => {
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      scene.background = texture;
     });
-  }
 
-  channel.presence.subscribe("enter", updateCount);
-  channel.presence.subscribe("leave", updateCount);
-  setTimeout(updateCount, 1500);
+    // === Animate Slowly (Minecraft-style slow spin) ===
+    function animate() {
+      requestAnimationFrame(animate);
+      camera.rotation.y += 0.0003; // Slow, immersive spin
+      renderer.render(scene, camera);
+    }
+    animate();
 
-  // === 11️⃣ Hover effect ===
-  counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
-  counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
-
-  // Start main process after connected
-  ably.connection.once("connected", tryEnterPresence);
-</script>
+    // === Handle Resize ===
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
 </body>
 </html>
