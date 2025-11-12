@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Access Restricted</title>
+<style>
+  :root {
+    --bg: #f8f9fb;
+    --card-bg: #fff;
+    --border: #e5e7eb;
+    --text: #111827;
+    --muted: #6b7280;
+    --accent: #d93b32;
+  }
+  body {
+    margin: 0;
+    height: 100vh;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.06);
+    border-radius: 10px;
+    padding: 40px 50px;
+    width: min(400px, 90%);
+    text-align: center;
+  }
+  h1 {
+    font-size: 22px;
+    margin: 0 0 10px;
+  }
+  p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    font-size: 15px;
+    transition: border 0.2s;
+  }
+  input[type="password"]:focus {
+    border-color: var(--accent);
+  }
+  button {
+    width: 100%;
+    margin-top: 18px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 0;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover {
+    background: #c2332a;
+  }
+  .error {
+    color: #c53030;
+    font-size: 13px;
+    margin-top: 10px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Access Restricted</h1>
+    <p>Please enter the access password to continue.</p>
+    <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off" />
+    <button onclick="checkPassword()">Continue</button>
+    <div id="error" class="error">Incorrect password. Try again.</div>
+  </div>
+
+  <script>
+    // 🔐 CONFIG: set your password and destination page here
+    const CORRECT_PASSWORD = "TRUTH"; // change this
+    const REDIRECT_URL = "/dd-games/main.html"; // page to go to
+
+    function checkPassword() {
+      const input = document.getElementById("passwordInput").value.trim();
+      const error = document.getElementById("error");
+      if (input === CORRECT_PASSWORD) {
+        window.location.href = REDIRECT_URL;
+      } else {
+        error.style.display = "block";
+      }
+    }
+
+    // allow pressing Enter to submit
+    document.getElementById("passwordInput").addEventListener("keypress", e => {
+      if (e.key === "Enter") checkPassword();
+    });
+  </script>
+</body>
+</html>
