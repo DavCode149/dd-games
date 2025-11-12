@@ -1,193 +1,212 @@
-<!doctypehtml>
+<!doctype html>
+<html lang="en">
 <head>
-    <title>DD Games - beta</title>
-</head>
-<style>
-    /* Make the background gradient move in a loop */
-    body {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      background: linear-gradient(270deg, #89f7fe, #66a6ff, #f6d365, #fda085);
-      background-size: 800% 800%;
-      animation: gradientMove 12s ease infinite;
-      font-family: Arial, sans-serif;
-      color: white;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Access Blocked</title>
+  <style>
+    :root{
+      --card-bg: #ffffff;
+      --page-bg: #f6f7f8;
+      --accent: #d93b32; /* red accent */
+      --muted: #6b7280;
+      --shadow: 0 6px 22px rgba(16,24,40,0.06);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #111827;
+    }
+    html,body{height:100%;margin:0;background:var(--page-bg);display:flex;align-items:center;justify-content:center;padding:30px;}
+    .card {
+      width: min(920px, 94%);
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 34px 40px;
+      box-sizing: border-box;
+      border: 1px solid rgba(16,24,40,0.04);
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
     }
 
-    /* Animate the gradient smoothly */
-    @keyframes gradientMove {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
+    /* left column: logo + title + body */
+    .left {
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
 
-    /* Style the input box */
-    input[type="text"] {
-      width: 300px;
-      padding: 12px 15px;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      font-size: 16px;
-      outline: none;
-      margin-bottom: 15px;
-      transition: box-shadow 0.3s ease;
+    .brand-row {
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
     }
 
-    input[type="text"]:focus {
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    /* small emblem */
+    .emblem {
+      width:48px;
+      height:36px;
+      border-radius:6px;
+      background: linear-gradient(90deg, rgba(217,59,50,1) 0%, rgba(231,84,76,0.95) 100%);
+      display:grid;
+      place-items:center;
+      position:relative;
+      box-shadow: 0 6px 18px rgba(217,59,50,0.08);
+      overflow:visible;
+    }
+    /* subtle rays behind emblem */
+    .emblem::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:260px;
+      height:160px;
+      transform:translate(-60%,-40%) rotate(-18deg);
+      background: radial-gradient(closest-side, rgba(217,59,50,0.06), transparent 45%);
+      pointer-events:none;
+    }
+    .emblem svg{ width:26px; height:22px; fill: #ffffff; opacity:0.98; }
+
+    .brand-text h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.02;
+      font-weight:700;
+      color:#2b2b2b;
+    }
+    .brand-text p {
+      margin:6px 0 0 0;
+      font-size:14px;
+      color:var(--muted);
     }
 
-    /* Style the button */
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 25px;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-      transition: background-color 0.3s, transform 0.1s;
+    .subtitle {
+      margin-top:6px;
+      font-weight:700;
+      color:#2b2b2b;
+      font-size:16px;
     }
 
-    button:hover {
-      background-color: #0056b3;
+    .lead {
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      margin-top:8px;
+      max-width:64ch;
     }
 
-    button:active {
-      transform: scale(0.98);
+    /* info block similar to screenshot */
+    .info-box {
+      margin-top:14px;
+      font-size:14px;
+      color:var(--muted);
+      display:block;
+    }
+    .info-row {
+      display:flex;
+      gap:12px;
+      align-items:baseline;
+      margin-top:10px;
+    }
+    .info-label{
+      width:96px;
+      font-weight:600;
+      color:#444;
+      font-size:13px;
+    }
+    .info-value {
+      color:#111827;
+      font-family: "Courier New", monospace;
+      font-size:13px;
+      word-break:break-all;
+    }
+
+    /* right column: empty area or small visual */
+    .right {
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-left:10px;
+    }
+    .placeholder {
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+
+    /* slight footer text centered under card on small screens */
+    .small-note {
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:left;
+    }
+
+    @media (max-width:880px){
+      .card { grid-template-columns: 1fr; padding:22px; }
+      .right { order: -1; padding-bottom:6px; }
+      .brand-row{align-items:center;}
     }
   </style>
-<script>
-    function OpenLink() {
-    javascript: var win = window.open();   win.document.body.style.margin = '0';   win.document.body.style.height = '100vh';   var iframe = win.document.createElement('iframe');   iframe.style.border = 'none';   iframe.style.width = '100%';   iframe.style.height = '100%';   iframe.style.margin = '0';   iframe.src = "games.html";   win.document.body.appendChild(iframe);
-    }
-</script>
+</head>
 <body>
-<h1>Welcome to DD Games!</h1>
-    <p>This sites is all about games, unblocked, and ported to work on the web</p>
-    <button onclick="OpenLink()">Open Site in Cloaked Tab (Recomended)</button>
-    <p>   </p>
-    <button onclick="window.location.href='games.html'">Open Site normally</button>
-<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
-<script>
-  // === ABLY CONFIG ===
-  const ABLY_API_KEY = "f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw";
-  const CHANNEL_NAME = "site-active-users";
+  <div class="card" role="main" aria-labelledby="blockedTitle">
+    <div class="left" aria-live="polite">
+      <div class="brand-row">
+        <div class="emblem" aria-hidden="true">
+          <img src="assets/images/fortinet.png" onclick="window.location.href='assets/pw.html'"alt="emblem">
+        </div>
 
-  // === CONNECT TO ABLY WITH RANDOM CLIENT ID ===
-  const ably = new Ably.Realtime({
-    key: ABLY_API_KEY,
-    clientId: 'webUser-' + Math.random().toString(36).substring(2, 9)
-  });
+        <div class="brand-text">
+          <h1 id="brandMain">Network Protection — Access Blocked</h1>
+          <p id="brandSub">Web Page Blocked</p>
+        </div>
+      </div>
 
-  const channel = ably.channels.get(CHANNEL_NAME);
+      <div>
+        <div class="subtitle" id="blockedTitle">Access to this page has been denied</div>
+        <div class="lead" id="leadText">
+          The page you have requested has been blocked because the URL is restricted by your organization's web policy.
+        </div>
 
-  // === JOIN PRESENCE WHEN CONNECTED ===
-  ably.connection.once("connected", () => {
-    channel.presence.enter("online");
-  });
+        <div class="info-box" role="region" aria-label="Blocked information">
+          <div class="info-row"><div class="info-label">URL</div><div class="info-value" id="urlValue">https://example.com/</div></div>
+          <div class="info-row"><div class="info-label">Description</div><div class="info-value" id="descValue">—</div></div>
+        </div>
+      </div>
+    </div>
 
-  // === LEAVE ON PAGE CLOSE ===
-  window.addEventListener("beforeunload", () => {
-    channel.presence.leave("online");
-  });
+    <div class="right" aria-hidden="true">
+      <div class="placeholder" id="rightNote">
+        <!-- optional: small grey graphic or keep empty -->
+      </div>
+    </div>
+  </div>
 
-  // === OPTIONAL COUNTER SNIPPET ===
-  function createUserCounter() {
-    const counter = document.createElement("div");
-    counter.id = "userCounter";
-    counter.style.position = "fixed";
-    counter.style.bottom = "15px";
-    counter.style.right = "15px";
-    counter.style.display = "flex";
-    counter.style.alignItems = "center";
-    counter.style.gap = "8px";
-    counter.style.padding = "8px 14px";
-    counter.style.background = "linear-gradient(90deg, #2575fc, #6a11cb)";
-    counter.style.color = "white";
-    counter.style.fontFamily = "Arial, sans-serif";
-    counter.style.fontSize = "14px";
-    counter.style.borderRadius = "12px";
-    counter.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
-    counter.style.zIndex = "999";
-    counter.style.opacity = "0.9";
-    counter.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-    counter.innerHTML = `
-      <div id="statusDot" style="
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: limegreen;
-        box-shadow: 0 0 6px 2px rgba(0,255,0,0.5);
-        animation: pulse 1.5s infinite;
-      "></div>
-      <span id="userText">Connecting...</span>
-    `;
-    document.body.appendChild(counter);
+  <script>
+    // CONFIG: edit the visible values below
+    const CONFIG = {
+      titleMain: "Network Protection — Access Blocked",
+      subtitle: "Web Page Blocked",
+      blockedTitle: "Access to this page has been denied",
+      leadText: "The page you have requested has been blocked because the URL is restricted by your organization's web policy.",
+      url: "https://davcode149.github.io/dd-games",
+      description: "The requested URL matches a blocked category.",
+      source: "Local URL Filter"
+    };
 
-    // Add pulse animation style
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.3); opacity: 0.7; }
-      }
-      @keyframes countChange {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.3); }
-        100% { transform: scale(1); }
-      }
-    `;
-    document.head.appendChild(style);
-
-    // Optional hover fade
-    counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
-    counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
-
-    return counter;
-  }
-
-  // === CREATE COUNTER ONLY WHEN NEEDED ===
-  // Comment out this line on pages where you don't want the counter:
-  const counter = createUserCounter();
-
-  // === UPDATE FUNCTION WITH PULSE ON CHANGE ===
-  let lastCount = null;
-  function updateCount() {
-    channel.presence.get((err, members) => {
-      if (err) return;
-      const count = members.length;
-
-      if (counter) {
-        const userText = document.getElementById("userText");
-        if (userText) {
-          userText.textContent = `${count} user${count !== 1 ? "s" : ""} online`;
-          if (lastCount !== null && count !== lastCount) {
-            counter.style.animation = "countChange 0.4s ease";
-            setTimeout(() => counter.style.animation = "", 400);
-          }
-        }
-      }
-      lastCount = count;
-    });
-  }
-
-  // === PRESENCE SUBSCRIPTIONS ===
-  channel.presence.subscribe("enter", updateCount);
-  channel.presence.subscribe("leave", updateCount);
-
-  // Initial update
-  setTimeout(updateCount, 1000);
-</script>
+    // apply config
+    document.getElementById('brandMain').textContent = CONFIG.titleMain;
+    document.getElementById('brandSub').textContent = CONFIG.subtitle;
+    document.getElementById('blockedTitle').textContent = CONFIG.blockedTitle;
+    document.getElementById('leadText').textContent = CONFIG.leadText;
+    document.getElementById('urlValue').textContent = CONFIG.url;
+    document.getElementById('descValue').textContent = CONFIG.description;
+  </script>
 </body>
+</html>
