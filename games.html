@@ -1,353 +1,212 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title>Classroom</title>
-<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
-<script src="assets/tracker.js"></script>
-<style>
-  /* Blue to purple animated gradient background */
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: linear-gradient(270deg, #6a11cb, #2575fc);
-    background-size: 400% 400%;
-    animation: gradientMove 3s ease infinite;
-    font-family: Arial, sans-serif;
-    overflow-y: auto; /* allows scrolling */
-  }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Access Blocked</title>
+  <style>
+    :root{
+      --card-bg: #ffffff;
+      --page-bg: #f6f7f8;
+      --accent: #d93b32; /* red accent */
+      --muted: #6b7280;
+      --shadow: 0 6px 22px rgba(16,24,40,0.06);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #111827;
+    }
+    html,body{height:100%;margin:0;background:var(--page-bg);display:flex;align-items:center;justify-content:center;padding:30px;}
+    .card {
+      width: min(920px, 94%);
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 34px 40px;
+      box-sizing: border-box;
+      border: 1px solid rgba(16,24,40,0.04);
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+    }
 
-  @keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+    /* left column: logo + title + body */
+    .left {
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
 
-   /* Grid layout styles */
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
-    width: 90%;
-    max-width: 1000px;
-    padding: 20px;
-  }
+    .brand-row {
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+    }
 
-  .grid-item {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    text-align: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: pointer;
-    overflow: hidden;
-  }
+    /* small emblem */
+    .emblem {
+      width:48px;
+      height:36px;
+      border-radius:6px;
+      background: linear-gradient(90deg, rgba(217,59,50,1) 0%, rgba(231,84,76,0.95) 100%);
+      display:grid;
+      place-items:center;
+      position:relative;
+      box-shadow: 0 6px 18px rgba(217,59,50,0.08);
+      overflow:visible;
+    }
+    /* subtle rays behind emblem */
+    .emblem::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:260px;
+      height:160px;
+      transform:translate(-60%,-40%) rotate(-18deg);
+      background: radial-gradient(closest-side, rgba(217,59,50,0.06), transparent 45%);
+      pointer-events:none;
+    }
+    .emblem svg{ width:26px; height:22px; fill: #ffffff; opacity:0.98; }
 
-  .grid-item:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-  }
+    .brand-text h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.02;
+      font-weight:700;
+      color:#2b2b2b;
+    }
+    .brand-text p {
+      margin:6px 0 0 0;
+      font-size:14px;
+      color:var(--muted);
+    }
 
-  .grid-item img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
+    .subtitle {
+      margin-top:6px;
+      font-weight:700;
+      color:#2b2b2b;
+      font-size:16px;
+    }
 
-  .grid-item h3 {
-    margin: 10px 0;
-    font-size: 18px;
-    color: #333;
-  }
-  
-  .back-button {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-    transition: background-color 0.3s;
-    z-index: 100;
-  }
+    .lead {
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      margin-top:8px;
+      max-width:64ch;
+    }
 
-  .back-button:hover {
-    background-color: #0056b3;
-  }
-</style>
-<script>
-  function openRequestForm() {
-  window.open("https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Jrm3b-vtT02C6AwQ5Ee1cNLNR-GLk9tJrwn7dwbdJRtUM0FXU0JTWTExME9PM1U3T1ZHS1lSSlJJRy4u");
-  }
-</script>
-<script>
-function brainrot() {
-  alert("WARNING: These games may result in loss of braincells!");
-  window.location.assign("https://davcode149.github.io/dd-games/games/brainrot/select.html");
-}
-</script>
+    /* info block similar to screenshot */
+    .info-box {
+      margin-top:14px;
+      font-size:14px;
+      color:var(--muted);
+      display:block;
+    }
+    .info-row {
+      display:flex;
+      gap:12px;
+      align-items:baseline;
+      margin-top:10px;
+    }
+    .info-label{
+      width:96px;
+      font-weight:600;
+      color:#444;
+      font-size:13px;
+    }
+    .info-value {
+      color:#111827;
+      font-family: "Courier New", monospace;
+      font-size:13px;
+      word-break:break-all;
+    }
+
+    /* right column: empty area or small visual */
+    .right {
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-left:10px;
+    }
+    .placeholder {
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+
+    /* slight footer text centered under card on small screens */
+    .small-note {
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:left;
+    }
+
+    @media (max-width:880px){
+      .card { grid-template-columns: 1fr; padding:22px; }
+      .right { order: -1; padding-bottom:6px; }
+      .brand-row{align-items:center;}
+    }
+  </style>
 </head>
 <body>
-  <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
+  <div class="card" role="main" aria-labelledby="blockedTitle">
+    <div class="left" aria-live="polite">
+      <div class="brand-row">
+        <div class="emblem" aria-hidden="true">
+          <img src="assets/images/Fortinet.jpg" width=40 height=40 onclick="window.location.href='assets/pw.html'"alt="emblem">
+        </div>
 
-  <div class="grid-container">
-    <div class="grid-item">
-      <img src="assets/images/request.jpg" onclick="openRequestForm()">
-      <h3>Request Game</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/deltarune.png" onclick="window.location.href='games/deltarune.html'" alt="Item 1">
-      <h3>Deltarune</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/block-blast.png" onclick="window.location.href='games/block-blast.html'" alt="Item 2">
-      <h3>Block Blast</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/cookie-clicker.png" onclick="window.location.href='games/cookie-clicker.html'" alt="Item 3">
-      <h3>Cookie Clicker</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/crossy-road.jpg" onclick="window.location.href='games/crossy-road.html'" alt="Item 4">
-      <h3>Crossy Road</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/pizza-tower.jpg" onclick="window.location.href='games/pizza-tower.html'" alt="Item 5">
-      <h3>Pizza Tower</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/fnaf1.jpg" onclick="window.location.href='games/fnaf-selection.html'" alt="Item 6">
-      <h3>FNAF Collection</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/geometry-dash.png" onclick="window.location.href='games/geometry-dash.html'" alt="Item 7">
-      <h3>Geometry Dash</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/buckshot-roulette.jpg" onclick="window.location.href='games/buckshot-roulette.html'" alt="Item 8">
-      <h3>Buckshot Roulette</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/friday-night-funkin.png" onclick="window.location.href='games/friday-night-funkin.html'" alt="Item 9">
-      <h3>Friday Night Funkin</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/crazy-cattle-3d.png" onclick="window.location.href='games/crazy-cattle-3d.html'" alt="Item 10">
-      <h3>Crazy Cattle 3D</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/thats-not-my-neighbor.jpg" onclick="window.location.href='games/thats-not-my-neighbor.html'" alt="Item 11">
-      <h3>That's Not My Neighbor</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/undertale.png" onclick="window.location.href='games/undertale.html'" alt="Item 12">
-      <h3>Undertale</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/baldis-basics.jpg" onclick="window.location.href='games/baldis-basics.html'" alt="Item 13">
-      <h3>Baldi's Basics (Fixed)</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/schoolboy-runaway.jpg" onclick="window.location.href='games/schoolboy-runaway.html'" alt="Item 14">
-      <h3>Schoolboy Runaway (LAGGY)</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/jetpack-joyride.png" onclick="window.location.href='games/jetpack-joyride.html'" alt="Item 15">
-      <h3>Jetpack Joyride</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/the-man-from-the-window.png" onclick="window.location.href='games/the-man-from-the-window.html'" alt="Item 16">
-      <h3>The Man From the Window</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/BERGENTRUCK.png" onclick="window.location.href='games/BERGENTRUCK.html'" alt="Item 17">
-      <h3>BERGENTRUCK</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/retro-bowl.png" onclick="window.location.href='games/retro-bowl.html'" alt="Item 18">
-      <h3>Retro Bowl</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/melon-playground.jpg" onclick="window.location.href='games/melon-playground.html'" alt="Item 19">
-      <h3>Melon Playground</h3>
-    </div>
-      <div class="grid-item">
-      <img src="assets/images/people-playground.jpg" onclick="window.location.href='games/people-playground.html'" alt="Item 20">
-      <h3>People Playground</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/puppet-hockey.jpg" onclick="window.location.href='games/puppet-hockey.html'" alt="Item 21">
-      <h3>Puppet Hockey</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/drive-mad.png" onclick="window.location.href='games/drivemad.html'" alt="Item 22">
-      <h3>Drive Mad</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/minecraft.png" onclick="window.location.href='games/eaglercraft/1.8/index.html'" alt="Item 23">
-      <h3>Minecraft</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/super-liquid-soccer.png" onclick="window.location.href='games/super-liquid-soccer.html'" alt="Item 24">
-      <h3>Super Liquid Soccer</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/balatro.jpg" onclick="window.location.href='games/balatro.html'" alt="Item 25">
-      <h3>Balatro</h3>
-    </div>
-    <div class="grid-item">
-      <img src="assets/images/steal-a-brainrot.png" onclick="brainrot()" alt="Item 26">
-      <h3>Brainrot Games (FIXED)</h3>
-    </div>
-    <!-- You can duplicate these blocks to add more items -->
-<!-- Live User Counter -->
-<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
-<script>
-  // === 1️⃣ Unique persistent browser ID ===
-  let browserId = localStorage.getItem('ablyBrowserId');
-  if (!browserId) {
-    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
-    localStorage.setItem('ablyBrowserId', browserId);
-  }
+        <div class="brand-text">
+          <h1 id="brandMain">Network Protection — Access Blocked</h1>
+          <p id="brandSub">Web Page Blocked</p>
+        </div>
+      </div>
 
-  // === 2️⃣ Setup Ably connection ===
-  const ably = new Ably.Realtime({
-    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
-    clientId: browserId
-  });
-  const channel = ably.channels.get('site-active-users');
+      <div>
+        <div class="subtitle" id="blockedTitle">Access to this page has been denied</div>
+        <div class="lead" id="leadText">
+          The page you have requested has been blocked because the URL is restricted by your organization's web policy.
+        </div>
 
-  // === 3️⃣ Shared-tab logic ===
-  const isMainTabKey = "ablyMainTabActive";
-  const heartbeatKey = "ablyHeartbeat";
-  const heartbeatInterval = 3000; // ms
+        <div class="info-box" role="region" aria-label="Blocked information">
+          <div class="info-row"><div class="info-label">URL</div><div class="info-value" id="urlValue">https://example.com/</div></div>
+          <div class="info-row"><div class="info-label">Description</div><div class="info-value" id="descValue">—</div></div>
+        </div>
+      </div>
+    </div>
 
-  function setMainTab(active) {
-    if (active) {
-      localStorage.setItem(isMainTabKey, "true");
-      localStorage.setItem(heartbeatKey, Date.now());
-    } else {
-      localStorage.removeItem(isMainTabKey);
-      localStorage.removeItem(heartbeatKey);
-    }
-  }
+    <div class="right" aria-hidden="true">
+      <div class="placeholder" id="rightNote">
+        <!-- optional: small grey graphic or keep empty -->
+      </div>
+    </div>
+  </div>
 
-  function isMainTab() {
-    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
-    return Date.now() - lastBeat < heartbeatInterval * 2;
-  }
+  <script>
+    // CONFIG: edit the visible values below
+    const CONFIG = {
+      titleMain: "Network Protection — Access Blocked",
+      subtitle: "Web Page Blocked",
+      blockedTitle: "Access to this page has been denied",
+      leadText: "The page you have requested has been blocked because the URL is restricted by your organization's web policy.",
+      url: "https://davcode149.github.io/dd-games",
+      description: "The requested URL matches a blocked category.",
+      source: "Local URL Filter"
+    };
 
-  // === 4️⃣ Keep heartbeat alive if this is the main tab ===
-  setInterval(() => {
-    if (localStorage.getItem(isMainTabKey) === "true") {
-      localStorage.setItem(heartbeatKey, Date.now());
-    }
-  }, heartbeatInterval);
-
-  // === 5️⃣ Only the first tab enters Ably presence ===
-  async function tryEnterPresence() {
-    if (!isMainTab()) {
-      setMainTab(true);
-      try {
-        await channel.attach();
-        channel.presence.enter("online");
-      } catch (err) {
-        console.error("Error entering presence:", err);
-      }
-    }
-  }
-
-  // === 6️⃣ Listen for other tabs closing/opening ===
-  window.addEventListener("storage", async (event) => {
-    if (event.key === heartbeatKey) {
-      if (!isMainTab()) {
-        tryEnterPresence();
-      }
-    }
-  });
-
-  // === 7️⃣ Leave presence when tab is closed ===
-  window.addEventListener("beforeunload", () => {
-    if (isMainTab()) {
-      channel.presence.leave("online");
-      setMainTab(false);
-    }
-  });
-
-  // === 8️⃣ Create counter element ===
-  const counter = document.createElement("div");
-  counter.id = "userCounter";
-  Object.assign(counter.style, {
-    position: "fixed",
-    bottom: "15px",
-    right: "15px",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "8px 14px",
-    background: "linear-gradient(90deg, #2575fc, #6a11cb)",
-    color: "white",
-    fontFamily: "Arial, sans-serif",
-    fontSize: "14px",
-    borderRadius: "12px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-    zIndex: "999",
-    opacity: "0.9",
-    transition: "opacity 0.3s ease"
-  });
-  counter.innerHTML = `
-    <div id="statusDot" style="
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: limegreen;
-      box-shadow: 0 0 6px 2px rgba(0,255,0,0.5);
-      animation: pulse 1.5s infinite;
-    "></div>
-    <span id="userText">Connecting...</span>
-  `;
-  document.body.appendChild(counter);
-
-  // === 9️⃣ Glow animation ===
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.7; }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // === 🔟 Count updater ===
-  function updateCount() {
-    channel.presence.get((err, members) => {
-      if (err) return;
-      const unique = new Set(members.map(m => m.clientId));
-      const count = unique.size;
-      document.getElementById("userText").textContent =
-        `${count} user${count !== 1 ? "s" : ""} online`;
-    });
-  }
-
-  channel.presence.subscribe("enter", updateCount);
-  channel.presence.subscribe("leave", updateCount);
-  setTimeout(updateCount, 1500);
-
-  // === 11️⃣ Hover effect ===
-  counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
-  counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
-
-  // Start main process after connected
-  ably.connection.once("connected", tryEnterPresence);
-</script>
+    // apply config
+    document.getElementById('brandMain').textContent = CONFIG.titleMain;
+    document.getElementById('brandSub').textContent = CONFIG.subtitle;
+    document.getElementById('blockedTitle').textContent = CONFIG.blockedTitle;
+    document.getElementById('leadText').textContent = CONFIG.leadText;
+    document.getElementById('urlValue').textContent = CONFIG.url;
+    document.getElementById('descValue').textContent = CONFIG.description;
+  </script>
 </body>
 </html>
