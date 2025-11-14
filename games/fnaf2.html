@@ -1,167 +1,212 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-	<base href="https://cdn.jsdelivr.net/gh/genizy/fnaf@latest/2/">
-    <link rel="stylesheet" type="text/css" href="style.css"/>
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="HandheldFriendly" content="true" />
-    <title>Five Nights at Freddy's 2</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Access Blocked</title>
+  <style>
+    :root{
+      --card-bg: #ffffff;
+      --page-bg: #f6f7f8;
+      --accent: #d93b32; /* red accent */
+      --muted: #6b7280;
+      --shadow: 0 6px 22px rgba(16,24,40,0.06);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #111827;
+    }
+    html,body{height:100%;margin:0;background:var(--page-bg);display:flex;align-items:center;justify-content:center;padding:30px;}
+    .card {
+      width: min(920px, 94%);
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 34px 40px;
+      box-sizing: border-box;
+      border: 1px solid rgba(16,24,40,0.04);
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+    }
+
+    /* left column: logo + title + body */
+    .left {
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .brand-row {
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+    }
+
+    /* small emblem */
+    .emblem {
+      width:48px;
+      height:36px;
+      border-radius:6px;
+      background: linear-gradient(90deg, rgba(217,59,50,1) 0%, rgba(231,84,76,0.95) 100%);
+      display:grid;
+      place-items:center;
+      position:relative;
+      box-shadow: 0 6px 18px rgba(217,59,50,0.08);
+      overflow:visible;
+    }
+    /* subtle rays behind emblem */
+    .emblem::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:260px;
+      height:160px;
+      transform:translate(-60%,-40%) rotate(-18deg);
+      background: radial-gradient(closest-side, rgba(217,59,50,0.06), transparent 45%);
+      pointer-events:none;
+    }
+    .emblem svg{ width:26px; height:22px; fill: #ffffff; opacity:0.98; }
+
+    .brand-text h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.02;
+      font-weight:700;
+      color:#2b2b2b;
+    }
+    .brand-text p {
+      margin:6px 0 0 0;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .subtitle {
+      margin-top:6px;
+      font-weight:700;
+      color:#2b2b2b;
+      font-size:16px;
+    }
+
+    .lead {
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      margin-top:8px;
+      max-width:64ch;
+    }
+
+    /* info block similar to screenshot */
+    .info-box {
+      margin-top:14px;
+      font-size:14px;
+      color:var(--muted);
+      display:block;
+    }
+    .info-row {
+      display:flex;
+      gap:12px;
+      align-items:baseline;
+      margin-top:10px;
+    }
+    .info-label{
+      width:96px;
+      font-weight:600;
+      color:#444;
+      font-size:13px;
+    }
+    .info-value {
+      color:#111827;
+      font-family: "Courier New", monospace;
+      font-size:13px;
+      word-break:break-all;
+    }
+
+    /* right column: empty area or small visual */
+    .right {
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-left:10px;
+    }
+    .placeholder {
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+
+    /* slight footer text centered under card on small screens */
+    .small-note {
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:left;
+    }
+
+    @media (max-width:880px){
+      .card { grid-template-columns: 1fr; padding:22px; }
+      .right { order: -1; padding-bottom:6px; }
+      .brand-row{align-items:center;}
+    }
+  </style>
 </head>
-
 <body>
-	<!-- ▼ Dropdown menu toggle -->
-<div class="menu-container">
-  <div class="menu-toggle" onclick="toggleMenu()">▼</div>
-  <div class="dropdown-menu" id="dropdownMenu">
-    <button onclick="window.location.href='https://davcode149.github.io/dd-games/games/fnaf-selection.html'">Return</button>
+  <div class="card" role="main" aria-labelledby="blockedTitle">
+    <div class="left" aria-live="polite">
+      <div class="brand-row">
+        <div class="emblem" aria-hidden="true">
+          <img src="/dd-games/assets/images/Fortinet.jpg" width=40 height=40 onclick="window.location.href='/dd-games/assets/pw.html'"alt="emblem">
+        </div>
+
+        <div class="brand-text">
+          <h1 id="brandMain">Network Protection — Access Blocked</h1>
+          <p id="brandSub">Web Page Blocked</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="subtitle" id="blockedTitle">Access to this page has been denied</div>
+        <div class="lead" id="leadText">
+          The page you have requested has been blocked because the URL is restricted by your organization's web policy.
+        </div>
+
+        <div class="info-box" role="region" aria-label="Blocked information">
+          <div class="info-row"><div class="info-label">URL</div><div class="info-value" id="urlValue">https://example.com/</div></div>
+          <div class="info-row"><div class="info-label">Description</div><div class="info-value" id="descValue">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right" aria-hidden="true">
+      <div class="placeholder" id="rightNote">
+        <!-- optional: small grey graphic or keep empty -->
+      </div>
+    </div>
   </div>
-</div>
 
-<style>
-  /* Position menu at top center */
-  .menu-container {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-  }
+  <script>
+    // CONFIG: edit the visible values below
+    const CONFIG = {
+      titleMain: "Network Protection — Access Blocked",
+      subtitle: "Web Page Blocked",
+      blockedTitle: "Access to this page has been denied",
+      leadText: "The page you have requested has been blocked because the URL is restricted by your organization's web policy.",
+      url: "https://davcode149.github.io/dd-games",
+      description: "The requested URL matches a blocked category.",
+      source: "Local URL Filter"
+    };
 
-  /* The arrow toggle */
-  .menu-toggle {
-    background-color: rgba(255, 255, 255, 0.85);
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    text-align: center;
-    line-height: 30px;
-    font-size: 18px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    transition: background-color 0.2s, transform 0.2s;
-  }
-
-  .menu-toggle:hover {
-    background-color: rgba(240, 240, 240, 0.95);
-    transform: scale(1.1);
-  }
-
-  /* Dropdown panel */
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 40px;
-    right: 0;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    padding: 10px;
-    min-width: 120px;
-    text-align: center;
-    animation: dropdownFade 0.2s ease;
-  }
-
-  /* Animation for fade-in */
-  @keyframes dropdownFade {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .dropdown-menu button {
-    width: 100%;
-    padding: 8px 10px;
-    border: none;
-    border-radius: 6px;
-    background-color: #007bff;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  .dropdown-menu button:hover {
-    background-color: #0056b3;
-  }
-</style>
-
-<script>
-  function toggleMenu() {
-    var menu = document.getElementById("dropdownMenu");
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
-  }
-
-  // Optional: Close menu when clicking outside
-  window.addEventListener("click", function(e) {
-    if (!e.target.closest(".menu-container")) {
-      document.getElementById("dropdownMenu").style.display = "none";
-    }
-  });
-</script>
-
-    <div style="display: inline-block; -webkit-user-select: none; text-align: left">
-        <canvas id="MMFCanvas" width="1280" height="720"> Your browser does not support Canvas, Please try again. </canvas>
-    </div>
-    <div id="progress-container">
-        <div style="margin-bottom: 6px;">Downloading... <span id="download-text">0%</span></div>
-        <div style="width: 100%; background: #444; border-radius: 6px; overflow: hidden;">
-            <div id="download-bar" style="height: 10px; background: #3b82f6; width: 0%; transition: width 0.2s;"></div>
-        </div>
-        <div style="margin: 12px 0 6px;">Extracting... <span id="extract-text">0%</span></div>
-        <div style="width: 100%; background: #444; border-radius: 6px; overflow: hidden;">
-            <div id="extract-bar" style="height: 10px; background: #10b981; width: 0%; transition: width 0.2s;"></div>
-        </div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="main.js"></script>
-	<!-- Include Ably client -->
-<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
-
-<!-- Active user tracker -->
-<script>
-  // === ABLY CONFIG ===
-  const ABLY_API_KEY = "f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw"; // <-- replace with your public key
-  const CHANNEL_NAME = "site-active-users"; // shared channel name for all pages
-
-  // === CONNECT TO ABLY ===
-  const ably = new Ably.Realtime(ABLY_API_KEY);
-  const channel = ably.channels.get(CHANNEL_NAME);
-	console.log("Connected to Ably")
-
-
-  // === JOIN PRESENCE WHEN CONNECTED ===
-  ably.connection.once("connected", () => {
-    channel.presence.enter("online");
-  });
-
-  // === CLEAN EXIT ON PAGE CLOSE ===
-  window.addEventListener("beforeunload", () => {
-    channel.presence.leave("online");
-  });
-
-  // === COUNT FUNCTION ===
-  async function updateCount() {
-    try {
-      const members = await channel.presence.get();
-      const counter = document.getElementById("userCount");
-      if (counter) {
-        counter.textContent = members.length;
-      }
-    } catch (err) {
-      console.error("Error getting presence:", err);
-    }
-  }
-
-  // === LIVE UPDATES ===
-  channel.presence.subscribe("enter", updateCount);
-  channel.presence.subscribe("leave", updateCount);
-  setInterval(updateCount, 5000);
-  updateCount();
-</script>
+    // apply config
+    document.getElementById('brandMain').textContent = CONFIG.titleMain;
+    document.getElementById('brandSub').textContent = CONFIG.subtitle;
+    document.getElementById('blockedTitle').textContent = CONFIG.blockedTitle;
+    document.getElementById('leadText').textContent = CONFIG.leadText;
+    document.getElementById('urlValue').textContent = CONFIG.url;
+    document.getElementById('descValue').textContent = CONFIG.description;
+  </script>
 </body>
-
 </html>
