@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <base href="https://cdn.jsdelivr.net/gh/genizy/web-port@main/getting-over-it/">
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | Getting Over It</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: #231F20;
+        }
+
+        #unity-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ▼ Dropdown menu toggle -->
+<div class="menu-container">
+  <div class="menu-toggle" onclick="toggleMenu()">▼</div>
+  <div class="dropdown-menu" id="dropdownMenu">
+    <button onclick="window.location.href='https://davcode149.github.io/dd-games/list.html'">Return</button>
+  </div>
+</div>
+
+<style>
+  /* Position menu at top center */
+  .menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+
+  /* The arrow toggle */
+  .menu-toggle {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+
+  .menu-toggle:hover {
+    background-color: rgba(240, 240, 240, 0.95);
+    transform: scale(1.1);
+  }
+
+  /* Dropdown panel */
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    min-width: 120px;
+    text-align: center;
+    animation: dropdownFade 0.2s ease;
+  }
+
+  /* Animation for fade-in */
+  @keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-menu button {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .dropdown-menu button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+<script>
+  function toggleMenu() {
+    var menu = document.getElementById("dropdownMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
+  // Optional: Close menu when clicking outside
+  window.addEventListener("click", function(e) {
+    if (!e.target.closest(".menu-container")) {
+      document.getElementById("dropdownMenu").style.display = "none";
+    }
+  });
+</script>
+
+    <div id="loading-text" style="color: white; font-size: 48px; font-family: cursive; text-align: center; margin-top: 20px;"> LOADING... </div>
+    <div id="unity-container" class="unity-desktop">
+        <canvas id="unity-canvas" tabindex="-1"></canvas>
+        <div id="unity-loading-bar">
+            <div id="unity-logo"></div>
+            <div id="unity-progress-bar-empty">
+                <div id="unity-progress-bar-full"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const loadingText = document.querySelector("#loading-text");
+        let totalBytes = 0;
+        let loadedBytes = 0;
+
+        function formatSize(bytes) {
+            if (bytes > 1024 * 1024 * 1024) {
+                return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+            } else if (bytes > 1024 * 1024) {
+                return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+            } else if (bytes > 1024) {
+                return (bytes / 1024).toFixed(2) + " KB";
+            } else {
+                return bytes + " B";
+            }
+        }
+
+        async function fetchWithProgress(url) {
+            const response = await fetch(url);
+            const reader = response.body.getReader();
+            let chunks = [];
+            let received = 0;
+            while (true) {
+                const {
+                    done,
+                    value
+                } = await reader.read();
+                if (done) break;
+                received += value.length;
+                loadedBytes += value.length;
+                chunks.push(value);
+                const doneText = formatSize(loadedBytes);
+                const totalText = formatSize(totalBytes);
+                const percent = totalBytes > 0 ? ((loadedBytes / totalBytes) * 100).toFixed(1) : "?";
+                loadingText.textContent = `LOADING... ${doneText} / ${totalText} (${percent}%)`;
+            }
+            let fullBuffer = new Uint8Array(received);
+            let offset = 0;
+            for (let chunk of chunks) {
+                fullBuffer.set(chunk, offset);
+                offset += chunk.length;
+            }
+            return fullBuffer.buffer;
+        }
+        async function mergeFiles(parts) {
+            const buffers = await Promise.all(parts.map(fetchWithProgress));
+            return URL.createObjectURL(new Blob(buffers));
+        }
+
+        function getParts(file, count) {
+            let parts = [];
+            for (let i = 1; i <= count; i++) {
+                parts.push(file + ".part" + i);
+            }
+            return parts;
+        }
+        (async () => {
+            const dataParts = getParts("Build/GettingOverIt.data", 32);
+            const wasmParts = getParts("Build/GettingOverIt.wasm", 2);
+            const allParts = [...dataParts, ...wasmParts];
+            totalBytes = 691732588;
+            const [dataUrl, wasmUrl] = await Promise.all([
+                mergeFiles(dataParts),
+                mergeFiles(wasmParts)
+            ]);
+            var container = document.querySelector("#unity-container");
+            var canvas = document.querySelector("#unity-canvas");
+            var loadingBar = document.querySelector("#unity-loading-bar");
+            var progressBarFull = document.querySelector("#unity-progress-bar-full");
+            var warningBanner = document.querySelector("#unity-warning");
+
+            function unityShowBanner(msg, type) {
+
+            }
+
+            var buildUrl = "Build";
+            var loaderUrl = buildUrl + "/GettingOverIt.loader.js";
+            var config = {
+                dataUrl: dataUrl,
+                frameworkUrl: buildUrl + "/GettingOverIt.framework.js",
+                codeUrl: wasmUrl,
+                streamingAssetsUrl: "StreamingAssets",
+                companyName: "Bennett Foddy",
+                productName: "Getting Over It",
+                productVersion: "1.7",
+                showBanner: unityShowBanner,
+            };
+
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+
+                var meta = document.createElement('meta');
+                meta.name = 'viewport';
+                meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+                document.getElementsByTagName('head')[0].appendChild(meta);
+                container.className = "unity-mobile";
+                canvas.className = "unity-mobile";
+
+            } else {
+                const canvas = document.querySelector("canvas");
+
+                function resizeCanvas() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    canvas.style.width = window.innerWidth + "px";
+                    canvas.style.height = window.innerHeight + "px";
+                }
+
+                window.addEventListener("resize", resizeCanvas);
+                resizeCanvas();
+            }
+
+            loadingBar.style.display = "block";
+
+            var script = document.createElement("script");
+            script.src = loaderUrl;
+            script.onload = () => {
+                createUnityInstance(canvas, config, (progress) => {
+                    progressBarFull.style.width = 100 * progress + "%";
+                }).then((unityInstance) => {
+                    loadingBar.style.display = "none";
+                    loadingText.remove();
+                }).catch((message) => {
+                    alert(message);
+                });
+            };
+
+            document.body.appendChild(script);
+        })();
+    </script>
+<!-- Active User Tracker (No Display) -->
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+<script>
+  // === 1️⃣ Persistent browser ID ===
+  let browserId = localStorage.getItem('ablyBrowserId');
+  if (!browserId) {
+    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('ablyBrowserId', browserId);
+  }
+
+  // === 2️⃣ Connect to Ably ===
+  const ably = new Ably.Realtime({
+    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
+    clientId: browserId
+  });
+  const channel = ably.channels.get('site-active-users');
+
+  // === 3️⃣ Shared-tab logic (one connection per browser) ===
+  const isMainTabKey = "ablyMainTabActive";
+  const heartbeatKey = "ablyHeartbeat";
+  const heartbeatInterval = 3000; // ms
+
+  function setMainTab(active) {
+    if (active) {
+      localStorage.setItem(isMainTabKey, "true");
+      localStorage.setItem(heartbeatKey, Date.now());
+    } else {
+      localStorage.removeItem(isMainTabKey);
+      localStorage.removeItem(heartbeatKey);
+    }
+  }
+
+  function isMainTab() {
+    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
+    return Date.now() - lastBeat < heartbeatInterval * 2;
+  }
+
+  // === 4️⃣ Keep heartbeat alive for main tab ===
+  setInterval(() => {
+    if (localStorage.getItem(isMainTabKey) === "true") {
+      localStorage.setItem(heartbeatKey, Date.now());
+    }
+  }, heartbeatInterval);
+
+  // === 5️⃣ Only first tab joins presence ===
+  async function tryEnterPresence() {
+    if (!isMainTab()) {
+      setMainTab(true);
+      try {
+        await channel.attach();
+        channel.presence.enter("online");
+      } catch (err) {
+        console.error("Error entering presence:", err);
+      }
+    }
+  }
+
+  // === 6️⃣ Detect other tabs closing/opening ===
+  window.addEventListener("storage", async (event) => {
+    if (event.key === heartbeatKey) {
+      if (!isMainTab()) {
+        tryEnterPresence();
+      }
+    }
+  });
+
+  // === 7️⃣ Leave presence when main tab closes ===
+  window.addEventListener("beforeunload", () => {
+    if (isMainTab()) {
+      channel.presence.leave("online");
+      setMainTab(false);
+    }
+  });
+
+  // === 8️⃣ Connect ===
+  ably.connection.once("connected", tryEnterPresence);
+</script>
+</body>
+
+</html>

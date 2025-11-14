@@ -1,0 +1,198 @@
+<Module>
+<html>
+  <head>
+    <title>Baldi's Basics</title>
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+    <script type="text/javascript" src="/js/main.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Nailington/3kh0-assets@aeb371b7e88542fd5e61eeed9e967a446d84fe1b/baldis-basics/TemplateData/style.css" />
+    <script src="https://cdn.jsdelivr.net/gh/Nailington/3kh0-assets@aeb371b7e88542fd5e61eeed9e967a446d84fe1b/baldis-basics/TemplateData/UnityProgress.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Nailington/3kh0-assets@aeb371b7e88542fd5e61eeed9e967a446d84fe1b/baldis-basics/baldi.js"></script>
+    <script>
+      var gameInstance = UnityLoader.instantiate("gameContainer", "https://rawcdn.githack.com/Nailington/3kh0-assets/aeb371b7e88542fd5e61eeed9e967a446d84fe1b/baldis-basics/baldi.json", {
+        onProgress: UnityProgress,
+        Module: {
+          onRuntimeInitialized: function () {
+            UnityProgress(gameInstance, "complete");
+          },
+        },
+      });
+    </script>
+  </head>
+  <body style="margin: 0;">
+      <!-- ▼ Dropdown menu toggle -->
+<div class="menu-container">
+  <div class="menu-toggle" onclick="toggleMenu()">▼</div>
+  <div class="dropdown-menu" id="dropdownMenu">
+    <button onclick="window.location.href='https://davcode149.github.io/dd-games/list.html'">Return</button>
+  </div>
+</div>
+
+<style>
+  /* Position menu at top center */
+  .menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+
+  /* The arrow toggle */
+  .menu-toggle {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+
+  .menu-toggle:hover {
+    background-color: rgba(240, 240, 240, 0.95);
+    transform: scale(1.1);
+  }
+
+  /* Dropdown panel */
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    min-width: 120px;
+    text-align: center;
+    animation: dropdownFade 0.2s ease;
+  }
+
+  /* Animation for fade-in */
+  @keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-menu button {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .dropdown-menu button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+<script>
+  function toggleMenu() {
+    var menu = document.getElementById("dropdownMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
+  // Optional: Close menu when clicking outside
+  window.addEventListener("click", function(e) {
+    if (!e.target.closest(".menu-container")) {
+      document.getElementById("dropdownMenu").style.display = "none";
+    }
+  });
+</script>
+    <div class="webgl-content">
+      <div id="unityContainer" style="width: 960px; height: 600px; padding: 0px; margin: 0px; border: 0px; position: relative; background: rgb(35, 31, 32);">
+        <div id="gameContainer" style="width: 800px; height: 560px; margin: auto;"></div>
+      </div>
+      <script src="firebase-app.js"></script>
+    </div>
+    <!-- Include Ably client -->
+<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
+
+<!-- Active User Tracker (No Display) -->
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+<script>
+  // === 1️⃣ Persistent browser ID ===
+  let browserId = localStorage.getItem('ablyBrowserId');
+  if (!browserId) {
+    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('ablyBrowserId', browserId);
+  }
+
+  // === 2️⃣ Connect to Ably ===
+  const ably = new Ably.Realtime({
+    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
+    clientId: browserId
+  });
+  const channel = ably.channels.get('site-active-users');
+
+  // === 3️⃣ Shared-tab logic (one connection per browser) ===
+  const isMainTabKey = "ablyMainTabActive";
+  const heartbeatKey = "ablyHeartbeat";
+  const heartbeatInterval = 3000; // ms
+
+  function setMainTab(active) {
+    if (active) {
+      localStorage.setItem(isMainTabKey, "true");
+      localStorage.setItem(heartbeatKey, Date.now());
+    } else {
+      localStorage.removeItem(isMainTabKey);
+      localStorage.removeItem(heartbeatKey);
+    }
+  }
+
+  function isMainTab() {
+    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
+    return Date.now() - lastBeat < heartbeatInterval * 2;
+  }
+
+  // === 4️⃣ Keep heartbeat alive for main tab ===
+  setInterval(() => {
+    if (localStorage.getItem(isMainTabKey) === "true") {
+      localStorage.setItem(heartbeatKey, Date.now());
+    }
+  }, heartbeatInterval);
+
+  // === 5️⃣ Only first tab joins presence ===
+  async function tryEnterPresence() {
+    if (!isMainTab()) {
+      setMainTab(true);
+      try {
+        await channel.attach();
+        channel.presence.enter("online");
+      } catch (err) {
+        console.error("Error entering presence:", err);
+      }
+    }
+  }
+
+  // === 6️⃣ Detect other tabs closing/opening ===
+  window.addEventListener("storage", async (event) => {
+    if (event.key === heartbeatKey) {
+      if (!isMainTab()) {
+        tryEnterPresence();
+      }
+    }
+  });
+
+  // === 7️⃣ Leave presence when main tab closes ===
+  window.addEventListener("beforeunload", () => {
+    if (isMainTab()) {
+      channel.presence.leave("online");
+      setMainTab(false);
+    }
+  });
+
+  // === 8️⃣ Connect ===
+  ably.connection.once("connected", tryEnterPresence);
+</script>
+  </body>
+</html>

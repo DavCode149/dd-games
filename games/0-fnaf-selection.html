@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classroom</title>
+
+<style>
+  /* --- Background GIF --- */
+  body {
+    margin: 0;
+    height: 100vh;
+    background: url('/dd-games/assets/fnaf-selection-bg.gif') center center / cover no-repeat fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+
+  /* --- Popdown Menu --- */
+  .menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .menu-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 20px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .menu-button:hover {
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  .menu-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    width: 120px;
+  }
+
+  .menu-content a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 8px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .menu-content a:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* --- Grid Gallery --- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    max-width: 900px;
+    width: 90%;
+  }
+
+  .game {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  .game:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+  }
+
+  .game img {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .game h3 {
+    margin: 10px 0 0;
+  }
+</style>
+</head>
+
+<body>
+  <!-- Popdown Menu -->
+  <div class="menu-container">
+    <button class="menu-button">▼</button>
+    <div class="menu-content">
+      <a href="https://davcode149.github.io/dd-games/list.html">Return</a> <!-- Replace # with your index.html or main page -->
+    </div>
+  </div>
+
+  <!-- Game Selector Grid -->
+  <div class="grid">
+    <div class="game" onclick="window.location.href='0-fnaf1.html'">
+      <img src="../assets/images/fnaf1.jpg" alt="FNaF 1">
+      <h3>FNaF 1</h3>
+    </div>
+
+    <div class="game" onclick="window.location.href='0-fnaf2.html'">
+      <img src="../assets/images/fnaf2.jpg" alt="FNaF 2">
+      <h3>FNaF 2</h3>
+    </div>
+
+    <div class="game" onclick="window.location.href='0-fnaf3.html'">
+      <img src="../assets/images/fnaf3.png" alt="FNaF 3">
+      <h3>FNaF 3</h3>
+    </div>
+
+    <div class="game" onclick="window.location.href='0-fnaf4.html'">
+      <img src="../assets/images/fnaf4.jpg" alt="FNaF 4">
+      <h3>FNaF 4</h3>
+    </div>
+  </div>
+
+  <script>
+    const menuButton = document.querySelector('.menu-button');
+    const menuContent = document.querySelector('.menu-content');
+
+    menuButton.addEventListener('click', () => {
+      menuContent.style.display =
+        menuContent.style.display === 'block' ? 'none' : 'block';
+    });
+  </script>
+<!-- Active User Tracker (No Display) -->
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+<script>
+  // === 1️⃣ Persistent browser ID ===
+  let browserId = localStorage.getItem('ablyBrowserId');
+  if (!browserId) {
+    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('ablyBrowserId', browserId);
+  }
+
+  // === 2️⃣ Connect to Ably ===
+  const ably = new Ably.Realtime({
+    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
+    clientId: browserId
+  });
+  const channel = ably.channels.get('site-active-users');
+
+  // === 3️⃣ Shared-tab logic (one connection per browser) ===
+  const isMainTabKey = "ablyMainTabActive";
+  const heartbeatKey = "ablyHeartbeat";
+  const heartbeatInterval = 3000; // ms
+
+  function setMainTab(active) {
+    if (active) {
+      localStorage.setItem(isMainTabKey, "true");
+      localStorage.setItem(heartbeatKey, Date.now());
+    } else {
+      localStorage.removeItem(isMainTabKey);
+      localStorage.removeItem(heartbeatKey);
+    }
+  }
+
+  function isMainTab() {
+    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
+    return Date.now() - lastBeat < heartbeatInterval * 2;
+  }
+
+  // === 4️⃣ Keep heartbeat alive for main tab ===
+  setInterval(() => {
+    if (localStorage.getItem(isMainTabKey) === "true") {
+      localStorage.setItem(heartbeatKey, Date.now());
+    }
+  }, heartbeatInterval);
+
+  // === 5️⃣ Only first tab joins presence ===
+  async function tryEnterPresence() {
+    if (!isMainTab()) {
+      setMainTab(true);
+      try {
+        await channel.attach();
+        channel.presence.enter("online");
+      } catch (err) {
+        console.error("Error entering presence:", err);
+      }
+    }
+  }
+
+  // === 6️⃣ Detect other tabs closing/opening ===
+  window.addEventListener("storage", async (event) => {
+    if (event.key === heartbeatKey) {
+      if (!isMainTab()) {
+        tryEnterPresence();
+      }
+    }
+  });
+
+  // === 7️⃣ Leave presence when main tab closes ===
+  window.addEventListener("beforeunload", () => {
+    if (isMainTab()) {
+      channel.presence.leave("online");
+      setMainTab(false);
+    }
+  });
+
+  // === 8️⃣ Connect ===
+  ably.connection.once("connected", tryEnterPresence);
+</script>
+</body>
+</html>
