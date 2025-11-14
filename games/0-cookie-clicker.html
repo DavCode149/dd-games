@@ -1,324 +1,212 @@
-<html>
-<!-- ▼ Dropdown menu toggle -->
-<div class="menu-container">
-  <div class="menu-toggle" onclick="toggleMenu()">▼</div>
-  <div class="dropdown-menu" id="dropdownMenu">
-    <button onclick="window.location.href='https://davcode149.github.io/dd-games/list.html'">Return</button>
-  </div>
-</div>
-
-<style>
-  /* Position menu at top center */
-  .menu-container {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-  }
-
-  /* The arrow toggle */
-  .menu-toggle {
-    background-color: rgba(255, 255, 255, 0.85);
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    text-align: center;
-    line-height: 30px;
-    font-size: 18px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    transition: background-color 0.2s, transform 0.2s;
-  }
-
-  .menu-toggle:hover {
-    background-color: rgba(240, 240, 240, 0.95);
-    transform: scale(1.1);
-  }
-
-  /* Dropdown panel */
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 40px;
-    right: 0;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    padding: 10px;
-    min-width: 120px;
-    text-align: center;
-    animation: dropdownFade 0.2s ease;
-  }
-
-  /* Animation for fade-in */
-  @keyframes dropdownFade {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .dropdown-menu button {
-    width: 100%;
-    padding: 8px 10px;
-    border: none;
-    border-radius: 6px;
-    background-color: #007bff;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  .dropdown-menu button:hover {
-    background-color: #0056b3;
-  }
-</style>
-
-<script>
-  function toggleMenu() {
-    var menu = document.getElementById("dropdownMenu");
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
-  }
-
-  // Optional: Close menu when clicking outside
-  window.addEventListener("click", function(e) {
-    if (!e.target.closest(".menu-container")) {
-      document.getElementById("dropdownMenu").style.display = "none";
-    }
-  });
-</script>
+<!doctype html>
+<html lang="en">
 <head>
-    
-    
-    <script>
-        window.dataLayer = window.dataLayer || [];
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Access Blocked</title>
+  <style>
+    :root{
+      --card-bg: #ffffff;
+      --page-bg: #f6f7f8;
+      --accent: #d93b32; /* red accent */
+      --muted: #6b7280;
+      --shadow: 0 6px 22px rgba(16,24,40,0.06);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #111827;
+    }
+    html,body{height:100%;margin:0;background:var(--page-bg);display:flex;align-items:center;justify-content:center;padding:30px;}
+    .card {
+      width: min(920px, 94%);
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 34px 40px;
+      box-sizing: border-box;
+      border: 1px solid rgba(16,24,40,0.04);
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+    }
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        gtag('config', 'G-WX5VS54ZDW');
-    </script>
-    <meta name="viewport" content="width=900, initial-scale=1">
-    <script src="https://cdn.jsdelivr.net/gh/bcat1023/webprx@8b966f57aeceb9616de5f15455d811ab76df9c8f/gfiles/cookies/old/base64.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/bobydob/JSEngine@135436abead1c966dde378e7e41fe832330b1f5a/dist/main.js"></script>
-    <link href="https://cdn.jsdelivr.net/gh/bcat1023/webprx@8b966f57aeceb9616de5f15455d811ab76df9c8f/gfiles/cookies/old/style.css" rel="stylesheet" type="text/css">
+    /* left column: logo + title + body */
+    .left {
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .brand-row {
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+    }
+
+    /* small emblem */
+    .emblem {
+      width:48px;
+      height:36px;
+      border-radius:6px;
+      background: linear-gradient(90deg, rgba(217,59,50,1) 0%, rgba(231,84,76,0.95) 100%);
+      display:grid;
+      place-items:center;
+      position:relative;
+      box-shadow: 0 6px 18px rgba(217,59,50,0.08);
+      overflow:visible;
+    }
+    /* subtle rays behind emblem */
+    .emblem::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:260px;
+      height:160px;
+      transform:translate(-60%,-40%) rotate(-18deg);
+      background: radial-gradient(closest-side, rgba(217,59,50,0.06), transparent 45%);
+      pointer-events:none;
+    }
+    .emblem svg{ width:26px; height:22px; fill: #ffffff; opacity:0.98; }
+
+    .brand-text h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.02;
+      font-weight:700;
+      color:#2b2b2b;
+    }
+    .brand-text p {
+      margin:6px 0 0 0;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .subtitle {
+      margin-top:6px;
+      font-weight:700;
+      color:#2b2b2b;
+      font-size:16px;
+    }
+
+    .lead {
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      margin-top:8px;
+      max-width:64ch;
+    }
+
+    /* info block similar to screenshot */
+    .info-box {
+      margin-top:14px;
+      font-size:14px;
+      color:var(--muted);
+      display:block;
+    }
+    .info-row {
+      display:flex;
+      gap:12px;
+      align-items:baseline;
+      margin-top:10px;
+    }
+    .info-label{
+      width:96px;
+      font-weight:600;
+      color:#444;
+      font-size:13px;
+    }
+    .info-value {
+      color:#111827;
+      font-family: "Courier New", monospace;
+      font-size:13px;
+      word-break:break-all;
+    }
+
+    /* right column: empty area or small visual */
+    .right {
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-left:10px;
+    }
+    .placeholder {
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+
+    /* slight footer text centered under card on small screens */
+    .small-note {
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:left;
+    }
+
+    @media (max-width:880px){
+      .card { grid-template-columns: 1fr; padding:22px; }
+      .right { order: -1; padding-bottom:6px; }
+      .brand-row{align-items:center;}
+    }
+  </style>
 </head>
-
 <body>
-    <div id="wrapper">
-        <div id="topBar">
-            <div><b>Cookie Clicker</b><a href="//orteil.dashnet.org" target="_blank" id="topbarOrteil">Orteil</a><a href="//dashnet.org" target="_blank" id="topbarDashnet">DashNet</a></div>
-            <div><a href="https://twitter.com/orteil42" target="_blank" id="topbarTwitter">twitter</a></div>
-            <div><a href="https://orteil42.tumblr.com" target="_blank" id="topbarTumblr">tumblr</a></div>
-            <div style="position:relative;">
-                <div style="width:22px;height:32px;background:url(https://cdn.jsdelivr.net/gh/bcat1023/webprx@8b966f57aeceb9616de5f15455d811ab76df9c8f/gfiles/cookies/img/discord.png);position:absolute;left:0px;top:0px;pointer-events:none;"></div><a href="https://discordapp.com/invite/cookie" target="_blank" style="padding-left:16px;" id="topbarDiscord">Discord</a>
-            </div>
-            <div style="position:relative;">
-                <div style="width:25px;height:32px;background:url(https://cdn.jsdelivr.net/gh/bcat1023/webprx@8b966f57aeceb9616de5f15455d811ab76df9c8f/gfiles/cookies/img/weeHoodie.png);position:absolute;left:-2px;top:0px;pointer-events:none;"></div><a class="blueLink" href="http://www.redbubble.com/people/dashnet" target="_blank" style="padding-left:12px;" id="topbarMerch">Merch!</a>
-            </div>
-            <div style="position:relative;">
-                <div style="width:22px;height:32px;background:url(https://cdn.jsdelivr.net/gh/bcat1023/webprx@8b966f57aeceb9616de5f15455d811ab76df9c8f/gfiles/cookies/img/patreon.png);position:absolute;left:0px;top:0px;pointer-events:none;"></div><a class="orangeLink" href="https://www.patreon.com/dashnet" target="_blank" style="padding-left:16px;" id="topbarPatreon">Patreon</a>
-            </div>
-            <div style="position:relative;display:none;font-weight:bold;" id="heralds">
-                <div style="position:absolute;top:-4px;width:31px;height:39px;background:url(https://cdn.jsdelivr.net/gh/bcat1023/webprx@8b966f57aeceb9616de5f15455d811ab76df9c8f/gfiles/cookies/img/heraldFlag.png);left:50%;margin-left:-15px;pointer-events:none;"></div>
-                <div id="heraldsAmount" style="position:relative;z-index:10;text-shadow:0px 1px 0px #000,0px 0px 6px #ff00e4;color:#fff;">-</div>
-            </div>
-            <div><a class="lightblueLink" style="font-weight:bold;" href="https://play.google.com/store/apps/details?id=org.dashnet.cookieclicker" target="_blank" id="topbarMobileCC">Cookie Clicker for Android</a></div>
-            <div><a href="//orteil.dashnet.org/randomgen/" target="_blank" id="topbarRandomgen">RandomGen</a></div>
-            <div><a href="//orteil.dashnet.org/igm/" target="_blank" id="topbarIGM">Idle Game Maker</a></div>
-            <div id="links" class="hoverer"> Other versions <div class="hoverable"> <a href="../" target="_blank" id="linkVersionLive">Live version</a> <a href="http://orteil.dashnet.org/cookieclicker/beta/" target="_blank" id="linkVersionBeta">Try the beta!</a> <a href="//orteil.dashnet.org/cookieclicker/v10466" target="_blank" id="linkVersionOld">v. 1.0466</a> <a href="//orteil.dashnet.org/experiments/cookie/" target="_blank">Classic</a> </div>
-            </div>
+  <div class="card" role="main" aria-labelledby="blockedTitle">
+    <div class="left" aria-live="polite">
+      <div class="brand-row">
+        <div class="emblem" aria-hidden="true">
+          <img src="assets/images/Fortinet.jpg" width=40 height=40 onclick="window.location.href='/dd-games/assets/pw.html'"alt="emblem">
         </div>
-        <div id="game">
-            <div id="javascriptError">
-                <div id="loader">
-                    <div class="spinnyBig"></div>
-                    <div class="spinnySmall"></div>
-                    <div id="loading" class="title">Loading...</div>
-                    <div id="failedToLoad" class="title">This is taking longer than expected.<br>
-                        <div style="font-size:65%;line-height:120%;">Slow connection? If not, please make sure your javascript is enabled, then refresh.<br> If problems persist, this might be on our side - wait a few minutes, then hit ctrl+f5!</div>
-                    </div>
-                    <div id="ifIE9" class="title" style="font-size:100%;line-height:120%;">Your browser may not be recent enough to run Cookie Clicker.<br>You might want to update, or switch to a more modern browser such as Chrome or Firefox.</div>
-                </div>
-            </div> <canvas id="backgroundCanvas"></canvas>
-            <div id="goldenCookie" class="goldenCookie"></div>
-            <div id="seasonPopup" class="seasonPopup"></div>
-            <div id="shimmers"></div>
-            <div id="alert"></div>
-            <div id="particles"></div>
-            <div id="sparkles" class="sparkles"></div>
-            <div id="notes"></div>
-            <div id="darken"></div>
-            <div id="toggleBox" class="framed prompt"></div>
-            <div id="promptAnchor">
-                <div id="prompt" class="framed">
-                    <div id="promptContent"></div>
-                    <div class="close" onclick="PlaySound('https://cdn.jsdelivr.net/gh/bcat1023/webprx@8b966f57aeceb9616de5f15455d811ab76df9c8f/gfiles/cookies/snd/tick.mp3');Game.ClosePrompt();">x</div>
-                </div>
-            </div>
-            <div id="versionNumber" class="title"></div>
-            <div id="ascend">
-                <div id="ascendBG"></div>
-                <div id="ascendZoomable">
-                    <div id="ascendContent">
-                        <div id="ascendUpgrades" style="position:absolute;"></div>
-                    </div>
-                </div>
-                <div id="ascendOverlay"></div>
-            </div>
-            <div id="debug">
-                <div id="devConsole" class="framed"></div>
-                <div id="debugLog"></div>
-            </div>
-            <div id="sectionLeft" class="inset"> <canvas id="backgroundLeftCanvas" style="z-index:5;"></canvas>
-                <div class="blackFiller"></div>
-                <div class="blackGradient"></div>
-                <div id="sectionLeftInfo"></div>
-                <div id="cookies" class="title"></div>
-                <div id="bakeryNameAnchor">
-                    <div id="bakeryName" class="title"></div>
-                </div>
-                <div id="specialPopup" class="framed prompt offScreen"></div>
-                <div id="buffs" class="crateBox"></div>
-                <div id="cookieAnchor">
-                    <div id="bigCookie"></div>
-                    <div id="cookieNumbers"></div>
-                </div>
-                <div id="sectionLeftExtra"></div>
-            </div>
-            <div class="separatorLeft"></div>
-            <div class="separatorRight"></div>
-            <div id="sectionMiddle" class="inset">
-                <div id="comments" class="inset title">
-                    <div id="prefsButton" class="button">Options</div>
-                    <div id="statsButton" class="button">Stats</div>
-                    <div id="logButton" class="button">
-                        <div id="checkForUpdate">New update!</div>Info
-                    </div>
-                    <div id="legacyButton" class="button">Legacy<div id="ascendMeterContainer" class="smallFramed meterContainer">
-                            <div id="ascendMeter" class="meter filling"></div>
-                        </div>
-                        <div class="roundedPanel" id="ascendNumber"></div>
-                        <div id="ascendTooltip" class="framed"></div>
-                    </div>
-                    <div id="commentsTextBelow" class="commentsText"></div>
-                    <div id="commentsText" class="commentsText"></div>
-                    <div class="separatorBottom"></div>
-                </div>
-                <div id="centerArea">
-                    <div id="buildingsTitle" class="inset title zoneTitle">Buildings</div>
-                    <div id="buildingsMaster"></div>
-                    <div id="rows"></div>
-                    <div id="menu"></div>
-                </div>
-            </div>
-            <div id="sectionRight" class="inset">
-                <div id="store">
-                    <div id="storeTitle" class="inset title zoneTitle">Store</div>
-                    <div id="toggleUpgrades" class="storeSection upgradeBox"></div>
-                    <div id="techUpgrades" class="storeSection upgradeBox"></div>
-                    <div id="vaultUpgrades" class="storeSection upgradeBox"></div>
-                    <div id="upgrades" class="storeSection upgradeBox"></div>
-                    <div id="products" class="storeSection"></div>
-                </div>
-            </div>
-            <div id="focusButtons">
-                <div id="focusLeft" class="title">Cookie</div>
-                <div id="focusMiddle" class="title" style="font-size:80%;padding-top:18px;padding-bottom:14px;">Buildings</div>
-                <div id="focusRight" class="title">Store</div>
-                <div id="focusMenu" class="title">Menu</div>
-            </div>
-            <div id="compactOverlay" class="title">
-                <div id="compactCommentsText" class="commentsText"></div>
-                <div id="compactCookies"></div>
-                <div class="separatorBottom"></div>
-            </div>
-            <div id="tooltipAnchor">
-                <div id="tooltip" class="framed" onMouseOut="Game.tooltip.hide();"></div>
-            </div>
+
+        <div class="brand-text">
+          <h1 id="brandMain">Network Protection — Access Blocked</h1>
+          <p id="brandSub">Web Page Blocked</p>
         </div>
+      </div>
+
+      <div>
+        <div class="subtitle" id="blockedTitle">Access to this page has been denied</div>
+        <div class="lead" id="leadText">
+          The page you have requested has been blocked because the URL is restricted by your organization's web policy.
+        </div>
+
+        <div class="info-box" role="region" aria-label="Blocked information">
+          <div class="info-row"><div class="info-label">URL</div><div class="info-value" id="urlValue">https://example.com/</div></div>
+          <div class="info-row"><div class="info-label">Description</div><div class="info-value" id="descValue">—</div></div>
+        </div>
+      </div>
     </div>
-  <!-- Include Ably client -->
-<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
 
-<!-- Active User Tracker (No Display) -->
-<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
-<script>
-  // === 1️⃣ Persistent browser ID ===
-  let browserId = localStorage.getItem('ablyBrowserId');
-  if (!browserId) {
-    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
-    localStorage.setItem('ablyBrowserId', browserId);
-  }
+    <div class="right" aria-hidden="true">
+      <div class="placeholder" id="rightNote">
+        <!-- optional: small grey graphic or keep empty -->
+      </div>
+    </div>
+  </div>
 
-  // === 2️⃣ Connect to Ably ===
-  const ably = new Ably.Realtime({
-    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
-    clientId: browserId
-  });
-  const channel = ably.channels.get('site-active-users');
+  <script>
+    // CONFIG: edit the visible values below
+    const CONFIG = {
+      titleMain: "Network Protection — Access Blocked",
+      subtitle: "Web Page Blocked",
+      blockedTitle: "Access to this page has been denied",
+      leadText: "The page you have requested has been blocked because the URL is restricted by your organization's web policy.",
+      url: "https://davcode149.github.io/dd-games",
+      description: "The requested URL matches a blocked category.",
+      source: "Local URL Filter"
+    };
 
-  // === 3️⃣ Shared-tab logic (one connection per browser) ===
-  const isMainTabKey = "ablyMainTabActive";
-  const heartbeatKey = "ablyHeartbeat";
-  const heartbeatInterval = 3000; // ms
-
-  function setMainTab(active) {
-    if (active) {
-      localStorage.setItem(isMainTabKey, "true");
-      localStorage.setItem(heartbeatKey, Date.now());
-    } else {
-      localStorage.removeItem(isMainTabKey);
-      localStorage.removeItem(heartbeatKey);
-    }
-  }
-
-  function isMainTab() {
-    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
-    return Date.now() - lastBeat < heartbeatInterval * 2;
-  }
-
-  // === 4️⃣ Keep heartbeat alive for main tab ===
-  setInterval(() => {
-    if (localStorage.getItem(isMainTabKey) === "true") {
-      localStorage.setItem(heartbeatKey, Date.now());
-    }
-  }, heartbeatInterval);
-
-  // === 5️⃣ Only first tab joins presence ===
-  async function tryEnterPresence() {
-    if (!isMainTab()) {
-      setMainTab(true);
-      try {
-        await channel.attach();
-        channel.presence.enter("online");
-      } catch (err) {
-        console.error("Error entering presence:", err);
-      }
-    }
-  }
-
-  // === 6️⃣ Detect other tabs closing/opening ===
-  window.addEventListener("storage", async (event) => {
-    if (event.key === heartbeatKey) {
-      if (!isMainTab()) {
-        tryEnterPresence();
-      }
-    }
-  });
-
-  // === 7️⃣ Leave presence when main tab closes ===
-  window.addEventListener("beforeunload", () => {
-    if (isMainTab()) {
-      channel.presence.leave("online");
-      setMainTab(false);
-    }
-  });
-
-  // === 8️⃣ Connect ===
-  ably.connection.once("connected", tryEnterPresence);
-</script>
+    // apply config
+    document.getElementById('brandMain').textContent = CONFIG.titleMain;
+    document.getElementById('brandSub').textContent = CONFIG.subtitle;
+    document.getElementById('blockedTitle').textContent = CONFIG.blockedTitle;
+    document.getElementById('leadText').textContent = CONFIG.leadText;
+    document.getElementById('urlValue').textContent = CONFIG.url;
+    document.getElementById('descValue').textContent = CONFIG.description;
+  </script>
 </body>
-
 </html>
