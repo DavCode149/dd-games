@@ -1,203 +1,212 @@
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <base href="https://cdn.jsdelivr.net/gh/genizy/web-port@main/schoolboy-runaway/">
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Unity WebGL Player | SchoolBoy Runaway</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
-    <link rel="stylesheet" href="TemplateData/style.css" />
-  </head>
-  <body>
-    <div
-      id="loading-text"
-      style="
-        color: black;
-        font-size: 48px;
-        font-family: cursive;
-        text-align: center;
-        margin-top: 20px;
-      "
-    >
-      LOADING...
-    </div>
-    <div id="unity-container">
-      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Access Blocked</title>
+  <style>
+    :root{
+      --card-bg: #ffffff;
+      --page-bg: #f6f7f8;
+      --accent: #d93b32; /* red accent */
+      --muted: #6b7280;
+      --shadow: 0 6px 22px rgba(16,24,40,0.06);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: #111827;
+    }
+    html,body{height:100%;margin:0;background:var(--page-bg);display:flex;align-items:center;justify-content:center;padding:30px;}
+    .card {
+      width: min(920px, 94%);
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 34px 40px;
+      box-sizing: border-box;
+      border: 1px solid rgba(16,24,40,0.04);
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+    }
+
+    /* left column: logo + title + body */
+    .left {
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .brand-row {
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+    }
+
+    /* small emblem */
+    .emblem {
+      width:48px;
+      height:36px;
+      border-radius:6px;
+      background: linear-gradient(90deg, rgba(217,59,50,1) 0%, rgba(231,84,76,0.95) 100%);
+      display:grid;
+      place-items:center;
+      position:relative;
+      box-shadow: 0 6px 18px rgba(217,59,50,0.08);
+      overflow:visible;
+    }
+    /* subtle rays behind emblem */
+    .emblem::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:260px;
+      height:160px;
+      transform:translate(-60%,-40%) rotate(-18deg);
+      background: radial-gradient(closest-side, rgba(217,59,50,0.06), transparent 45%);
+      pointer-events:none;
+    }
+    .emblem svg{ width:26px; height:22px; fill: #ffffff; opacity:0.98; }
+
+    .brand-text h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.02;
+      font-weight:700;
+      color:#2b2b2b;
+    }
+    .brand-text p {
+      margin:6px 0 0 0;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .subtitle {
+      margin-top:6px;
+      font-weight:700;
+      color:#2b2b2b;
+      font-size:16px;
+    }
+
+    .lead {
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      margin-top:8px;
+      max-width:64ch;
+    }
+
+    /* info block similar to screenshot */
+    .info-box {
+      margin-top:14px;
+      font-size:14px;
+      color:var(--muted);
+      display:block;
+    }
+    .info-row {
+      display:flex;
+      gap:12px;
+      align-items:baseline;
+      margin-top:10px;
+    }
+    .info-label{
+      width:96px;
+      font-weight:600;
+      color:#444;
+      font-size:13px;
+    }
+    .info-value {
+      color:#111827;
+      font-family: "Courier New", monospace;
+      font-size:13px;
+      word-break:break-all;
+    }
+
+    /* right column: empty area or small visual */
+    .right {
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-left:10px;
+    }
+    .placeholder {
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+
+    /* slight footer text centered under card on small screens */
+    .small-note {
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:left;
+    }
+
+    @media (max-width:880px){
+      .card { grid-template-columns: 1fr; padding:22px; }
+      .right { order: -1; padding-bottom:6px; }
+      .brand-row{align-items:center;}
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="main" aria-labelledby="blockedTitle">
+    <div class="left" aria-live="polite">
+      <div class="brand-row">
+        <div class="emblem" aria-hidden="true">
+          <img src="/dd-games/assets/images/Fortinet.jpg" width=40 height=40 onclick="window.location.href='/dd-games/assets/pw.html'"alt="emblem">
+        </div>
+
+        <div class="brand-text">
+          <h1 id="brandMain">Network Protection — Access Blocked</h1>
+          <p id="brandSub">Web Page Blocked</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="subtitle" id="blockedTitle">Access to this page has been denied</div>
+        <div class="lead" id="leadText">
+          The page you have requested has been blocked because the URL is restricted by your organization's web policy.
+        </div>
+
+        <div class="info-box" role="region" aria-label="Blocked information">
+          <div class="info-row"><div class="info-label">URL</div><div class="info-value" id="urlValue">https://example.com/</div></div>
+          <div class="info-row"><div class="info-label">Description</div><div class="info-value" id="descValue">—</div></div>
         </div>
       </div>
     </div>
-    <script>
-      const loadingText = document.querySelector("#loading-text");
-      let totalBytes = 315673804.8;
-      let loadedBytes = 0;
 
-      function formatSize(bytes) {
-        if (bytes > 1024 * 1024 * 1024) {
-          return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
-        } else if (bytes > 1024 * 1024) {
-          return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-        } else if (bytes > 1024) {
-          return (bytes / 1024).toFixed(2) + " KB";
-        } else {
-          return bytes + " B";
-        }
-      }
-      async function fetchWithProgress(url) {
-        const response = await fetch(url);
-        const reader = response.body.getReader();
-        let chunks = [];
-        let received = 0;
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          received += value.length;
-          loadedBytes += value.length;
-          chunks.push(value);
-          const doneText = formatSize(loadedBytes);
-          const totalText = formatSize(totalBytes);
-          const percent =
-            totalBytes > 0
-              ? ((loadedBytes / totalBytes) * 100).toFixed(1)
-              : "?";
-          loadingText.textContent = `LOADING... ${doneText} / ${totalText} (${percent}%)`;
-        }
-        let fullBuffer = new Uint8Array(received);
-        let offset = 0;
-        for (let chunk of chunks) {
-          fullBuffer.set(chunk, offset);
-          offset += chunk.length;
-        }
-        return fullBuffer.buffer;
-      }
-      async function mergeFiles(parts) {
-        const buffers = await Promise.all(parts.map(fetchWithProgress));
-        return URL.createObjectURL(new Blob(buffers));
-      }
+    <div class="right" aria-hidden="true">
+      <div class="placeholder" id="rightNote">
+        <!-- optional: small grey graphic or keep empty -->
+      </div>
+    </div>
+  </div>
 
-      function getParts(file, count) {
-        let parts = [];
-        for (let i = 1; i <= count; i++) {
-          parts.push(file + ".part" + i);
-        }
-        return parts;
-      }
-      (async () => {
-        const dataParts = getParts("Build/schoolboy-runaway.data", 14);
-        const wasmParts = getParts("Build/schoolboy-runaway.wasm", 2);
-        const allParts = [...dataParts, ...wasmParts];
-        const [dataUrl, wasmUrl] = await Promise.all([
-          mergeFiles(dataParts),
-          mergeFiles(wasmParts),
-        ]);
-        var container = document.querySelector("#unity-container");
-        var canvas = document.querySelector("#unity-canvas");
-        var loadingBar = document.querySelector("#unity-loading-bar");
-        var progressBarFull = document.querySelector(
-          "#unity-progress-bar-full"
-        );
-        var warningBanner = document.querySelector("#unity-warning");
+  <script>
+    // CONFIG: edit the visible values below
+    const CONFIG = {
+      titleMain: "Network Protection — Access Blocked",
+      subtitle: "Web Page Blocked",
+      blockedTitle: "Access to this page has been denied",
+      leadText: "The page you have requested has been blocked because the URL is restricted by your organization's web policy.",
+      url: "https://davcode149.github.io/dd-games",
+      description: "The requested URL matches a blocked category.",
+      source: "Local URL Filter"
+    };
 
-        // Shows a temporary message banner/ribbon for a few seconds, or
-        // a permanent error message on top of the canvas if type=='error'.
-        // If type=='warning', a yellow highlight color is used.
-        // Modify or remove this function to customize the visually presented
-        // way that non-critical warnings and error messages are presented to the
-        // user.
-        function unityShowBanner(msg, type) {}
-
-        var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/schoolboy-runaway.loader.js";
-        var config = {
-          dataUrl: dataUrl,
-          frameworkUrl: buildUrl + "/schoolboy-runaway.framework.js",
-          codeUrl: wasmUrl,
-          streamingAssetsUrl: "StreamingAssets",
-          companyName: "Linked Squad",
-          productName: "SchoolBoy Runaway",
-          productVersion: "0.500",
-          showBanner: unityShowBanner,
-        };
-
-        // By default Unity keeps WebGL canvas render target size matched with
-        // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-        // Set this to false if you want to decouple this synchronization from
-        // happening inside the engine, and you would instead like to size up
-        // the canvas DOM size and WebGL render target sizes yourself.
-        // config.matchWebGLToCanvasSize = false;
-
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          // Mobile device style: fill the whole browser client area with the game canvas:
-          var meta = document.createElement("meta");
-          meta.name = "viewport";
-          meta.content =
-            "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
-          document.getElementsByTagName("head")[0].appendChild(meta);
-        }
-
-        loadingBar.style.display = "block";
-
-        var script = document.createElement("script");
-        script.src = loaderUrl;
-        script.onload = () => {
-          createUnityInstance(canvas, config, (progress) => {
-            progressBarFull.style.width = 100 * progress + "%";
-          })
-            .then((unityInstance) => {
-              loadingText.remove();
-              loadingBar.style.display = "none";
-            })
-            .catch((message) => {
-              alert(message);
-            });
-        };
-        document.body.appendChild(script);
-      })();
-    </script>
-    <!-- Include Ably client -->
-<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
-
-<!-- Active user tracker -->
-<script>
-  // === ABLY CONFIG ===
-  const ABLY_API_KEY = "f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw"; // <-- replace with your public key
-  const CHANNEL_NAME = "site-active-users"; // shared channel name for all pages
-
-  // === CONNECT TO ABLY ===
-  const ably = new Ably.Realtime(ABLY_API_KEY);
-  const channel = ably.channels.get(CHANNEL_NAME);
-
-  // === JOIN PRESENCE WHEN CONNECTED ===
-  ably.connection.once("connected", () => {
-    channel.presence.enter("online");
-  });
-
-  // === CLEAN EXIT ON PAGE CLOSE ===
-  window.addEventListener("beforeunload", () => {
-    channel.presence.leave("online");
-  });
-
-  // === COUNT FUNCTION ===
-  async function updateCount() {
-    try {
-      const members = await channel.presence.get();
-      const counter = document.getElementById("userCount");
-      if (counter) {
-        counter.textContent = members.length;
-      }
-    } catch (err) {
-      console.error("Error getting presence:", err);
-    }
-  }
-
-  // === LIVE UPDATES ===
-  channel.presence.subscribe("enter", updateCount);
-  channel.presence.subscribe("leave", updateCount);
-  setInterval(updateCount, 5000);
-  updateCount();
-</script>
-  </body>
+    // apply config
+    document.getElementById('brandMain').textContent = CONFIG.titleMain;
+    document.getElementById('brandSub').textContent = CONFIG.subtitle;
+    document.getElementById('blockedTitle').textContent = CONFIG.blockedTitle;
+    document.getElementById('leadText').textContent = CONFIG.leadText;
+    document.getElementById('urlValue').textContent = CONFIG.url;
+    document.getElementById('descValue').textContent = CONFIG.description;
+  </script>
+</body>
 </html>
