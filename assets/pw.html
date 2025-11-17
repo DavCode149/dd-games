@@ -84,26 +84,79 @@
     <button onclick="checkPassword()">Continue</button>
     <div id="error" class="error">Incorrect password. Try again.</div>
   </div>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAT-oK3scrUg7Jt1tEQk6b7IP2-ah1OcCc",
+    authDomain: "dd-games-6aa54.firebaseapp.com",
+    databaseURL: "https://dd-games-6aa54-default-rtdb.firebaseio.com",
+    projectId: "dd-games-6aa54",
+    storageBucket: "dd-games-6aa54.firebasestorage.app",
+    messagingSenderId: "26805694246",
+    appId: "1:26805694246:web:dd9bce62c16fbfc762dbe7",
+    measurementId: "G-L349JWYP7B"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
   <script>
-    // 🔐 CONFIG: set your password and destination page here
-    const CORRECT_PASSWORD = "TRUTH"; // change this
-    const REDIRECT_URL = "/dd-games/main.html"; // page to go to
+  const CORRECT_PASSWORD = "cooked";
+  const ALT_PASSWORD = "lopsided";          // your alternate password
+  const REDIRECT_URL = "/dd-games/main.html";
+  const ALT_REDIRECT_URL = "/dd-games/secret.html";
 
-    function checkPassword() {
-      const input = document.getElementById("passwordInput").value.trim();
-      const error = document.getElementById("error");
-      if (input === CORRECT_PASSWORD) {
-        window.location.href = REDIRECT_URL;
-      } else {
-        error.style.display = "block";
-      }
-    }
+  async function getIP() {
+    const res = await fetch("https://api.ipify.org?format=json");
+    const data = await res.json();
+    return data.ip;
+  }
 
-    // allow pressing Enter to submit
-    document.getElementById("passwordInput").addEventListener("keypress", e => {
-      if (e.key === "Enter") checkPassword();
+  function logAltPassword() {
+    getIP().then(ip => {
+      const entry = {
+        ip: ip,
+        time: new Date().toISOString()
+      };
+
+      // Save log entry
+      firebase.database().ref("altLogs").push(entry);
+
+      // Increment counter
+      firebase.database().ref("altCount").transaction(n => (n || 0) + 1);
     });
-  </script>
+  }
+
+  function checkPassword() {
+    const input = document.getElementById("passwordInput").value.trim();
+    const error = document.getElementById("error");
+
+    if (input === CORRECT_PASSWORD) {
+      window.location.href = REDIRECT_URL;
+
+    } else if (input === ALT_PASSWORD) {
+      // log + counter + redirect
+      logAltPassword();
+      window.location.href = ALT_REDIRECT_URL;
+
+    } else {
+      error.style.display = "block";
+    }
+  }
+
+  // Allow Enter key
+  document.getElementById("passwordInput").addEventListener("keypress", e => {
+    if (e.key === "Enter") checkPassword();
+  });
+</script>
 </body>
 </html>
+
