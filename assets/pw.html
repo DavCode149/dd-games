@@ -14,7 +14,6 @@
     --muted: #6b7280;
     --accent: #d93b32;
   }
-
   body {
     margin: 0;
     height: 100vh;
@@ -22,10 +21,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: Inter, Arial, sans-serif;
+    font-family: "Inter", Arial, sans-serif;
     color: var(--text);
   }
-
   .card {
     background: var(--card-bg);
     border: 1px solid var(--border);
@@ -35,7 +33,6 @@
     width: min(400px, 90%);
     text-align: center;
   }
-
   input[type="password"] {
     width: 100%;
     padding: 10px 12px;
@@ -44,7 +41,6 @@
     outline: none;
     font-size: 15px;
   }
-
   button {
     width: 100%;
     margin-top: 18px;
@@ -56,7 +52,6 @@
     font-size: 15px;
     cursor: pointer;
   }
-
   .error {
     color: #c53030;
     font-size: 13px;
@@ -64,111 +59,93 @@
     display: none;
   }
 </style>
-</head>
 
+<!-- ✅ Firebase COMPAT (Required for firebase.database()) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAT-oK3scrUg7Jt1tEQk6b7IP2-ah1OcCc",
+    authDomain: "dd-games-6aa54.firebaseapp.com",
+    databaseURL: "https://dd-games-6aa54-default-rtdb.firebaseio.com",
+    projectId: "dd-games-6aa54",
+    storageBucket: "dd-games-6aa54.firebasestorage.app",
+    messagingSenderId: "26805694246",
+    appId: "1:26805694246:web:dd9bce62c16fbfc762dbe7",
+    measurementId: "G-L349JWYP7B"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
+</head>
 <body>
+
   <div class="card">
     <h1>Access Restricted</h1>
-    <p>Please enter the access password.</p>
+    <p>Please enter the access password to continue.</p>
 
-    <input id="pw" type="password" placeholder="Enter password" autocomplete="off">
-    <button onclick="verify()">Continue</button>
+    <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off">
+    <button onclick="checkPassword()">Continue</button>
 
-    <div id="err" class="error">Incorrect password.</div>
+    <div id="error" class="error">Incorrect password. Try again.</div>
   </div>
 
 <script>
-/* ===============================
-   🔐 SALT SPLIT (DO NOT MERGE)
-================================ */
-const S1 = "7xQ!";
-const S2 = "91zK";
-const S3 = "@p";
+  // 🔐 Passwords
+  const CORRECT_PASSWORD = "cooked";
+  const ALT_PASSWORD = "lopsided";
 
-/* ===============================
-   🔐 REAL HASH (SHA-256)
-   hash("cooked" + S1+S2+S3)
-================================ */
-const hash362 =
-  "d03a9b62305a0a7f5beebb1b087ec53da7362693382491d54a481378a436d1d4";
+  // Redirects
+  const REDIRECT_URL = "/dd-games/main.html";
+  const ALT_REDIRECT_URL = "/dd-games/main.html";
 
-/* ===============================
-   🪤 DECOY HASHES (TRAPS)
-================================ */
-const hash817 = [
-  "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
-  "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed",
-  "5e884898da28047151d0e56f8dc6292773603d0d"
-];
-
-/* ===============================
-   🧠 STATE
-================================ */
-let attempts = 0;
-const MAX_ATTEMPTS = 6;
-
-/* ===============================
-   🔐 HASH FUNCTION
-================================ */
-async function sha256(text) {
-  const data = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-/* ===============================
-   🔍 VERIFY LOGIC
-================================ */
-async function verify() {
-  const input = pw.value.trim();
-  const error = err;
-
-  attempts++;
-
-  // Lockout
-  if (attempts > MAX_ATTEMPTS) {
-    error.textContent = "Too many attempts. Try later.";
-    error.style.display = "block";
-    pw.disabled = true;
-    return;
+  // 🌐 Get user IP
+  async function getIP() {
+    const res = await fetch("https://api.ipify.org?format=json");
+    return (await res.json()).ip;
   }
 
-  // Delay to slow brute force
-  await new Promise(r => setTimeout(r, 900));
+  // 📥 Log alt-password usage
+  function logAltPassword() {
+    getIP().then(ip => {
+      const entry = {
+        ip: ip,
+        time: new Date().toISOString()
+      };
 
-  // Fake branch (trap)
-  if (input.length === 42) {
-    await sha256(input + "fake");
+      // Save log entry in database
+      db.ref("altLogs").push(entry);
+
+      // Increase counter
+      db.ref("altCount").transaction(n => (n || 0) + 1);
+    });
   }
 
-  // Build salt dynamically
-  const salt =
-    S1 +
-    (input.length > 2 ? S2 : "") +
-    S3;
+  // 🔍 Check password
+  function checkPassword() {
+    const input = document.getElementById("passwordInput").value.trim();
+    const error = document.getElementById("error");
 
-  const hash = await sha256(input + salt);
+    if (input === CORRECT_PASSWORD) {
+      window.location.href = REDIRECT_URL;
 
-  // Decoy checks (waste time)
-  if (hash817.includes(hash)) {
-    error.style.display = "block";
-    return;
+    } else if (input === ALT_PASSWORD) {
+      logAltPassword();
+      window.location.href = ALT_REDIRECT_URL;
+
+    } else {
+      error.style.display = "block";
+    }
   }
 
-  // REAL CHECK
-  if (hash === hash362) {
-    window.location.href = "/dd-games/main.html";
-  } else {
-    error.style.display = "block";
-  }
-}
-
-/* Enter key support */
-pw.addEventListener("keypress", e => {
-  if (e.key === "Enter") verify();
-});
+  // Press Enter to submit
+  document.getElementById("passwordInput").addEventListener("keypress", e => {
+    if (e.key === "Enter") checkPassword();
+  });
 </script>
+
 </body>
 </html>
