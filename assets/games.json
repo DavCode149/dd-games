@@ -1,0 +1,147 @@
+[
+  {
+    "name": "Request Game",
+    "image": "assets/images/request.jpg",
+    "link": "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Jrm3b-vtT02C6AwQ5Ee1cNLNR-GLk9tJrwn7dwbdJRtUM0FXU0JTWTExME9PM1U3T1ZHS1lSSlJJRy4u"
+  },
+  {
+    "name": "Deltarune",
+    "image": "assets/images/deltarune.png",
+    "link": "games/0-deltarune.html"
+  },
+  {
+    "name": "Block Blast",
+    "image": "assets/images/block-blast.png",
+    "link": "games/0-block-blast.html"
+  },
+  {
+    "name": "Cookie Clicker",
+    "image": "assets/images/cookie-clicker.png",
+    "link": "games/0-cookie-clicker.html"
+  },
+  {
+    "name": "Crossy Road",
+    "image": "assets/images/crossy-road.jpg",
+    "link": "games/0-crossy-road.html"
+  },
+  {
+    "name": "Pizza Tower",
+    "image": "assets/images/pizza-tower.jpg",
+    "link": "games/0-pizza-tower.html"
+  },
+  {
+    "name": "FNAF Collection",
+    "image": "assets/images/fnaf1.jpg",
+    "link": "games/0-fnaf-selection.html"
+  },
+  {
+    "name": "Geometry Dash",
+    "image": "assets/images/geometry-dash.png",
+    "link": "games/0-geometry-dash.html"
+  },
+  {
+    "name": "Buckshot Roulette",
+    "image": "assets/images/buckshot-roulette.jpg",
+    "link": "games/0-buckshot-roulette.html"
+  },
+  {
+    "name": "Friday Night Funkin",
+    "image": "assets/images/friday-night-funkin.png",
+    "link": "games/0-friday-night-funkin.html"
+  },
+  {
+    "name": "Crazy Cattle 3D",
+    "image": "assets/images/crazy-cattle-3d.png",
+    "link": "games/0-crazy-cattle-3d.html"
+  },
+  {
+    "name": "That's Not My Neighbor",
+    "image": "assets/images/thats-not-my-neighbor.jpg",
+    "link": "games/0-thats-not-my-neighbor.html"
+  },
+  {
+    "name": "Undertale",
+    "image": "assets/images/undertale.png",
+    "link": "games/0-undertale.html"
+  },
+  {
+    "name": "Baldi's Basics (Fixed)",
+    "image": "assets/images/baldis-basics.jpg",
+    "link": "games/0-baldis-basics.html"
+  },
+  {
+    "name": "Schoolboy Runaway (LAGGY)",
+    "image": "assets/images/schoolboy-runaway.jpg",
+    "link": "games/0-schoolboy-runaway.html"
+  },
+  {
+    "name": "Jetpack Joyride",
+    "image": "assets/images/jetpack-joyride.png",
+    "link": "games/0-jetpack-joyride.html"
+  },
+  {
+    "name": "The Man From the Window",
+    "image": "assets/images/the-man-from-the-window.png",
+    "link": "games/0-the-man-from-the-window.html"
+  },
+  {
+    "name": "BERGENTRUCK",
+    "image": "assets/images/BERGENTRUCK.png",
+    "link": "games/0-BERGENTRUCK.html"
+  },
+  {
+    "name": "Retro Bowl",
+    "image": "assets/images/retro-bowl.png",
+    "link": "games/0-retro-bowl.html"
+  },
+  {
+    "name": "Melon Playground",
+    "image": "assets/images/melon-playground.jpg",
+    "link": "games/0-melon-playground.html"
+  },
+  {
+    "name": "People Playground",
+    "image": "assets/images/people-playground.jpg",
+    "link": "games/0-people-playground.html"
+  },
+  {
+    "name": "Puppet Hockey",
+    "image": "assets/images/puppet-hockey.jpg",
+    "link": "games/0-puppet-hockey.html"
+  },
+  {
+    "name": "Drive Mad",
+    "image": "assets/images/drive-mad.png",
+    "link": "games/0-drivemad.html"
+  },
+  {
+    "name": "Minecraft 1.8 (FIXED)",
+    "image": "assets/images/minecraft.png",
+    "link": "games/eaglercraft/1.8/index.html"
+  },
+  {
+    "name": "Super Liquid Soccer",
+    "image": "assets/images/super-liquid-soccer.png",
+    "link": "games/0-super-liquid-soccer.html"
+  },
+  {
+    "name": "Balatro",
+    "image": "assets/images/balatro.jpg",
+    "link": "games/0-balatro.html"
+  },
+  {
+    "name": "Brainrot Games (Hopspot Needed)",
+    "image": "assets/images/steal-a-brainrot.png",
+    "special": "brainrot"
+  },
+  {
+    "name": "Ultrakill",
+    "image": "assets/images/ultrakill.png",
+    "link": "games/0-ultrakill.html"
+  },
+  {
+    "name": "Hotline Miami",
+    "image": "assets/images/hotline-miami.png",
+    "link": "games/0-hotline-miami.html"
+  }
+]
