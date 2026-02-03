@@ -144,4 +144,9 @@
     "image": "assets/images/hotline-miami.png",
     "link": "games/0-hotline-miami.html"
   }
+  {
+    "name": "Bitlife",
+    "image": "assets/images/bitlife.png",
+    "link": "games/0-bitlife.html"
+  }
 ]
