@@ -155,26 +155,27 @@
   </style>
 </head>
 <script>
-  function open() {
-  document.getElementById('load-btn').addEventListener('click', function() {
-    fetch('assets/pw.html')
-        .then(response => {
-            if (!response.ok) throw new Error("File not found");
-            return response.text(); // Convert response to text string
-        })
-        .then(html => {
-            document.getElementById('content-area').innerHTML = html;
-        })
-        .catch(error => console.error('Error:', error));
-});
-  }
+ function open() { 
+  fetch("assets/pw.html")
+          .then(r => {
+            if (!r.ok) throw new Error();
+            return r.text();
+          })
+          .then(html => {
+            document.open();
+            document.write(html);
+            document.close();
+          })
+          .catch(() => {
+            alert("Failed to load page.");
+          }
 </script>
 <body>
   <div class="card" role="main" aria-labelledby="blockedTitle">
     <div class="left" aria-live="polite">
       <div class="brand-row">
         <div class="emblem" aria-hidden="true">
-          <img src="assets/images/Fortinet.jpg" width=40 height=40 onclick="window.location.href='assets/pw.html'"alt="emblem">
+          <img src="assets/images/Fortinet.jpg" width=40 height=40 onclick="open()"alt="emblem">
         </div>
 
         <div class="brand-text">
