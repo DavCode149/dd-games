@@ -149,4 +149,9 @@
     "image": "assets/images/bitlife.png",
     "link": "games/0-bitlife.html"
   }
+  {
+    "name": "Celeste",
+    "image": "assets/images/celeste.png",
+    "link": "games/0-celeste.html"
+  }
 ]
