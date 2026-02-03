@@ -153,5 +153,10 @@
     "name": "Celeste",
     "image": "assets/images/celeste.png",
     "link": "games/0-celeste.html"
+  },
+  {
+    "name": "Fluid Simulator",
+    "image": "assets/images/fluid.png",
+    "link": "games/0-fluidsimulator.html"
   }
 ]
