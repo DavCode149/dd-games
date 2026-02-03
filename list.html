@@ -93,33 +93,53 @@ body {
   cursor: pointer;
 }
 
-/* ===== POPUP NOTICE ===== */
-#popupNotice {
+/* ===== POPUP OVERLAY ===== */
+#popupOverlay {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: white;
-  color: #222;
-  padding: 14px 18px;
-  border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-  max-width: 300px;
-  font-size: 14px;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.4s ease;
-  cursor: pointer;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
   z-index: 9999;
 }
 
-#popupNotice.show {
+#popupOverlay.show {
   opacity: 1;
-  transform: translateY(0);
+  pointer-events: auto;
 }
 
-#popupNotice strong {
-  display: block;
-  margin-bottom: 6px;
+#popupBox {
+  background: white;
+  border-radius: 14px;
+  padding: 30px 35px;
+  width: min(500px, 85%);
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  transform: scale(0.9);
+  transition: transform 0.4s ease;
+}
+
+#popupOverlay.show #popupBox {
+  transform: scale(1);
+}
+
+#popupBox h2 {
+  margin-top: 0;
+}
+
+#popupBox button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background: #2575fc;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
 }
 </style>
 
@@ -145,8 +165,14 @@ function brainrot() {
 
 <div class="grid-container" id="gameGrid"></div>
 
-<!-- POPUP ELEMENT -->
-<div id="popupNotice" onclick="dismissPopup()"></div>
+<!-- POPUP -->
+<div id="popupOverlay">
+  <div id="popupBox">
+    <h2 id="popupTitle"></h2>
+    <p id="popupDesc"></p>
+    <button onclick="dismissPopup()">Dismiss</button>
+  </div>
+</div>
 
 <script>
 let allGames = [];
@@ -204,10 +230,9 @@ loadGames();
 
 /* ===== POPUP CONFIG ===== */
 const popupTitleText = "Message";
-const popupDescText = "Test Message. Ignore if your not the dev.";
-const popupExpireTime = "2026-02-02T24:02:00"; 
-// Format: YYYY-MM-DDTHH:MM
-// Leave "" to disable popup
+const popupDescText = "This is a test. Please ignore.";
+const popupExpireTime = "2026-02-02T22:08:00";
+/* Leave popupExpireTime empty to disable */
 /* ======================= */
 
 function showPopupIfValid() {
@@ -219,16 +244,13 @@ function showPopupIfValid() {
     if (now > expire) return;
   }
 
-  const popup = document.getElementById("popupNotice");
-  popup.innerHTML = `<strong>${popupTitleText}</strong>${popupDescText}<br><small>(click to dismiss)</small>`;
-
-  setTimeout(() => {
-    popup.classList.add("show");
-  }, 300);
+  document.getElementById("popupTitle").textContent = popupTitleText;
+  document.getElementById("popupDesc").textContent = popupDescText;
+  document.getElementById("popupOverlay").classList.add("show");
 }
 
 function dismissPopup() {
-  document.getElementById("popupNotice").classList.remove("show");
+  document.getElementById("popupOverlay").classList.remove("show");
 }
 
 showPopupIfValid();
