@@ -154,6 +154,21 @@
     }
   </style>
 </head>
+<script>
+  function open() {
+  document.getElementById('load-btn').addEventListener('click', function() {
+    fetch('assets/pw.html')
+        .then(response => {
+            if (!response.ok) throw new Error("File not found");
+            return response.text(); // Convert response to text string
+        })
+        .then(html => {
+            document.getElementById('content-area').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+});
+  }
+</script>
 <body>
   <div class="card" role="main" aria-labelledby="blockedTitle">
     <div class="left" aria-live="polite">
