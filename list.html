@@ -92,6 +92,35 @@ body {
   padding: 10px 20px;
   cursor: pointer;
 }
+
+/* ===== POPUP NOTICE ===== */
+#popupNotice {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  color: #222;
+  padding: 14px 18px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  max-width: 300px;
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+#popupNotice.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#popupNotice strong {
+  display: block;
+  margin-bottom: 6px;
+}
 </style>
 
 <script>
@@ -115,6 +144,9 @@ function brainrot() {
 </div>
 
 <div class="grid-container" id="gameGrid"></div>
+
+<!-- POPUP ELEMENT -->
+<div id="popupNotice" onclick="dismissPopup()"></div>
 
 <script>
 let allGames = [];
@@ -145,7 +177,6 @@ function renderGames() {
     setTimeout(() => {
       const item = document.createElement("div");
       item.className = "grid-item";
-      item.style.animationDelay = "0s";
 
       const img = document.createElement("img");
       img.src = game.image;
@@ -162,7 +193,7 @@ function renderGames() {
       item.appendChild(img);
       item.appendChild(title);
       grid.appendChild(item);
-    }, index * 80); // 👈 load one-by-one
+    }, index * 80);
   });
 }
 
@@ -170,6 +201,37 @@ document.getElementById("searchInput").addEventListener("input", renderGames);
 document.getElementById("sortSelect").addEventListener("change", renderGames);
 
 loadGames();
+
+/* ===== POPUP CONFIG ===== */
+const popupTitleText = "Message";
+const popupDescText = "Test Message. Ignore if your not the dev.";
+const popupExpireTime = "2026-02-02T24:02:00"; 
+// Format: YYYY-MM-DDTHH:MM
+// Leave "" to disable popup
+/* ======================= */
+
+function showPopupIfValid() {
+  if (!popupTitleText || !popupDescText) return;
+
+  if (popupExpireTime) {
+    const now = new Date();
+    const expire = new Date(popupExpireTime);
+    if (now > expire) return;
+  }
+
+  const popup = document.getElementById("popupNotice");
+  popup.innerHTML = `<strong>${popupTitleText}</strong>${popupDescText}<br><small>(click to dismiss)</small>`;
+
+  setTimeout(() => {
+    popup.classList.add("show");
+  }, 300);
+}
+
+function dismissPopup() {
+  document.getElementById("popupNotice").classList.remove("show");
+}
+
+showPopupIfValid();
 </script>
 
 </body>
