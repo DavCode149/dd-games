@@ -168,5 +168,10 @@
     "name": "tubejumpers",
     "image": "assets/images/tubejump.jpeg",
     "link": "games/0-tubejumpers.html"
+  },
+  {
+    "name": "just one boss",
+    "image": "assets/images/just1boss.jpeg",
+    "link": "games/0-justoneboss.html"
   }
 ]
