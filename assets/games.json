@@ -159,4 +159,9 @@
     "image": "assets/images/fluid.jpeg",
     "link": "games/0-fluidsimulator.html"
   }
+  {
+    "name": "WebRetro",
+    "image": "assets/images/webretro.png",
+    "link": "games/0-webretro.html"
+  }
 ]
