@@ -165,13 +165,17 @@
     "link": "games/0-webretro.html"
   },
   {
-    "name": "tubejumpers",
+    "name": "Tubejumpers",
     "image": "assets/images/tubejump.jpeg",
     "link": "games/0-tubejumpers.html"
   },
   {
-    "name": "just one boss",
+    "name": "Just one boss",
     "image": "assets/images/just1boss.jpeg",
     "link": "games/0-justoneboss.html"
-  }
+  },
+  {
+   "name": "Sand game",
+    "image": "assets/images/sand.jpeg",
+    "link": "games/0-sand.html" 
 ]
