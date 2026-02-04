@@ -183,5 +183,10 @@
      "name": "Super mario 64",
     "image": "assets/images/sm64.jpeg",
     "link": "games/0-sm64.html"
+  },
+  {
+    "name": "Ruffel",
+    "image": "assets/images/ruffle.png",
+    "link": "games/0-ruffle.html"
   }
 ]
