@@ -177,6 +177,11 @@
   {
    "name": "Sand game",
     "image": "assets/images/sand.jpeg",
-    "link": "games/0-sand.html" 
+    "link": "games/0-sand.html"
+  },
+  {
+     "name": "Super mario 64",
+    "image": "assets/images/sm64.jpeg",
+    "link": "games/0-sm64.html"
   }
 ]
