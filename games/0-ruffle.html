@@ -1,0 +1,380 @@
+
+<!DOCTYPE html>
+<html data-ruffle-optout>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ruffle</title>
+    <style>
+:root {
+--ruffle-blue: #37528c;
+--ruffle-orange: #ffad33;
+--preloader-background: #31497d;
+}
+
+body {
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
+padding: 0;
+margin: 0;
+font-family: Lato, sans-serif;
+display: flex;
+flex-flow: column;
+background: black;
+}
+
+#main {
+position: relative;
+flex: 1;
+}
+
+#nav {
+width: 100%;
+background: var(--ruffle-blue);
+box-shadow: 0 3px 6px 5px var(--ruffle-blue);
+display: flex;
+align-items: center;
+justify-content: space-around;
+color: white;
+padding: 10px 0 5px;
+margin-bottom: 5px;
+}
+
+#title {
+transition: opacity 0.5s;
+}
+
+#title:hover {
+opacity: 0.5;
+}
+
+#title img {
+height: 32px;
+}
+
+#file-picker select,
+#file-picker input,
+#author {
+margin-left: 5px;
+}
+
+#local-file-container,
+#sample-swfs-container {
+display: inline-block;
+vertical-align: middle;
+}
+
+#local-file {
+width: 0;
+opacity: 0;
+position: absolute;
+}
+
+#local-file-label {
+color: var(--ruffle-blue);
+padding: 3px 10px;
+margin: 5px 2px;
+cursor: pointer;
+border-radius: 50px;
+background-color: white;
+}
+
+#local-file-name {
+min-width: 150px;
+display: inline-block;
+font-size: smaller;
+}
+
+.hidden {
+display: none !important;
+}
+
+@media only screen and (max-width: 800px) {
+#local-file-container,
+#sample-swfs-container {
+display: block;
+}
+
+#local-file-container {
+margin-bottom: 10px;
+}
+}
+
+@media only screen and (max-width: 600px) {
+#local-file-static-label,
+#sample-swfs-label {
+display: block;
+margin-bottom: 5px;
+}
+
+#nav {
+flex-flow: column;
+}
+}
+    </style>
+  </head>
+  <body>
+     <!-- ▼ Dropdown menu toggle -->
+<div class="menu-container">
+  <div class="menu-toggle" onclick="toggleMenu()">▼</div>
+  <div class="dropdown-menu" id="dropdownMenu">
+    <button onclick="window.location.href='https://davcode149.github.io/dd-games/list.html'">Return</button>
+  </div>
+</div>
+
+<style>
+  /* Position menu at top center */
+  .menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+
+  /* The arrow toggle */
+  .menu-toggle {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+
+  .menu-toggle:hover {
+    background-color: rgba(240, 240, 240, 0.95);
+    transform: scale(1.1);
+  }
+
+  /* Dropdown panel */
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    min-width: 120px;
+    text-align: center;
+    animation: dropdownFade 0.2s ease;
+  }
+
+  /* Animation for fade-in */
+  @keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-menu button {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .dropdown-menu button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+<script>
+  function toggleMenu() {
+    var menu = document.getElementById("dropdownMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
+  // Optional: Close menu when clicking outside
+  window.addEventListener("click", function(e) {
+    if (!e.target.closest(".menu-container")) {
+      document.getElementById("dropdownMenu").style.display = "none";
+    }
+  });
+</script>
+  
+<div id="allCont">
+  
+    <div id="nav">
+      <div id="title">
+        <a target="_blank" href="https://ruffle.rs/">
+          <img src="logo.svg" alt="Ruffle" data-canonical-src="logo.svg" />
+        </a>
+      </div>
+<div id="file-picker">
+        <div id="local-file-container">
+          <span id="local-file-static-label">Local SWF:</span>
+          <input type="file" accept=".swf,.spl" id="local-file" aria-describedby="local-file-static-label">
+          <label for="local-file" id="local-file-label">Select File</label>
+          <span id="local-file-name">No file selected.</span>
+        </div>
+
+</div>
+<script>
+var localFile = document.getElementById("local-file");
+var allCont = document.getElementById("allCont");
+
+localFile.addEventListener("change", (e => {
+  handleFileSelect(e.target.files[0])
+}))
+
+function dataURLtoBlobURL(dataURL){
+  try {
+    var byteString = atob(dataURL.split(',')[1]);
+    var mime = dataURL.split(',')[0].split(':')[0];
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (i = 0; i < byteString.length; i++){
+      ia[i] = byteString.charCodeAt(i);
+    }
+    var blob = new Blob([ab], {
+      type : mime
+    });
+    return URL.createObjectURL(blob);
+  } catch (error) {
+    alert('Failed to convert data URL to Blob URL');
+    console.error('Failed to convert data URL to Blob URL:', error);
+  }
+}
+
+function generateRandomString() {
+  var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var result = '';
+  
+  for (var i = 0; i < 10; i++) {
+    var randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars.charAt(randomIndex);
+  }
+  
+  return result;
+}
+
+var channel = generateRandomString();
+const bc = new BroadcastChannel(channel);
+
+function handleFileSelect(file){
+
+allCont.innerHTML = '';
+
+  var reader = new FileReader();
+  reader.onload = function (e){
+    var dataURL = e.target.result;
+
+    var frame = document.createElement('iframe');
+    frame.setAttribute('frameborder', 0);
+    frame.style.width = '100%';
+    frame.style.height = '100%';
+    frame.style.margin = '0';
+    frame.style.padding = '0';
+    frame.src = "player.html?channel="+channel;
+    document.body.appendChild(frame);
+    frame.onload = function() {
+     bc.postMessage({type: "swf", data: dataURL});
+    }
+
+  };
+  reader.readAsDataURL(file);
+}
+
+bc.onmessage = (event) => {
+   var eventType = (event.data.type);
+   if (eventType == 'close') {
+    bc.close();
+   }
+};
+</script>
+      <!-- Include Ably client -->
+<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
+
+<!-- Active User Tracker (No Display) -->
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+<script>
+  // === 1️⃣ Persistent browser ID ===
+  let browserId = localStorage.getItem('ablyBrowserId');
+  if (!browserId) {
+    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('ablyBrowserId', browserId);
+  }
+
+  // === 2️⃣ Connect to Ably ===
+  const ably = new Ably.Realtime({
+    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
+    clientId: browserId
+  });
+  const channel = ably.channels.get('site-active-users');
+
+  // === 3️⃣ Shared-tab logic (one connection per browser) ===
+  const isMainTabKey = "ablyMainTabActive";
+  const heartbeatKey = "ablyHeartbeat";
+  const heartbeatInterval = 3000; // ms
+
+  function setMainTab(active) {
+    if (active) {
+      localStorage.setItem(isMainTabKey, "true");
+      localStorage.setItem(heartbeatKey, Date.now());
+    } else {
+      localStorage.removeItem(isMainTabKey);
+      localStorage.removeItem(heartbeatKey);
+    }
+  }
+
+  function isMainTab() {
+    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
+    return Date.now() - lastBeat < heartbeatInterval * 2;
+  }
+
+  // === 4️⃣ Keep heartbeat alive for main tab ===
+  setInterval(() => {
+    if (localStorage.getItem(isMainTabKey) === "true") {
+      localStorage.setItem(heartbeatKey, Date.now());
+    }
+  }, heartbeatInterval);
+
+  // === 5️⃣ Only first tab joins presence ===
+  async function tryEnterPresence() {
+    if (!isMainTab()) {
+      setMainTab(true);
+      try {
+        await channel.attach();
+        channel.presence.enter("online");
+      } catch (err) {
+        console.error("Error entering presence:", err);
+      }
+    }
+  }
+
+  // === 6️⃣ Detect other tabs closing/opening ===
+  window.addEventListener("storage", async (event) => {
+    if (event.key === heartbeatKey) {
+      if (!isMainTab()) {
+        tryEnterPresence();
+      }
+    }
+  });
+
+  // === 7️⃣ Leave presence when main tab closes ===
+  window.addEventListener("beforeunload", () => {
+    if (isMainTab()) {
+      channel.presence.leave("online");
+      setMainTab(false);
+    }
+  });
+
+  // === 8️⃣ Connect ===
+  ably.connection.once("connected", tryEnterPresence);
+</script>
+  </body>
+</html>
