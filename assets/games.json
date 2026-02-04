@@ -163,5 +163,10 @@
     "name": "WebRetro",
     "image": "assets/images/webretro.png",
     "link": "games/0-webretro.html"
+  },
+  {
+    "name": "tubejumpers",
+    "image": "assets/images/tubejump.jpeg",
+    "link": "games/0-tubejumpers.html"
   }
 ]
