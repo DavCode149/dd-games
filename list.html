@@ -379,7 +379,7 @@ function updateCount() {
     const unique = new Set(members.map(m => m.clientId));
     const count = unique.size;
     document.getElementById("userText").textContent =
-      `${count} user\${count !== 1 ? "s" : ""} online`;
+      `${count} user(s) online`;
   });
 }
 
