@@ -165,7 +165,7 @@
     "link": "games/0-webretro.html"
   },
   {
-    "name": "Tubejumpers",
+    "name": "Tube Jumpers",
     "image": "assets/images/tubejump.jpeg",
     "link": "games/0-tubejumpers.html"
   },
@@ -180,12 +180,12 @@
     "link": "games/0-sand.html"
   },
   {
-     "name": "Super mario 64",
+     "name": "Super Mario 64",
     "image": "assets/images/sm64.jpeg",
     "link": "games/0-sm64.html"
   },
   {
-    "name": "Ruffel",
+    "name": "Ruffle",
     "image": "assets/images/ruffle.png",
     "link": "games/0-ruffle.html"
   }
