@@ -136,7 +136,7 @@
 </div>
 <script>
 function loadListPage() {
-  fetch("/davcode149/main.html")
+  fetch("/dd-games/main.html")
     .then(res => res.text())
     .then(html => {
       document.open();
@@ -172,7 +172,7 @@ function loadListPage() {
   }
 
   function showTOS() {
-    fetch("/TOS.md")
+    fetch("/dd-games/TOS.md")
       .then(res => res.text())
       .then(text => {
         document.getElementById("tosContent").textContent = text;
