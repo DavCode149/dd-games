@@ -183,7 +183,7 @@ function brainrot() {
 let allGames = [];
 
 async function loadGames() {
-  const res = await fetch("assets/games.json");
+  const res = await fetch("games.json");
   allGames = await res.json();
   renderGames();
 }
