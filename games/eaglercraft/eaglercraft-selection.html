@@ -75,7 +75,7 @@
 <body>
   <script>
     function UnavailableSoftware(){
-      alert("This is not yet available")
+      alert("This is not yet available. We're working on it!")
     }
   </script>
   <canvas id="bgCanvas"></canvas>
@@ -110,7 +110,7 @@
   const geometry = new THREE.SphereGeometry(500, 100, 80);
   geometry.scale(-1, 1, 1);
 
-  const texture = new THREE.TextureLoader().load("images/panorama.jpg", (tex) => {
+  const texture = new THREE.TextureLoader().load("/dd-games/assets/mc-panorama.png", (tex) => {
     tex.mapping = THREE.EquirectangularReflectionMapping; // makes projection correct
     tex.minFilter = THREE.LinearFilter;
   });
