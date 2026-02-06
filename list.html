@@ -182,11 +182,44 @@ function brainrot() {
 <script>
 let allGames = [];
 
-async function loadGames() {
-  const res = await fetch("assets/games.json?v=" + Date.now());
-  allGames = await res.json();
-  renderGames();
+function showErrorPopup(code) {
+  popupTitle.textContent = "An error has occurred.";
+  popupDesc.textContent = "Error code: " + code;
+  popupOverlay.classList.add("show");
 }
+
+async function loadGames() {
+  try {
+    const res = await fetch("assets/games.json?v=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    if (!res.ok) {
+      throw new Error("HTTP_" + res.status);
+    }
+
+    const text = await res.text();
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error("INVALID_JSON");
+    }
+
+    if (!Array.isArray(data)) {
+      throw new Error("NOT_ARRAY");
+    }
+
+    allGames = data;
+    renderGames();
+
+  } catch (err) {
+    showErrorPopup(err.message);
+  }
+}
+
+setInterval(loadGames, 30000);
 
 function renderGames() {
   const grid = document.getElementById("gameGrid");
