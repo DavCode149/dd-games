@@ -7,112 +7,112 @@
   {
     "name": "Deltarune",
     "image": "/dd-games/assets/images/deltarune.png",
-    "link": "games/0-deltarune.html"
+    "link": "/dd-games/games/0-deltarune.html"
   },
   {
     "name": "Block Blast",
     "image": "/dd-games/assets/images/block-blast.png",
-    "link": "games/0-block-blast.html"
+    "link": "/dd-games/games/0-block-blast.html"
   },
   {
     "name": "Cookie Clicker",
     "image": "/dd-games/assets/images/cookie-clicker.png",
-    "link": "games/0-cookie-clicker.html"
+    "link": "/dd-games/games/0-cookie-clicker.html"
   },
   {
     "name": "Crossy Road",
     "image": "/dd-games/assets/images/crossy-road.jpg",
-    "link": "games/0-crossy-road.html"
+    "link": "/dd-games/games/0-crossy-road.html"
   },
   {
     "name": "Pizza Tower",
     "image": "/dd-games/assets/images/pizza-tower.jpg",
-    "link": "games/0-pizza-tower.html"
+    "link": "/dd-games/games/0-pizza-tower.html"
   },
   {
     "name": "FNAF Collection",
     "image": "/dd-games/assets/images/fnaf1.jpg",
-    "link": "games/0-fnaf-selection.html"
+    "link": "/dd-games/games/0-fnaf-selection.html"
   },
   {
     "name": "Geometry Dash",
     "image": "/dd-games/assets/images/geometry-dash.png",
-    "link": "games/0-geometry-dash.html"
+    "link": "/dd-games/games/0-geometry-dash.html"
   },
   {
     "name": "Buckshot Roulette",
     "image": "/dd-games/assets/images/buckshot-roulette.jpg",
-    "link": "games/0-buckshot-roulette.html"
+    "link": "/dd-games/games/0-buckshot-roulette.html"
   },
   {
     "name": "Friday Night Funkin",
     "image": "/dd-games/assets/images/friday-night-funkin.png",
-    "link": "games/0-friday-night-funkin.html"
+    "link": "/dd-games/games/0-friday-night-funkin.html"
   },
   {
     "name": "Crazy Cattle 3D",
     "image": "/dd-games/assets/images/crazy-cattle-3d.png",
-    "link": "games/0-crazy-cattle-3d.html"
+    "link": "/dd-games/games/0-crazy-cattle-3d.html"
   },
   {
     "name": "That's Not My Neighbor",
     "image": "/dd-games/assets/images/thats-not-my-neighbor.jpg",
-    "link": "games/0-thats-not-my-neighbor.html"
+    "link": "/dd-games/games/0-thats-not-my-neighbor.html"
   },
   {
     "name": "Undertale",
     "image": "/dd-games/assets/images/undertale.png",
-    "link": "games/0-undertale.html"
+    "link": "/dd-games/games/0-undertale.html"
   },
   {
     "name": "Baldi's Basics (Fixed)",
     "image": "/dd-games/assets/images/baldis-basics.jpg",
-    "link": "games/0-baldis-basics.html"
+    "link": "/dd-games/games/0-baldis-basics.html"
   },
   {
     "name": "Schoolboy Runaway (LAGGY)",
     "image": "/dd-games/assets/images/schoolboy-runaway.jpg",
-    "link": "games/0-schoolboy-runaway.html"
+    "link": "/dd-games/games/0-schoolboy-runaway.html"
   },
   {
     "name": "Jetpack Joyride",
     "image": "/dd-games/assets/images/jetpack-joyride.png",
-    "link": "games/0-jetpack-joyride.html"
+    "link": "/dd-games/games/0-jetpack-joyride.html"
   },
   {
     "name": "The Man From the Window",
     "image": "/dd-games/assets/images/the-man-from-the-window.png",
-    "link": "games/0-the-man-from-the-window.html"
+    "link": "/dd-games/games/0-the-man-from-the-window.html"
   },
   {
     "name": "BERGENTRUCK",
     "image": "/dd-games/assets/images/BERGENTRUCK.png",
-    "link": "games/0-BERGENTRUCK.html"
+    "link": "/dd-games/games/0-BERGENTRUCK.html"
   },
   {
     "name": "Retro Bowl",
     "image": "/dd-games/assets/images/retro-bowl.png",
-    "link": "games/0-retro-bowl.html"
+    "link": "/dd-games/games/0-retro-bowl.html"
   },
   {
     "name": "Melon Playground",
     "image": "/dd-games/assets/images/melon-playground.jpg",
-    "link": "games/0-melon-playground.html"
+    "link": "/dd-games/games/0-melon-playground.html"
   },
   {
     "name": "People Playground",
     "image": "/dd-games/assets/images/people-playground.jpg",
-    "link": "games/0-people-playground.html"
+    "link": "/dd-games/games/0-people-playground.html"
   },
   {
     "name": "Puppet Hockey",
     "image": "/dd-games/assets/images/puppet-hockey.jpg",
-    "link": "games/0-puppet-hockey.html"
+    "link": "/dd-games/games/0-puppet-hockey.html"
   },
   {
     "name": "Drive Mad",
     "image": "/dd-games/assets/images/drive-mad.png",
-    "link": "games/0-drivemad.html"
+    "link": "/dd-games/games/0-drivemad.html"
   },
   {
     "name": "Minecraft 1.8 (FIXED)",
@@ -122,12 +122,12 @@
   {
     "name": "Super Liquid Soccer",
     "image": "/dd-games/assets/images/super-liquid-soccer.png",
-    "link": "games/0-super-liquid-soccer.html"
+    "link": "/dd-games/games/0-super-liquid-soccer.html"
   },
   {
     "name": "Balatro",
     "image": "/dd-games/assets/images/balatro.jpg",
-    "link": "games/0-balatro.html"
+    "link": "/dd-games/games/0-balatro.html"
   },
   {
     "name": "Brainrot Games (Hopspot Needed)",
@@ -137,61 +137,61 @@
   {
     "name": "Ultrakill",
     "image": "/dd-games/assets/images/ultrakill.png",
-    "link": "games/0-ultrakill.html"
+    "link": "/dd-games/games/0-ultrakill.html"
   },
   {
     "name": "Hotline Miami",
     "image": "/dd-games/assets/images/hotline-miami.png",
-    "link": "games/0-hotline-miami.html"
+    "link": "/dd-games/games/0-hotline-miami.html"
   },
   {
     "name": "Bitlife",
     "image": "/dd-games/assets/images/bitlife.png",
-    "link": "games/0-bitlife.html"
+    "link": "/dd-games/games/0-bitlife.html"
   },
   {
     "name": "Celeste",
     "image": "/dd-games/assets/images/celeste.png",
-    "link": "games/0-celeste.html"
+    "link": "/dd-games/games/0-celeste.html"
   },
   {
     "name": "Fluid Simulator",
     "image": "/dd-games/assets/images/fluid.jpeg",
-    "link": "games/0-fluidsimulator.html"
+    "link": "/dd-games/games/0-fluidsimulator.html"
   },
   {
     "name": "WebRetro",
     "image": "/dd-games/assets/images/webretro.png",
-    "link": "games/0-webretro.html"
+    "link": "/dd-games/games/0-webretro.html"
   },
   {
     "name": "Tube Jumpers",
     "image": "/dd-games/assets/images/tubejump.jpeg",
-    "link": "games/0-tubejumpers.html"
+    "link": "/dd-games/games/0-tubejumpers.html"
   },
   {
     "name": "Just one boss",
     "image": "/dd-games/assets/images/just1boss.jpeg",
-    "link": "games/0-justoneboss.html"
+    "link": "/dd-games/games/0-justoneboss.html"
   },
   {
    "name": "Sand game",
     "image": "/dd-games/assets/images/sand.jpeg",
-    "link": "games/0-sand.html"
+    "link": "/dd-games/games/0-sand.html"
   },
   {
      "name": "Super Mario 64",
     "image": "/dd-games/assets/images/sm64.jpeg",
-    "link": "games/0-sm64.html"
+    "link": "/dd-games/games/0-sm64.html"
   },
   {
     "name": "Ruffle",
     "image": "/dd-games/assets/images/ruffle.png",
-    "link": "games/0-ruffle.html"
+    "link": "/dd-games/games/0-ruffle.html"
   },
   {
     "name": "flood runner",
     "image": "/dd-games/assets/images/floodrunner4.png",
-    "link": "games/0-floodrunner4.html"
+    "link": "/dd-games/games/0-floodrunner4.html"
   }
 ]
