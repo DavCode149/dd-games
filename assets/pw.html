@@ -136,7 +136,7 @@
 </div>
 <script>
 function loadListPage() {
-  fetch("list.html")
+  fetch("/davcode149/main.html")
     .then(res => res.text())
     .then(html => {
       document.open();
@@ -144,7 +144,7 @@ function loadListPage() {
       document.close();
     })
     .catch(() => {
-      alert("Failed to load list.html");
+      alert("Failed to load main.html");
     });
 }
 </script>
