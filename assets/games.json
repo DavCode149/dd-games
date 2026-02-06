@@ -190,12 +190,12 @@
     "link": "/dd-games/games/0-ruffle.html"
   },
   {
-    "me": "Flood runner",
+    "name": "Flood runner",
     "image": "/dd-games/assets/images/floodrunner4.png",
     "link": "/dd-gnaames/games/0-floodrunner4.html"
   },
   {
-    "me": "Stack",
+    "name": "Stack",
     "image": "/dd-games/assets/images/stack.png",
     "link": "/dd-gnaames/games/0-stack.html"
   }
