@@ -170,7 +170,6 @@ bc.onmessage = (event) => {
    }
 };
 </script>
-  
 	<!-- Include Ably client -->
 <script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
 
@@ -184,14 +183,12 @@ bc.onmessage = (event) => {
     localStorage.setItem('ablyBrowserId', browserId);
   }
 
- // === 2️⃣ Connect to Ably ===
+  // === 2️⃣ Connect to Ably ===
   const ably = new Ably.Realtime({
     key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
     clientId: browserId
   });
-  
-  // RENAME THIS VARIABLE from 'channel' to 'ablyChannel'
-  const ablyChannel = ably.channels.get('site-active-users'); 
+  const channel = ably.channels.get('site-active-users');
 
   // === 3️⃣ Shared-tab logic (one connection per browser) ===
   const isMainTabKey = "ablyMainTabActive";
