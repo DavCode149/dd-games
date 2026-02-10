@@ -90,7 +90,7 @@
   });
 </script>
 <script>
-var gamPath = "g/floodrunner4.js";
+var gamPath = "https://davcode149.github.io/dd-games/games/floodrunner4.js";
 function loadScripts(scripts, callback){
   var loadedCount = 0;
   function scriptLoaded(){
@@ -156,7 +156,7 @@ loadScripts([gamPath], function (error){
     frame.style.height = '100%';
     frame.style.margin = '0';
     frame.style.padding = '0';
-    frame.src = "g/player.html?channel="+channel;
+    frame.src = "https://davcode149.github.io/dd-games/games/player.html?channel="+channel;
     document.body.appendChild(frame);
     frame.onload = function() {
      bc.postMessage({type: "swf", data: window.data});
