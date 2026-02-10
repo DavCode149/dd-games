@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Classroom</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.8));
+      z-index: -1;
+    }
+
+   /* Grid layout styles */
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    width: 90%;
+    max-width: 1000px;
+    padding: 20px;
+  }
+
+  .grid-item {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .grid-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+  }
+
+  .grid-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  .grid-item h3 {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #333;
+  }
+  </style>
+</head>
+<body>
+  <script>
+    function UnavailableSoftware(){
+      alert("This is not yet available. We're working on it!")
+    }
+  </script>
+  <canvas id="bgCanvas"></canvas>
+  <div id="overlay"></div>
+  <!-- === Grid Content === -->
+  <div class="grid-container">
+    <div class="grid-item" onclick="window.location.href='/dd-games/games/minecraft/1.8/index.html'">
+      <img src="https://davcode149.github.io/dd-games/assets/images/minecraft.png" alt="Item 1">
+      <h3>1.8.8</h3>
+    </div>
+    <div class="grid-item" onclick="window.location.href='0-minecraft-web-client.html'">
+      <img src="https://davcode149.github.io/dd-games/assets/images/minecraft.png" alt="Item 1">
+      <h3>1.21.7</h3>
+    </div>
+    <div class="grid-item" onclick="UnavailableSoftware()">
+      <img src="https://davcode149.github.io/dd-games/assets/images/minecraft.png" alt="Item 1">
+      <h3>Coming Soon</h3>
+    </div>
+    <div class="grid-item" onclick="UnavailableSoftware()">
+      <img src="https://davcode149.github.io/dd-games/assets/images/minecraft.png" alt="Item 1">
+      <h3>Coming Soon</h3>
+    </div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+ <script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
+  const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("bgCanvas") });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+
+  // Sphere with smoother geometry to reduce warping
+  const geometry = new THREE.SphereGeometry(500, 100, 80);
+  geometry.scale(-1, 1, 1);
+
+  const texture = new THREE.TextureLoader().load("/dd-games/assets/mc-panorama.png", (tex) => {
+    tex.mapping = THREE.EquirectangularReflectionMapping; // makes projection correct
+    tex.minFilter = THREE.LinearFilter;
+  });
+
+  const material = new THREE.MeshBasicMaterial({ map: texture });
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+
+  camera.position.set(0, 0, 0);
+
+  // Gentle rotation
+  function animate() {
+    requestAnimationFrame(animate);
+    sphere.rotation.y += 0.0005;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Handle resizing
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+</div>
+</body>
+</html>
