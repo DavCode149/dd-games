@@ -246,9 +246,9 @@ function renderGames() {
       img.src = game.image;
 
       if (game.special === "brainrot") {
-        img.onclick = brainrot;
+        item.onclick = brainrot;
       } else {
-        img.onclick = () => window.location.href = game.link;
+        item.onclick = () => window.location.href = game.link;
       }
 
       const title = document.createElement("h3");
