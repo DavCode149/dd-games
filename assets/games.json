@@ -198,5 +198,10 @@
     "name": "Stack",
     "image": "/dd-games/assets/images/stack.png",
     "link": "/dd-games/games/0-stack.html"
+  },
+  {
+  "name": "escaping the prison",
+    "image": "/dd-games/assets/images/escaping-the-prison.png",
+    "link": "/dd-games/games/0-escaping-the-prison.html"
   }
 ]
