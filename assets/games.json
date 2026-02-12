@@ -203,5 +203,10 @@
   "name": "escaping the prison",
     "image": "/dd-games/assets/images/escapingtheprison.png",
     "link": "/dd-games/games/0-escaping-the-prison.html"
+  },
+  {
+    "name": "The impossible quiz",
+    "image": "/dd-games/assets/images/theimpossiblequiz.png",
+    "link": "/dd-games/games/0-theimpossiblequiz.html"
   }
 ]
