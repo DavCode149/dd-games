@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DD Games Account</title>
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(270deg,#6a11cb,#2575fc);
+  background-size:400% 400%;
+  animation:bg 6s ease infinite;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+@keyframes bg {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+.hidden{display:none}
+
+.card {
+  background:rgba(0,0,0,0.4);
+  padding:30px;
+  border-radius:14px;
+  width:350px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+input,button {
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  width:100%;
+  margin-top:10px;
+  font-size:16px;
+}
+
+button {
+  background:#00d4ff;
+  cursor:pointer;
+}
+
+#loader {font-size:20px; animation:pulse 1.5s infinite;}
+@keyframes pulse{50%{opacity:.5}}
+
+.small {font-size:13px;opacity:.8}
+</style>
+</head>
+
+<body>
+
+<!-- LOADING -->
+<div id="loading" class="card">
+  <div id="loader">Loading...</div>
+</div>
+
+<!-- SETUP -->
+<div id="setup" class="card hidden">
+  <h2>Account Setup</h2>
+  <p>Enter your name:</p>
+  <input id="nameInput" placeholder="Your name">
+  <button onclick="createAccount()">Create Account</button>
+</div>
+
+<!-- MAIN -->
+<div id="main" class="card hidden">
+  <h2 id="welcome"></h2>
+  <p id="time"></p>
+  <p id="weather"></p>
+
+  <button onclick="launchSite()">Launch Site</button>
+  <button onclick="openAccount()">Account</button>
+</div>
+
+<!-- ACCOUNT -->
+<div id="account" class="card hidden">
+  <h2>Account</h2>
+  <p>User ID: <span id="uid"></span></p>
+  <p>Device: <span id="device"></span></p>
+  <p>OS: <span id="os"></span></p>
+  <p>Browser: <span id="browser"></span></p>
+  <p>IP: <span id="ip"></span></p>
+
+  <input id="editName">
+  <button onclick="saveName()">Save Name</button>
+  <button onclick="backMain()">Back</button>
+</div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://lqfcntoldutgkzaboqfk.supabase.co",
+  "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
+);
+
+const loading = document.getElementById("loading");
+const setup = document.getElementById("setup");
+const main = document.getElementById("main");
+const account = document.getElementById("account");
+
+function show(el){
+  loading.classList.add("hidden");
+  setup.classList.add("hidden");
+  main.classList.add("hidden");
+  account.classList.add("hidden");
+  el.classList.remove("hidden");
+}
+
+/* ==== DEVICE ID ==== */
+function getDeviceID(){
+  let id = localStorage.getItem("deviceID");
+  if(!id){
+    id = crypto.randomUUID();
+    localStorage.setItem("deviceID",id);
+  }
+  return id;
+}
+
+/* ==== DEVICE INFO ==== */
+function getInfo(){
+  return {
+    browser: navigator.userAgent,
+    os: navigator.platform,
+    device: /Mobi/.test(navigator.userAgent)?"Mobile":"Desktop",
+    page: location.pathname
+  };
+}
+
+const deviceID = getDeviceID();
+const info = getInfo();
+let userRow = null;
+let ip = "";
+
+/* ==== INIT ==== */
+setTimeout(init, Math.random()*4000+1000);
+
+async function init(){
+  const ipRes = await fetch("https://api.ipify.org?format=json");
+  ip = (await ipRes.json()).ip;
+
+  let { data } = await supabase
+    .from("users")
+    .select("*")
+    .eq("user_id", deviceID)
+    .maybeSingle();
+
+  if(!data){
+    await supabase.from("users").insert({
+      user_id: deviceID,
+      ip, browser: info.browser,
+      os: info.os,
+      device: info.device,
+      page: info.page,
+      last_seen: new Date(),
+      visit_count: 1,
+      blocked:false
+    });
+
+    show(setup);
+    return;
+  }
+
+  userRow = data;
+
+  if(userRow.blocked){
+    document.body.innerHTML="<h1>Access denied</h1>";
+    return;
+  }
+
+  await supabase.from("users").update({
+    ip, browser:info.browser,
+    os:info.os, device:info.device,
+    page:info.page,
+    last_seen:new Date(),
+    visit_count:(userRow.visit_count||0)+1
+  }).eq("user_id",deviceID);
+
+  if(!userRow.Name){
+    show(setup);
+  } else {
+    showMain();
+  }
+}
+
+/* ==== CREATE ACCOUNT ==== */
+async function createAccount(){
+  show(loading);
+  const msgs=["Polishing Games...","Refreshing Data...","Creating Account...","Almost Done..."];
+  let i=0;
+  const t=setInterval(()=>{
+    document.getElementById("loader").textContent=msgs[i%msgs.length];
+    i++;
+  },800);
+
+  await new Promise(r=>setTimeout(r,6000));
+  clearInterval(t);
+
+  const name=document.getElementById("nameInput").value;
+  await supabase.from("users").update({Name:name}).eq("user_id",deviceID);
+
+  userRow.Name=name;
+  showMain();
+}
+
+/* ==== MAIN ==== */
+function showMain(){
+  show(main);
+  document.getElementById("welcome").textContent="Welcome, "+userRow.Name;
+  setInterval(()=>{
+    document.getElementById("time").textContent=new Date().toLocaleString();
+  },1000);
+  loadWeather();
+}
+
+async function loadWeather(){
+  const res=await fetch("https://codetabs.com/weather/weather.html");
+  const txt=await res.text();
+  document.getElementById("weather").innerHTML="Weather: "+txt;
+}
+
+/* ==== ACCOUNT ==== */
+window.openAccount=()=>{
+  show(account);
+  uid.textContent=deviceID;
+  device.textContent=info.device;
+  os.textContent=info.os;
+  browser.textContent=info.browser;
+  ip.textContent=ip;
+  editName.value=userRow.Name;
+}
+
+window.saveName=async()=>{
+  const newName=editName.value;
+  await supabase.from("users").update({Name:newName}).eq("user_id",deviceID);
+  userRow.Name=newName;
+  showMain();
+}
+
+window.backMain=()=>showMain();
+
+/* ==== LAUNCH PLACEHOLDER ==== */
+window.launchSite=()=>{
+  javascript: var win = window.open();   win.document.body.style.margin = '0';   win.document.body.style.height = '100vh';   var iframe = win.document.createElement('iframe');   iframe.style.border = 'none';   iframe.style.width = '100%';   iframe.style.height = '100%';   iframe.style.margin = '0';   iframe.src = "list.html";   win.document.body.appendChild(iframe);
+    }
+}
+
+</script>
+<script type="module" src="assets/management.js"></script>
+</body>
+</html>
