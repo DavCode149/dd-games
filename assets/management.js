@@ -33,7 +33,7 @@ const { data: existingUser } = await supabase
   .from("users")
   .select("*")
   .eq("user_id", deviceID)
-  .single();
+  .maybeSingle();
 
 if (!existingUser) {
   await supabase.from("users").insert({
