@@ -2,69 +2,90 @@
 <html>
 <head>
 <title>DD Games</title>
+
 <style>
 body {
   margin:0;
   font-family: Arial, sans-serif;
   background: linear-gradient(270deg,#6a11cb,#2575fc);
   background-size:400% 400%;
-  animation:bg 6s ease infinite;
+  animation:bg 8s ease infinite;
   color:white;
+  height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
 }
+
 @keyframes bg {
   0%{background-position:0% 50%}
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
 }
-.hidden{display:none}
-.card {
-  background:rgba(0,0,0,0.4);
-  padding:30px;
-  border-radius:14px;
-  width:360px;
+
+.hidden { display:none; }
+
+#screen {
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
   text-align:center;
+}
+
+input, button {
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+  margin-top:10px;
+}
+
+button {
+  background:#00d4ff;
+  cursor:pointer;
+  min-width:200px;
+}
+
+#weather { margin-top:10px; }
+#time { font-size:18px; margin-top:5px; }
+
+.panel {
+  background:rgba(0,0,0,.4);
+  padding:30px;
+  border-radius:16px;
   box-shadow:0 10px 30px rgba(0,0,0,.3);
 }
-input,button {
-  padding:10px;
-  border-radius:8px;
-  border:none;
-  width:100%;
-  margin-top:10px;
-  font-size:16px;
-}
-button { background:#00d4ff; cursor:pointer; }
-#loader { font-size:20px; animation:pulse 1.5s infinite; }
-@keyframes pulse { 50%{opacity:.5} }
 </style>
 </head>
 
 <body>
 
-<div id="loading" class="card">
-  <div id="loader">Loading...</div>
+<div id="screen">
+
+<div id="loading" class="panel">
+  <h2 id="loaderText">Loading...</h2>
 </div>
 
-<div id="setup" class="card hidden">
+<div id="setup" class="panel hidden">
   <h2>Account Setup</h2>
   <input id="nameInput" placeholder="Enter your name">
   <button onclick="createAccount()">Create Account</button>
 </div>
 
-<div id="main" class="card hidden">
-  <h2 id="welcome"></h2>
-  <p id="time"></p>
-  <p id="weather"></p>
+<div id="main" class="panel hidden">
+  <h1 id="welcome"></h1>
+  <div id="time"></div>
+  <div id="weather"></div>
+  <br>
   <button onclick="launchSite()">Launch Site</button>
   <button onclick="openAccount()">Account</button>
 </div>
 
-<div id="account" class="card hidden">
-  <h2>Account</h2>
+<div id="account" class="panel hidden">
+  <h2>Account Info</h2>
   <p>User ID: <span id="uid"></span></p>
   <p>Device: <span id="device"></span></p>
   <p>OS: <span id="os"></span></p>
@@ -76,6 +97,8 @@ button { background:#00d4ff; cursor:pointer; }
   <button onclick="backMain()">Back</button>
 </div>
 
+</div>
+
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -84,16 +107,15 @@ const supabase = createClient(
   "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
 );
 
-const loading = document.getElementById("loading");
-const setup = document.getElementById("setup");
-const main = document.getElementById("main");
-const account = document.getElementById("account");
+const loading = loadingEl("loading");
+const setup = loadingEl("setup");
+const main = loadingEl("main");
+const account = loadingEl("account");
+
+function loadingEl(id){ return document.getElementById(id); }
 
 function show(el){
-  loading.classList.add("hidden");
-  setup.classList.add("hidden");
-  main.classList.add("hidden");
-  account.classList.add("hidden");
+  [loading,setup,main,account].forEach(e=>e.classList.add("hidden"));
   el.classList.remove("hidden");
 }
 
@@ -122,8 +144,8 @@ const info = getInfo();
 let userRow = null;
 let ip = "";
 
-/* INIT */
-setTimeout(init, Math.random()*4000 + 1000);
+/* START */
+setTimeout(init, Math.random()*4000+1000);
 
 async function init(){
   const ipRes = await fetch("https://api.ipify.org?format=json");
@@ -138,12 +160,12 @@ async function init(){
   if(!data){
     await supabase.from("users").insert({
       user_id: deviceID,
-      ip, browser: info.browser,
-      os: info.os,
-      device: info.device,
-      page: info.page,
-      last_seen: new Date(),
-      visit_count: 1,
+      ip, browser:info.browser,
+      os:info.os,
+      device:info.device,
+      page:info.page,
+      last_seen:new Date(),
+      visit_count:1,
       blocked:false
     });
     show(setup);
@@ -175,20 +197,18 @@ async function init(){
 
 /* CREATE ACCOUNT */
 window.createAccount = async function(){
-  show(loading);
   const msgs=["Polishing Games...","Refreshing Data...","Creating Account...","Almost Done..."];
   let i=0;
+  show(loading);
   const t=setInterval(()=>{
-    document.getElementById("loader").textContent=msgs[i%msgs.length];
-    i++;
+    loaderText.textContent=msgs[i++%msgs.length];
   },800);
 
   await new Promise(r=>setTimeout(r,6000));
   clearInterval(t);
 
-  const name=document.getElementById("nameInput").value;
+  const name=nameInput.value;
   await supabase.from("users").update({Name:name}).eq("user_id",deviceID);
-
   userRow.Name=name;
   showMain();
 }
@@ -196,21 +216,25 @@ window.createAccount = async function(){
 /* MAIN */
 function showMain(){
   show(main);
-  document.getElementById("welcome").textContent="Welcome, "+userRow.Name;
+  welcome.textContent="Welcome, "+userRow.Name;
+
   setInterval(()=>{
-    document.getElementById("time").textContent=new Date().toLocaleString();
+    time.textContent=new Date().toLocaleString();
   },1000);
+
   loadWeather();
 }
 
+/* WEATHER */
 async function loadWeather(){
-  const res=await fetch("https://codetabs.com/weather/weather.html");
-  const txt=await res.text();
-  document.getElementById("weather").innerHTML="Weather: "+txt;
+  const res = await fetch("https://api.codetabs.com/v1/weather");
+  const w = await res.json();
+  weather.textContent =
+    `${w.city}, ${w.country}: ${w.tempC}°C (${w.tempF}°F)`;
 }
 
 /* ACCOUNT */
-window.openAccount = function(){
+window.openAccount=function(){
   show(account);
   uid.textContent=deviceID;
   device.textContent=info.device;
@@ -220,31 +244,28 @@ window.openAccount = function(){
   editName.value=userRow.Name;
 }
 
-window.saveName = async function(){
+window.saveName=async function(){
   const newName=editName.value;
   await supabase.from("users").update({Name:newName}).eq("user_id",deviceID);
   userRow.Name=newName;
   showMain();
 }
 
-window.backMain = function(){
-  showMain();
-}
+window.backMain=function(){ showMain(); }
 
-/* LAUNCH BUTTON */
-window.launchSite = function(){
-  var win = window.open();
-  win.document.body.style.margin = '0';
-  win.document.body.style.height = '100vh';
-  var iframe = win.document.createElement('iframe');
-  iframe.style.border = 'none';
-  iframe.style.width = '100%';
-  iframe.style.height = '100%';
-  iframe.style.margin = '0';
-  iframe.src = "list.html";
+/* LAUNCH */
+window.launchSite=function(){
+  var win=window.open();
+  win.document.body.style.margin='0';
+  win.document.body.style.height='100vh';
+  var iframe=win.document.createElement('iframe');
+  iframe.style.border='none';
+  iframe.style.width='100%';
+  iframe.style.height='100%';
+  iframe.src="list.html";
   win.document.body.appendChild(iframe);
 }
 </script>
-<script type="module" src="assets/management.js"></script>
+
 </body>
 </html>
