@@ -90,9 +90,9 @@ button {
   <p>Device: <span id="device"></span></p>
   <p>OS: <span id="os"></span></p>
   <p>Browser: <span id="browser"></span></p>
-  <p>IP: <span id="ip"></span></p>
+  <p>IP: <span id="ipSpan"></span></p>
 
-  <input placeholder="" id="editName">
+  <input id="editName">
   <button onclick="saveName()">Save Name</button>
   <button onclick="backMain()">Back</button>
 </div>
@@ -107,12 +107,12 @@ const supabase = createClient(
   "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
 );
 
-const loading = loadingEl("loading");
-const setup = loadingEl("setup");
-const main = loadingEl("main");
-const account = loadingEl("account");
+const loading = el("loading");
+const setup = el("setup");
+const main = el("main");
+const account = el("account");
 
-function loadingEl(id){ return document.getElementById(id); }
+function el(id){ return document.getElementById(id); }
 
 function show(el){
   [loading,setup,main,account].forEach(e=>e.classList.add("hidden"));
@@ -142,14 +142,14 @@ function getInfo(){
 const deviceID = getDeviceID();
 const info = getInfo();
 let userRow = null;
-let ip = "";
+let ipAddr = "";
 
 /* START */
 setTimeout(init, Math.random()*4000+1000);
 
 async function init(){
   const ipRes = await fetch("https://api.ipify.org?format=json");
-  ip = (await ipRes.json()).ip;
+  ipAddr = (await ipRes.json()).ip;
 
   let { data } = await supabase
     .from("users")
@@ -160,7 +160,8 @@ async function init(){
   if(!data){
     await supabase.from("users").insert({
       user_id: deviceID,
-      ip, browser:info.browser,
+      ip: ipAddr,
+      browser:info.browser,
       os:info.os,
       device:info.device,
       page:info.page,
@@ -180,7 +181,8 @@ async function init(){
   }
 
   await supabase.from("users").update({
-    ip, browser:info.browser,
+    ip: ipAddr,
+    browser:info.browser,
     os:info.os,
     device:info.device,
     page:info.page,
@@ -229,7 +231,8 @@ function showMain(){
 async function loadWeather(){
   const res = await fetch("https://api.codetabs.com/v1/weather");
   const w = await res.json();
-  weatherDiv.textContent = `${data.city}, ${data.country}: ${Math.round(data.tempC)}°C (${Math.round(data.tempF)}°F)`;
+  weather.textContent =
+    `${w.city}, ${w.country}: ${Math.round(w.tempC)}°C (${Math.round(w.tempF)}°F)`;
 }
 
 /* ACCOUNT */
@@ -239,8 +242,9 @@ window.openAccount=function(){
   device.textContent=info.device;
   os.textContent=info.os;
   browser.textContent=info.browser;
-  ip.textContent=ip;
+  ipSpan.textContent=ipAddr;
   editName.value=userRow.Name;
+  editName.placeholder=userRow.Name;
 }
 
 window.saveName=async function(){
@@ -264,7 +268,6 @@ window.launchSite=function(){
   iframe.src="list.html";
   win.document.body.appendChild(iframe);
 }
-document.getElementById("editName").placeholder = userData.Name;
 </script>
 
 </body>
