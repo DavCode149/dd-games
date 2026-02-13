@@ -1,161 +1,271 @@
-<!doctype HTML>
+<!DOCTYPE html>
+<html>
 <head>
-    <title>DD Games - beta</title>
-</head>
+<title>DD Games</title>
+
 <style>
-    /* Make the background gradient move in a loop */
-    body {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      background: linear-gradient(270deg, #89f7fe, #66a6ff, #f6d365, #fda085);
-      background-size: 800% 800%;
-      animation: gradientMove 12s ease infinite;
-      font-family: Arial, sans-serif;
-      color: white;
-    }
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(270deg,#6a11cb,#2575fc);
+  background-size:400% 400%;
+  animation:bg 8s ease infinite;
+  color:white;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
 
-    /* Animate the gradient smoothly */
-    @keyframes gradientMove {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
-    }
+@keyframes bg {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
 
-    /* Style the input box */
-    input[type="text"] {
-      width: 300px;
-      padding: 12px 15px;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      font-size: 16px;
-      outline: none;
-      margin-bottom: 15px;
-      transition: box-shadow 0.3s ease;
-    }
+.hidden { display:none; }
 
-    input[type="text"]:focus {
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
+#screen {
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
 
-    /* Style the button */
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 25px;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-      transition: background-color 0.3s, transform 0.1s;
-    }
+input, button {
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+  margin-top:10px;
+}
 
-    button:hover {
-      background-color: #0056b3;
-    }
+button {
+  background:#00d4ff;
+  cursor:pointer;
+  min-width:200px;
+}
 
-    button:active {
-      transform: scale(0.98);
-    }
-  </style>
-<script>
-    function OpenLink() {
-    javascript: var win = window.open();   win.document.body.style.margin = '0';   win.document.body.style.height = '100vh';   var iframe = win.document.createElement('iframe');   iframe.style.border = 'none';   iframe.style.width = '100%';   iframe.style.height = '100%';   iframe.style.margin = '0';   iframe.src = "list.html";   win.document.body.appendChild(iframe);
-    }
-</script>
+#weather { margin-top:10px; }
+#time { font-size:18px; margin-top:5px; }
+
+.panel {
+  background:rgba(0,0,0,.4);
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+</style>
+</head>
+
 <body>
-<h1>Welcome to DD Games!</h1>
-    <p>The Ultimate Gaming Site! Hidden from History, and undetectable.</p>
-    <button onclick="OpenLink()">Open in Cloaked Tab (Hides from History)</button>
-	<!-- Include Ably client -->
-<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
 
-<!-- Active User Tracker (No Display) -->
-<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
-<script>
-  // === 1️⃣ Persistent browser ID ===
-  let browserId = localStorage.getItem('ablyBrowserId');
-  if (!browserId) {
-    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
-    localStorage.setItem('ablyBrowserId', browserId);
+<div id="screen">
+
+<div id="loading" class="panel">
+  <h2 id="loaderText">Loading...</h2>
+</div>
+
+<div id="setup" class="panel hidden">
+  <h2>Account Setup</h2>
+  <input id="nameInput" placeholder="Enter your name">
+  <button onclick="createAccount()">Create Account</button>
+</div>
+
+<div id="main" class="panel hidden">
+  <h1 id="welcome"></h1>
+  <div id="time"></div>
+  <div id="weather"></div>
+  <br>
+  <button onclick="launchSite()">Launch Site</button>
+  <button onclick="openAccount()">Account</button>
+</div>
+
+<div id="account" class="panel hidden">
+  <h2>Account Info</h2>
+  <p>User ID: <span id="uid"></span></p>
+  <p>Device: <span id="device"></span></p>
+  <p>OS: <span id="os"></span></p>
+  <p>Browser: <span id="browser"></span></p>
+  <p>IP: <span id="ip"></span></p>
+
+  <input placeholder="" id="editName">
+  <button onclick="saveName()">Save Name</button>
+  <button onclick="backMain()">Back</button>
+</div>
+
+</div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://lqfcntoldutgkzaboqfk.supabase.co",
+  "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
+);
+
+const loading = loadingEl("loading");
+const setup = loadingEl("setup");
+const main = loadingEl("main");
+const account = loadingEl("account");
+
+function loadingEl(id){ return document.getElementById(id); }
+
+function show(el){
+  [loading,setup,main,account].forEach(e=>e.classList.add("hidden"));
+  el.classList.remove("hidden");
+}
+
+/* DEVICE ID */
+function getDeviceID(){
+  let id = localStorage.getItem("deviceID");
+  if(!id){
+    id = crypto.randomUUID();
+    localStorage.setItem("deviceID", id);
+  }
+  return id;
+}
+
+/* DEVICE INFO */
+function getInfo(){
+  return {
+    browser: navigator.userAgent,
+    os: navigator.platform,
+    device: /Mobi/.test(navigator.userAgent) ? "Mobile" : "Desktop",
+    page: location.pathname
+  };
+}
+
+const deviceID = getDeviceID();
+const info = getInfo();
+let userRow = null;
+let ip = "";
+
+/* START */
+setTimeout(init, Math.random()*4000+1000);
+
+async function init(){
+  const ipRes = await fetch("https://api.ipify.org?format=json");
+  ip = (await ipRes.json()).ip;
+
+  let { data } = await supabase
+    .from("users")
+    .select("*")
+    .eq("user_id", deviceID)
+    .maybeSingle();
+
+  if(!data){
+    await supabase.from("users").insert({
+      user_id: deviceID,
+      ip, browser:info.browser,
+      os:info.os,
+      device:info.device,
+      page:info.page,
+      last_seen:new Date(),
+      visit_count:1,
+      blocked:false
+    });
+    show(setup);
+    return;
   }
 
-  // === 2️⃣ Connect to Ably ===
-  const ably = new Ably.Realtime({
-    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
-    clientId: browserId
-  });
-  const channel = ably.channels.get('site-active-users');
+  userRow = data;
 
-  // === 3️⃣ Shared-tab logic (one connection per browser) ===
-  const isMainTabKey = "ablyMainTabActive";
-  const heartbeatKey = "ablyHeartbeat";
-  const heartbeatInterval = 3000; // ms
-
-  function setMainTab(active) {
-    if (active) {
-      localStorage.setItem(isMainTabKey, "true");
-      localStorage.setItem(heartbeatKey, Date.now());
-    } else {
-      localStorage.removeItem(isMainTabKey);
-      localStorage.removeItem(heartbeatKey);
-    }
+  if(userRow.blocked){
+    document.body.innerHTML="<h1>Access denied</h1>";
+    return;
   }
 
-  function isMainTab() {
-    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
-    return Date.now() - lastBeat < heartbeatInterval * 2;
+  await supabase.from("users").update({
+    ip, browser:info.browser,
+    os:info.os,
+    device:info.device,
+    page:info.page,
+    last_seen:new Date(),
+    visit_count:(userRow.visit_count||0)+1
+  }).eq("user_id",deviceID);
+
+  if(!userRow.Name || userRow.Name.trim()===""){
+    show(setup);
+  } else {
+    showMain();
   }
+}
 
-  // === 4️⃣ Keep heartbeat alive for main tab ===
-  setInterval(() => {
-    if (localStorage.getItem(isMainTabKey) === "true") {
-      localStorage.setItem(heartbeatKey, Date.now());
-    }
-  }, heartbeatInterval);
+/* CREATE ACCOUNT */
+window.createAccount = async function(){
+  const msgs=["Polishing Games...","Refreshing Data...","Creating Account...","Almost Done..."];
+  let i=0;
+  show(loading);
+  const t=setInterval(()=>{
+    loaderText.textContent=msgs[i++%msgs.length];
+  },800);
 
-  // === 5️⃣ Only first tab joins presence ===
-  async function tryEnterPresence() {
-    if (!isMainTab()) {
-      setMainTab(true);
-      try {
-        await channel.attach();
-        channel.presence.enter("online");
-      } catch (err) {
-        console.error("Error entering presence:", err);
-      }
-    }
-  }
+  await new Promise(r=>setTimeout(r,6000));
+  clearInterval(t);
 
-  // === 6️⃣ Detect other tabs closing/opening ===
-  window.addEventListener("storage", async (event) => {
-    if (event.key === heartbeatKey) {
-      if (!isMainTab()) {
-        tryEnterPresence();
-      }
-    }
-  });
+  const name=nameInput.value;
+  await supabase.from("users").update({Name:name}).eq("user_id",deviceID);
+  userRow.Name=name;
+  showMain();
+}
 
-  // === 7️⃣ Leave presence when main tab closes ===
-  window.addEventListener("beforeunload", () => {
-    if (isMainTab()) {
-      channel.presence.leave("online");
-      setMainTab(false);
-    }
-  });
+/* MAIN */
+function showMain(){
+  show(main);
+  welcome.textContent="Welcome, "+userRow.Name;
 
-  // === 8️⃣ Connect ===
-  ably.connection.once("connected", tryEnterPresence);
+  setInterval(()=>{
+    time.textContent=new Date().toLocaleString();
+  },1000);
+
+  loadWeather();
+}
+
+/* WEATHER */
+async function loadWeather(){
+  const res = await fetch("https://api.codetabs.com/v1/weather");
+  const w = await res.json();
+  weatherDiv.textContent = `${data.city}, ${data.country}: ${Math.round(data.tempC)}°C (${Math.round(data.tempF)}°F)`;
+}
+
+/* ACCOUNT */
+window.openAccount=function(){
+  show(account);
+  uid.textContent=deviceID;
+  device.textContent=info.device;
+  os.textContent=info.os;
+  browser.textContent=info.browser;
+  ip.textContent=ip;
+  editName.value=userRow.Name;
+}
+
+window.saveName=async function(){
+  const newName=editName.value;
+  await supabase.from("users").update({Name:newName}).eq("user_id",deviceID);
+  userRow.Name=newName;
+  showMain();
+}
+
+window.backMain=function(){ showMain(); }
+
+/* LAUNCH */
+window.launchSite=function(){
+  var win=window.open();
+  win.document.body.style.margin='0';
+  win.document.body.style.height='100vh';
+  var iframe=win.document.createElement('iframe');
+  iframe.style.border='none';
+  iframe.style.width='100%';
+  iframe.style.height='100%';
+  iframe.src="list.html";
+  win.document.body.appendChild(iframe);
+}
+document.getElementById("editName").placeholder = userData.Name;
 </script>
-<script type="module" src="/dd-games/assets/management.js"></script>
+
 </body>
+</html>
