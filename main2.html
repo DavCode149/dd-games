@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>DD Games Account</title>
+<title>DD Games</title>
 <style>
 body {
   margin:0;
@@ -15,24 +15,20 @@ body {
   align-items:center;
   height:100vh;
 }
-
 @keyframes bg {
   0%{background-position:0% 50%}
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
 }
-
 .hidden{display:none}
-
 .card {
   background:rgba(0,0,0,0.4);
   padding:30px;
   border-radius:14px;
-  width:350px;
+  width:360px;
   text-align:center;
   box-shadow:0 10px 30px rgba(0,0,0,.3);
 }
-
 input,button {
   padding:10px;
   border-radius:8px;
@@ -41,45 +37,32 @@ input,button {
   margin-top:10px;
   font-size:16px;
 }
-
-button {
-  background:#00d4ff;
-  cursor:pointer;
-}
-
-#loader {font-size:20px; animation:pulse 1.5s infinite;}
-@keyframes pulse{50%{opacity:.5}}
-
-.small {font-size:13px;opacity:.8}
+button { background:#00d4ff; cursor:pointer; }
+#loader { font-size:20px; animation:pulse 1.5s infinite; }
+@keyframes pulse { 50%{opacity:.5} }
 </style>
 </head>
 
 <body>
 
-<!-- LOADING -->
 <div id="loading" class="card">
   <div id="loader">Loading...</div>
 </div>
 
-<!-- SETUP -->
 <div id="setup" class="card hidden">
   <h2>Account Setup</h2>
-  <p>Enter your name:</p>
-  <input id="nameInput" placeholder="Your name">
+  <input id="nameInput" placeholder="Enter your name">
   <button onclick="createAccount()">Create Account</button>
 </div>
 
-<!-- MAIN -->
 <div id="main" class="card hidden">
   <h2 id="welcome"></h2>
   <p id="time"></p>
   <p id="weather"></p>
-
   <button onclick="launchSite()">Launch Site</button>
   <button onclick="openAccount()">Account</button>
 </div>
 
-<!-- ACCOUNT -->
 <div id="account" class="card hidden">
   <h2>Account</h2>
   <p>User ID: <span id="uid"></span></p>
@@ -114,22 +97,22 @@ function show(el){
   el.classList.remove("hidden");
 }
 
-/* ==== DEVICE ID ==== */
+/* DEVICE ID */
 function getDeviceID(){
   let id = localStorage.getItem("deviceID");
   if(!id){
     id = crypto.randomUUID();
-    localStorage.setItem("deviceID",id);
+    localStorage.setItem("deviceID", id);
   }
   return id;
 }
 
-/* ==== DEVICE INFO ==== */
+/* DEVICE INFO */
 function getInfo(){
   return {
     browser: navigator.userAgent,
     os: navigator.platform,
-    device: /Mobi/.test(navigator.userAgent)?"Mobile":"Desktop",
+    device: /Mobi/.test(navigator.userAgent) ? "Mobile" : "Desktop",
     page: location.pathname
   };
 }
@@ -139,8 +122,8 @@ const info = getInfo();
 let userRow = null;
 let ip = "";
 
-/* ==== INIT ==== */
-setTimeout(init, Math.random()*4000+1000);
+/* INIT */
+setTimeout(init, Math.random()*4000 + 1000);
 
 async function init(){
   const ipRes = await fetch("https://api.ipify.org?format=json");
@@ -163,7 +146,6 @@ async function init(){
       visit_count: 1,
       blocked:false
     });
-
     show(setup);
     return;
   }
@@ -177,21 +159,22 @@ async function init(){
 
   await supabase.from("users").update({
     ip, browser:info.browser,
-    os:info.os, device:info.device,
+    os:info.os,
+    device:info.device,
     page:info.page,
     last_seen:new Date(),
     visit_count:(userRow.visit_count||0)+1
   }).eq("user_id",deviceID);
 
-  if(!userRow.Name){
+  if(!userRow.Name || userRow.Name.trim()===""){
     show(setup);
   } else {
     showMain();
   }
 }
 
-/* ==== CREATE ACCOUNT ==== */
-async function createAccount(){
+/* CREATE ACCOUNT */
+window.createAccount = async function(){
   show(loading);
   const msgs=["Polishing Games...","Refreshing Data...","Creating Account...","Almost Done..."];
   let i=0;
@@ -210,7 +193,7 @@ async function createAccount(){
   showMain();
 }
 
-/* ==== MAIN ==== */
+/* MAIN */
 function showMain(){
   show(main);
   document.getElementById("welcome").textContent="Welcome, "+userRow.Name;
@@ -226,8 +209,8 @@ async function loadWeather(){
   document.getElementById("weather").innerHTML="Weather: "+txt;
 }
 
-/* ==== ACCOUNT ==== */
-window.openAccount=()=>{
+/* ACCOUNT */
+window.openAccount = function(){
   show(account);
   uid.textContent=deviceID;
   device.textContent=info.device;
@@ -237,19 +220,30 @@ window.openAccount=()=>{
   editName.value=userRow.Name;
 }
 
-window.saveName=async()=>{
+window.saveName = async function(){
   const newName=editName.value;
   await supabase.from("users").update({Name:newName}).eq("user_id",deviceID);
   userRow.Name=newName;
   showMain();
 }
 
-window.backMain=()=>showMain();
-
-function launchSite() {
-     var win = window.open();   win.document.body.style.margin = '0';   win.document.body.style.height = '100vh';   var iframe = win.document.createElement('iframe');   iframe.style.border = 'none';   iframe.style.width = '100%';   iframe.style.height = '100%';   iframe.style.margin = '0';   iframe.src = "list.html";   win.document.body.appendChild(iframe);
+window.backMain = function(){
+  showMain();
 }
 
+/* LAUNCH BUTTON */
+window.launchSite = function(){
+  var win = window.open();
+  win.document.body.style.margin = '0';
+  win.document.body.style.height = '100vh';
+  var iframe = win.document.createElement('iframe');
+  iframe.style.border = 'none';
+  iframe.style.width = '100%';
+  iframe.style.height = '100%';
+  iframe.style.margin = '0';
+  iframe.src = "list.html";
+  win.document.body.appendChild(iframe);
+}
 </script>
 <script type="module" src="assets/management.js"></script>
 </body>
