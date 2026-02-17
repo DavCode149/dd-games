@@ -32,13 +32,17 @@ const ipRes = await fetch("https://api.ipify.org?format=json");
 const ip = (await ipRes.json()).ip;
 
 /* LOOKUP USER */
-const { data: existingUser } = await supabase
+const { data: existingUser, error: lookupError } = await supabase
   .from("users")
-  .select("*")
+  .select('*')
   .eq("user_id", deviceID)
   .maybeSingle();
 
-/* CREATE */
+if (lookupError) {
+  console.error("Lookup error:", lookupError);
+}
+
+/* CREATE USER */
 if (!existingUser) {
   await supabase.from("users").insert({
     user_id: deviceID,
@@ -49,9 +53,9 @@ if (!existingUser) {
     page: info.page,
     last_seen: new Date(),
     visit_count: 1,
-    playtime: 0,
     blocked: false,
-    Name: ""
+    "Name": "",
+    "Playtime": 0
   });
 } else {
   if (existingUser.blocked) {
@@ -72,19 +76,26 @@ if (!existingUser) {
 
 /* PLAYTIME TIMER (every minute) */
 setInterval(async () => {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("users")
-    .select("playtime,blocked")
+    .select('"Playtime", blocked')
     .eq("user_id", deviceID)
-    .single();
+    .maybeSingle();
 
-  if (data?.blocked) {
+  if (error) {
+    console.error("Playtime fetch error:", error);
+    return;
+  }
+
+  if (!data) return;
+
+  if (data.blocked) {
     document.body.innerHTML = "<h1>Access denied.</h1>";
     return;
   }
 
   await supabase.from("users").update({
-    playtime: (data.playtime || 0) + 1,
+    "Playtime": (data["Playtime"] || 0) + 1,
     last_seen: new Date()
   }).eq("user_id", deviceID);
 
