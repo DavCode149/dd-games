@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Playtime Leaderboard</title>
+<style>
+body {
+  font-family:Arial;
+  background:#020617;
+  color:white;
+  text-align:center;
+}
+ol {
+  max-width:400px;
+  margin:auto;
+}
+li {
+  padding:8px;
+  border-bottom:1px solid #334155;
+}
+</style>
+</head>
+<body>
+
+<h1>🏆 Playtime Leaderboard</h1>
+<ol id="lb"></ol>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://lqfcntoldutgkzaboqfk.supabase.co",
+  "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
+);
+
+const lb = document.getElementById("lb");
+
+async function loadLeaderboard(){
+  const { data, error } = await supabase
+    .from("users")
+    .select('"Name","Playtime"')
+    .order("Playtime",{ascending:false})
+    .limit(20);
+
+  if(error){
+    console.error(error);
+    lb.innerHTML="<li>Error loading leaderboard</li>";
+    return;
+  }
+
+  lb.innerHTML="";
+  data.forEach(u=>{
+    const li=document.createElement("li");
+    li.textContent = `${u["Name"] || "(no name)"} — ${u["Playtime"] || 0} min`;
+    lb.appendChild(li);
+  });
+}
+
+loadLeaderboard();
+setInterval(loadLeaderboard,30000);
+</script>
+
+</body>
+</html>
