@@ -119,12 +119,12 @@ function show(el){
   el.classList.remove("hidden");
 }
 
-/* DEVICE ID */
+/* DEVICE ID — MATCHES management.js */
 function getDeviceID(){
-  let id = localStorage.getItem("deviceID");
+  let id = localStorage.getItem("device_id");
   if(!id){
     id = crypto.randomUUID();
-    localStorage.setItem("deviceID", id);
+    localStorage.setItem("device_id", id);
   }
   return id;
 }
@@ -167,7 +167,8 @@ async function init(){
       page:info.page,
       last_seen:new Date(),
       visit_count:1,
-      blocked:false
+      blocked:false,
+      Name:""
     });
     show(setup);
     return;

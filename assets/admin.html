@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<style>
+body {
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+  display:flex;
+  height:100vh;
+}
+#users {
+  width:300px;
+  overflow-y:auto;
+  border-right:2px solid #1e293b;
+}
+.user {
+  padding:10px;
+  border-bottom:1px solid #334155;
+  cursor:pointer;
+}
+.user:hover {
+  background:#1e293b;
+}
+#details {
+  flex:1;
+  padding:20px;
+}
+iframe {
+  width:100%;
+  height:300px;
+  border:none;
+  border-radius:10px;
+}
+button {
+  padding:8px 12px;
+  margin-top:5px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+#leaderboard {
+  position:absolute;
+  right:0;
+  top:0;
+  background:#020617;
+  padding:10px;
+  width:300px;
+  height:100%;
+  overflow:auto;
+}
+</style>
+</head>
+<body>
+
+<div id="users"></div>
+
+<div id="details">
+  <h2>User Info</h2>
+  <div id="info"></div>
+  <iframe id="map"></iframe>
+</div>
+
+<div id="leaderboard">
+  <h2>Playtime Leaderboard</h2>
+  <ol id="lb"></ol>
+</div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://lqfcntoldutgkzaboqfk.supabase.co",
+  "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
+);
+
+const usersDiv = document.getElementById("users");
+const infoDiv = document.getElementById("info");
+const mapFrame = document.getElementById("map");
+const lb = document.getElementById("lb");
+
+async function loadUsers(){
+  const { data } = await supabase.from("users").select("*");
+  usersDiv.innerHTML="";
+  data.forEach(u=>{
+    const div=document.createElement("div");
+    div.className="user";
+    div.textContent = (u.Name||"(no name)") + " — " + u.user_id;
+    div.onclick=()=>showUser(u);
+    usersDiv.appendChild(div);
+  });
+}
+
+function showUser(u){
+  infoDiv.innerHTML = `
+    <p><b>Name:</b> ${u.Name}</p>
+    <p><b>User ID:</b> ${u.user_id}</p>
+    <p><b>IP:</b> ${u.ip}</p>
+    <p><b>Browser:</b> ${u.browser}</p>
+    <p><b>OS:</b> ${u.os}</p>
+    <p><b>Device:</b> ${u.device}</p>
+    <p><b>Page:</b> ${u.page}</p>
+    <p><b>Visits:</b> ${u.visit_count}</p>
+    <p><b>Playtime:</b> ${u.playtime} min</p>
+    <p><b>Last Seen:</b> ${u.last_seen}</p>
+    <p><b>Blocked:</b> ${u.blocked}</p>
+    <button onclick="blockUser('${u.user_id}', ${!u.blocked})">
+      ${u.blocked ? "Unblock" : "Block"}
+    </button>
+  `;
+
+  mapFrame.src = `https://www.openstreetmap.org/export/embed.html?bbox=0,0,0,0&marker=0,0&q=${u.ip}`;
+}
+
+window.blockUser = async (id,val)=>{
+  await supabase.from("users").update({blocked:val}).eq("user_id",id);
+  loadUsers();
+};
+
+async function loadLeaderboard(){
+  const { data } = await supabase
+    .from("users")
+    .select("Name,playtime")
+    .order("playtime",{ascending:false})
+    .limit(10);
+
+  lb.innerHTML="";
+  data.forEach(u=>{
+    const li=document.createElement("li");
+    li.textContent=`${u.Name||"(no name)"} — ${u.playtime} min`;
+    lb.appendChild(li);
+  });
+}
+
+loadUsers();
+loadLeaderboard();
+setInterval(loadUsers,10000);
+setInterval(loadLeaderboard,15000);
+</script>
+
+</body>
+</html>

@@ -1,1 +1,2 @@
+![DD Games Logo](assets/logo.png)
 DD Games is a site dedicated to games and web ports of non-web games. We are heavily expanding and will continue to spread the site. Want to gain access to the site? Contact me via this public form: https://forms.cloud.microsoft/r/5tJyGVcM1M. For any inquires or to contact us, use this form instead: https://forms.cloud.microsoft/r/mSqdwrg6RJ

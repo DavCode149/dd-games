@@ -4,6 +4,7 @@ const supabaseUrl = "https://lqfcntoldutgkzaboqfk.supabase.co";
 const supabaseKey = "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+/* DEVICE ID */
 function getOrCreateDeviceID() {
   let id = localStorage.getItem("device_id");
   if (!id) {
@@ -13,6 +14,7 @@ function getOrCreateDeviceID() {
   return id;
 }
 
+/* DEVICE INFO */
 function getDeviceInfo() {
   return {
     browser: navigator.userAgent,
@@ -25,16 +27,18 @@ function getDeviceInfo() {
 const deviceID = getOrCreateDeviceID();
 const info = getDeviceInfo();
 
+/* IP */
 const ipRes = await fetch("https://api.ipify.org?format=json");
-const ipData = await ipRes.json();
-const ip = ipData.ip;
+const ip = (await ipRes.json()).ip;
 
+/* LOOKUP USER */
 const { data: existingUser } = await supabase
   .from("users")
   .select("*")
   .eq("user_id", deviceID)
   .maybeSingle();
 
+/* CREATE */
 if (!existingUser) {
   await supabase.from("users").insert({
     user_id: deviceID,
@@ -45,9 +49,16 @@ if (!existingUser) {
     page: info.page,
     last_seen: new Date(),
     visit_count: 1,
-    blocked: false
+    playtime: 0,
+    blocked: false,
+    Name: ""
   });
 } else {
+  if (existingUser.blocked) {
+    document.body.innerHTML = "<h1>Access denied.</h1>";
+    throw new Error("Blocked");
+  }
+
   await supabase.from("users").update({
     ip,
     browser: info.browser,
@@ -55,10 +66,26 @@ if (!existingUser) {
     device: info.device,
     page: info.page,
     last_seen: new Date(),
-    visit_count: existingUser.visit_count + 1
+    visit_count: (existingUser.visit_count || 0) + 1
+  }).eq("user_id", deviceID);
+}
+
+/* PLAYTIME TIMER (every minute) */
+setInterval(async () => {
+  const { data } = await supabase
+    .from("users")
+    .select("playtime,blocked")
+    .eq("user_id", deviceID)
+    .single();
+
+  if (data?.blocked) {
+    document.body.innerHTML = "<h1>Access denied.</h1>";
+    return;
+  }
+
+  await supabase.from("users").update({
+    playtime: (data.playtime || 0) + 1,
+    last_seen: new Date()
   }).eq("user_id", deviceID);
 
-  if (existingUser.blocked === true) {
-    document.body.innerHTML = "<h1>Access denied.</h1>";
-  }
-}
+}, 60000);
