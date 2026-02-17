@@ -82,12 +82,18 @@ const mapFrame = document.getElementById("map");
 const lb = document.getElementById("lb");
 
 async function loadUsers(){
-  const { data } = await supabase.from("users").select("*");
+  const { data, error } = await supabase.from("users").select("*");
+
+  if(error){
+    console.error("User load error:", error);
+    return;
+  }
+
   usersDiv.innerHTML="";
   data.forEach(u=>{
     const div=document.createElement("div");
     div.className="user";
-    div.textContent = (u.Name||"(no name)") + " — " + u.user_id;
+    div.textContent = (u.name || "(no name)") + " — " + u.user_id;
     div.onclick=()=>showUser(u);
     usersDiv.appendChild(div);
   });
@@ -95,7 +101,7 @@ async function loadUsers(){
 
 function showUser(u){
   infoDiv.innerHTML = `
-    <p><b>Name:</b> ${u.Name}</p>
+    <p><b>Name:</b> ${u.name || "(no name)"}</p>
     <p><b>User ID:</b> ${u.user_id}</p>
     <p><b>IP:</b> ${u.ip}</p>
     <p><b>Browser:</b> ${u.browser}</p>
@@ -103,7 +109,7 @@ function showUser(u){
     <p><b>Device:</b> ${u.device}</p>
     <p><b>Page:</b> ${u.page}</p>
     <p><b>Visits:</b> ${u.visit_count}</p>
-    <p><b>Playtime:</b> ${u.playtime} min</p>
+    <p><b>Playtime:</b> ${u.playtime || 0} min</p>
     <p><b>Last Seen:</b> ${u.last_seen}</p>
     <p><b>Blocked:</b> ${u.blocked}</p>
     <button onclick="blockUser('${u.user_id}', ${!u.blocked})">
@@ -111,7 +117,7 @@ function showUser(u){
     </button>
   `;
 
-  mapFrame.src = `https://www.openstreetmap.org/export/embed.html?bbox=0,0,0,0&marker=0,0&q=${u.ip}`;
+  mapFrame.src = `https://www.openstreetmap.org/export/embed.html?search=${u.ip}`;
 }
 
 window.blockUser = async (id,val)=>{
@@ -120,16 +126,27 @@ window.blockUser = async (id,val)=>{
 };
 
 async function loadLeaderboard(){
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("users")
-    .select("Name,playtime")
+    .select("name, playtime")
     .order("playtime",{ascending:false})
     .limit(10);
+
+  if(error){
+    console.error("Leaderboard error:", error);
+    lb.innerHTML="<li>Error loading leaderboard</li>";
+    return;
+  }
+
+  if(!data || data.length===0){
+    lb.innerHTML="<li>No data</li>";
+    return;
+  }
 
   lb.innerHTML="";
   data.forEach(u=>{
     const li=document.createElement("li");
-    li.textContent=`${u.Name||"(no name)"} — ${u.playtime} min`;
+    li.textContent=`${u.name || "(no name)"} — ${u.playtime || 0} min`;
     lb.appendChild(li);
   });
 }
