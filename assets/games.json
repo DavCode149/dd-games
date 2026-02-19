@@ -213,5 +213,10 @@
     "name": "pokerogue",
     "image": "/dd-games/assets/images/pokerogue",
     "link": "/dd-games/games/pokerogue/pokerogue-1.11.10/pokerogue-1.11.10/index.html"
+  },
+  {
+      "name": "slime rancher",
+    "image": "/dd-games/assets/images/slime.png",
+    "link": "/dd-games/games/0-slimerancher.html"
   }
 ]
