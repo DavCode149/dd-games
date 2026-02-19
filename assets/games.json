@@ -208,5 +208,10 @@
     "name": "The impossible quiz",
     "image": "/dd-games/assets/images/theimpossiblequiz.png",
     "link": "/dd-games/games/0-theimpossiblequiz.html"
+  },
+  {
+    "name": "pokerogue",
+    "image": "/dd-games/assets/images/pokerogue",
+    "link": "dd-games/games/pokerogue/pokerogue-1.11.10/pokerogue-1.11.10/index.html"
   }
 ]
