@@ -57,10 +57,18 @@ if (!existingUser) {
     "Name": "",
     "Playtime": 0
   });
+
 } else {
   if (existingUser.blocked) {
     document.body.innerHTML = "<h1>Access denied.</h1>";
     throw new Error("Blocked");
+  }
+
+  // Redirect if no name
+  if (!existingUser.Name || existingUser.Name.trim() === "") {
+    if (!location.pathname.endsWith("main.html")) {
+      window.location.href = "/dd-games/main.html";
+    }
   }
 
   await supabase.from("users").update({
