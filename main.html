@@ -258,9 +258,18 @@ window.saveName=async function(){
 window.backMain=function(){ showMain(); }
 
 /* LAUNCH */
-window.launchSite=function(){
-  window.location.href="/dd-games/list.html"
-}
+window.launchSite=function loadListPage() {
+  fetch("/dd-games/list.html")
+    .then(res => res.text())
+    .then(html => {
+      document.open();
+      document.write(html);
+      document.close();
+    })
+    .catch(() => {
+      alert("Failed to load list.html");
+    });
+} 
 </script>
 
 </body>
