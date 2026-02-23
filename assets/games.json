@@ -218,5 +218,10 @@
       "name": "slime rancher",
     "image": "/dd-games/assets/images/slime.png",
     "link": "/dd-games/games/0-slimerancher.html"
+  },
+  {
+      "name": "Angry Birds",
+    "image": "/dd-games/assets/images/angry-birds.png",
+    "link": "/dd-games/games/0-angry-birds.html"
   }
 ]
