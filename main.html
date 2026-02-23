@@ -2,7 +2,9 @@
 <html>
 <head>
 <title>DD Games</title>
-
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <style>
 body {
   margin:0;
@@ -260,7 +262,10 @@ window.backMain=function(){ showMain(); }
 /* LAUNCH */
 window.launchSite=function(){
   if(!userRow.Access){
-    document.body.innerHTML="<h1>No Access!</h1><p>This feature is incomplete, if you are seeing this, please report it to the Dev.</p><button onclick='https://google.com'";
+    document.body.innerHTML=`<h1>No Access!</h1>
+    <p>This feature is incomplete, if you are seeing this, please report it to the Dev.</p>
+    <button onclick='https://google.com'>Access Form</button>
+    `;
     return;
   } else {
   document.body.style.margin = "0";
