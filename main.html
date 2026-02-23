@@ -258,18 +258,17 @@ window.saveName=async function(){
 window.backMain=function(){ showMain(); }
 
 /* LAUNCH */
-window.launchSite=function loadListPage() {
-  fetch("/dd-games/list.html")
-    .then(res => res.text())
-    .then(html => {
-      document.open();
-      document.write(html);
-      document.close();
-    })
-    .catch(() => {
-      alert("Failed to load list.html");
-    });
-} 
+window.launchSite=function(){
+  document.body.style.margin = "0";
+  document.body.style.height = "100vh";
+
+  document.body.innerHTML = `
+    <iframe 
+      src="/dd-games/list.html"
+      style="border:none; width:100vw; height:100vh;"
+    ></iframe>
+  `;
+}
 </script>
 
 </body>
