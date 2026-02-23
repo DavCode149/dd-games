@@ -259,6 +259,10 @@ window.backMain=function(){ showMain(); }
 
 /* LAUNCH */
 window.launchSite=function(){
+  if(!userRow.Access){
+    document.body.innerHTML="<h1>No Access!</h1><p>This feature is incomplete, if you are seeing this, please report it to the Dev.</p><button onclick='https://google.com'";
+    return;
+  } else {
   document.body.style.margin = "0";
   document.body.style.height = "100vh";
 
@@ -268,6 +272,7 @@ window.launchSite=function(){
       style="border:none; width:100vw; height:100vh;"
     ></iframe>
   `;
+  }
 }
 </script>
 
