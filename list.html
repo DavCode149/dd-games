@@ -194,7 +194,7 @@ function showErrorPopup(code) {
 
 async function loadGames() {
   try {
-    const res = await fetch("assets/games.json?v=" + Date.now(), {
+    const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
       cache: "no-store"
     });
 
