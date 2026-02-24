@@ -223,5 +223,10 @@
       "name": "Angry Birds",
     "image": "/dd-games/assets/images/angry-birds.png",
     "link": "/dd-games/games/0-angry-birds.html"
+  },
+  {
+    "name": "stealing the diamond",
+    "image": "/dd-games/assets/images/stealingthediamond.png",
+    "link": "/dd-games/games/0-stealingthediamond.html"
   }
 ]
