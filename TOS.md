@@ -9,23 +9,23 @@ To use this site, you must agree to these **Terms of Service.** If you do not ag
 You agree to use this site in a lawful and respectful way.
 You may not:
 
-Attempt to hack, exploit, or overload the site or its servers
+- Attempt to hack, exploit, or overload the site or its servers
 
-Bypass security or access restricted areas
+- Bypass security or access restricted areas
 
-Use bots, scripts, or automated tools without permission
+- Use bots, scripts, or automated tools without permission
 
-Abuse or misuse site features (including games, counters, or systems)
+- Abuse or misuse site features (including games, counters, or systems)
 
 ## 2. Blocking & Enforcement
 
 We reserve the right to:
 
-Block or restrict access to any user, device, or IP address
+- Block or restrict access to any user, device, or IP address
 
-Remove content or features from any user
+- Remove content or features from any user
 
-Take action if we believe the site is being misused or abused
+- Take action if we believe the site is being misused or abused
 
 This may be done with or without warning.
 
@@ -33,29 +33,29 @@ This may be done with or without warning.
 
 We may collect limited technical information such as:
 
-IP address
+- IP address
 
-Browser type
+- Browser type
 
-Device type
+- Device type
 
-Operating system
+- Operating system
 
-Page activity
+- Page activity
 
-Approximate location (city/region)
+- Approximate location (city/region)
 
 This information may be used for:
 
-Analytics
+- Analytics
 
-Performance monitoring
+- Performance monitoring
 
-Abuse prevention
+- Abuse prevention
 
-Security
+- Security
 
-Improving the site
+- Improving the site
 
 We do not sell personal data.
 
@@ -63,21 +63,21 @@ We do not sell personal data.
 
 This site may use:
 
-Cookies
+- Cookies
 
-Local storage
+- Local storage
 
-Session storage
+- Session storage
 
 These may be used to:
 
-Save preferences
+- Save preferences
 
-Track usage
+- Track usage
 
-Enable site features
+- Enable site features
 
-Prevent abuse
+- Prevent abuse
 
 You can disable cookies in your browser, but some features may not work properly.
 
@@ -85,11 +85,11 @@ You can disable cookies in your browser, but some features may not work properly
 
 This site may use third-party services such as:
 
-Hosting providers
+- Hosting providers
 
-Analytics tools
+- Analytics tools
 
-Real-time services (e.g. counters, servers, or APIs)
+- Real-time services (e.g. counters, servers, or APIs)
 
 These services may collect data under their own policies.
 
@@ -100,13 +100,13 @@ We are not responsible for third-party service outages or changes.
 Online features (such as multiplayer or counters) are provided as-is.
 We do not guarantee:
 
-Uptime
+-Uptime
 
-Accuracy
+- Accuracy
 
-Availability
+- Availability
 
-Performance
+- Performance
 
 We may change or remove features at any time.
 
@@ -116,13 +116,13 @@ All original site content (code, layout, design, text, games) belongs to the sit
 
 You may not:
 
-Copy
+- Copy
 
-Rehost
+- Rehost
 
-Redistribute
+- Redistribute
 
-Sell
+- Sell
 
 any part of the site without permission.
 
@@ -132,13 +132,13 @@ This site is provided “as is” without warranties.
 
 We are not responsible for:
 
-Data loss
+- Data loss
 
-Service interruptions
+- Service interruptions
 
-Bugs or errors
+- Bugs or errors
 
-Damage caused by use of the site
+- Damage caused by use of the site
 
 You use this site at your own risk.
 
@@ -150,4 +150,4 @@ Continued use of the site after changes means you accept the updated terms.
 
 ## 10. Contact
 
-If you have questions about these Terms, you may contact the site owner through the site’s contact method (if available).
+If you have questions about these Terms, you may contact the site owner through the site’s contact method (Found on GitHub).
