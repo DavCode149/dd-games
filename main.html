@@ -68,6 +68,7 @@ button {
 <div id="screen">
 
 <div id="loading" class="panel">
+  <img src="/dd-games/assets/logo-transparent.png" width="500" height="500">
   <h2 id="loaderText">Loading...</h2>
 </div>
 
@@ -78,6 +79,7 @@ button {
 </div>
 
 <div id="main" class="panel hidden">
+  <img src="/dd-games/assets/logo-transparent.png" width="500" height="500">
   <h1 id="welcome"></h1>
   <div id="time"></div>
   <div id="weather"></div>
@@ -188,7 +190,7 @@ async function init(){
   userRow = data;
 
   if(userRow.blocked){
-    document.body.innerHTML="<h1>Access denied</h1>";
+    document.body.innerHTML="<h1>You have been Blocked for breaking DD Games' TOS.";
     return;
   }
 

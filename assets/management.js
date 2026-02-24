@@ -98,7 +98,7 @@ setInterval(async () => {
   if (!data) return;
 
   if (data.blocked) {
-    document.body.innerHTML = "<h1>Access denied.</h1>";
+    document.body.innerHTML = "<h1>You have been Blocked for breaking DD Games' TOS.</h1>";
     return;
   }
 
