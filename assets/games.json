@@ -228,5 +228,10 @@
     "name": "stealing the diamond",
     "image": "/dd-games/assets/images/stealingthediamond.png",
     "link": "/dd-games/games/0-stealingthediamond.html"
+  },
+  {
+	"name": "breaking the bank",
+    "image": "/dd-games/assets/images/breakingthebank.png",
+    "link": "/dd-games/games/0-breakingthebank.html"
   }
 ]
