@@ -99,6 +99,14 @@ button {
   <button onclick="backMain()">Back</button>
 </div>
 
+<div id="noAccess" class="panel hidden">
+  <h1>Access Pending</h1>
+  <div>You currently do not have Access to the site. Please request Access via this form. Any info needed can be found on the Account page.</div>
+  <br>
+  <button onclick="launchSite()">Request Access</button>
+  <button onclick="backMain()">Go Back</button>
+</div>
+
 </div>
 
 <script type="module">
@@ -113,11 +121,12 @@ const loading = el("loading");
 const setup = el("setup");
 const main = el("main");
 const account = el("account");
+const noAccess = el("noAccess");
 
 function el(id){ return document.getElementById(id); }
 
 function show(el){
-  [loading,setup,main,account].forEach(e=>e.classList.add("hidden"));
+  [loading,setup,main,account,noAccess].forEach(e=>e.classList.add("hidden"));
   el.classList.remove("hidden");
 }
 
@@ -262,10 +271,7 @@ window.backMain=function(){ showMain(); }
 /* LAUNCH */
 window.launchSite=function(){
   if(!userRow.Access){
-    document.body.innerHTML=`<h1>No Access!</h1>
-    <p>This feature is incomplete, if you are seeing this, please report it to the Dev.</p>
-    <button onclick='https://google.com'>Access Form</button>
-    `;
+    show(noAccess)
     return;
   } else {
   document.body.style.margin = "0";
@@ -278,6 +284,9 @@ window.launchSite=function(){
     ></iframe>
   `;
   }
+}
+window.RequestForm=function(){
+  window.open(URL="https://google.com")
 }
 </script>
 
