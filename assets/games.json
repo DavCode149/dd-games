@@ -233,5 +233,10 @@
 	"name": "breaking the bank",
     "image": "/dd-games/assets/images/breakingthebank.png",
     "link": "/dd-games/games/0-breakingthebank.html"
+  },
+  {
+	  "name": "awesome tanks",
+    "image": "/dd-games/assets/images/awesometanks.png",
+    "link": "/dd-games/games/0-awesometanks.html"
   }
 ]
