@@ -189,10 +189,6 @@ async function init(){
 
   userRow = data;
 
-  if(userRow.blocked){
-    el(launchbutton).textContent = "BANNED";
-  }
-
   await supabase.from("users").update({
     ip: ipAddr,
     browser:info.browser,
