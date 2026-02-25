@@ -238,5 +238,10 @@
 	  "name": "awesome tanks",
     "image": "/dd-games/assets/images/awesometanks.png",
     "link": "/dd-games/games/0-awesometanks.html"
+  },
+  {
+	  "name": "Five Nights at Epstein's",
+    "image": "/dd-games/assets/images/fhefuferg.png",
+    "link": "/dd-games/games/0-five-nights-at-epstein.html"
   }
 ]
