@@ -84,7 +84,7 @@ button {
   <div id="time"></div>
   <div id="weather"></div>
   <br>
-  <button onclick="launchSite()">Launch Site</button>
+  <button id="launchbutton" onclick="launchSite()">Launch Site</button>
   <button onclick="openAccount()">Account</button>
 </div>
 
@@ -190,8 +190,8 @@ async function init(){
   userRow = data;
 
   if(userRow.blocked){
-    document.body.innerHTML="<h1>You have been Blocked for breaking DD Games' TOS. Please contact the Developer to submit an appeal.";
-    return;
+    el(launchbutton).disabled = true;
+    el(launchbutton).textContent = "BANNED";
   }
 
   await supabase.from("users").update({
