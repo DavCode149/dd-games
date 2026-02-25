@@ -129,6 +129,17 @@ async function loadMessages(){
   renderMessages(data);
 }
 
+supabase
+  .channel("realtime-messages")
+  .on(
+    "postgres_changes",
+    { event: "*", schema: "public", table: "messages" },
+    payload => {
+      loadMessages(); // reload when anything changes
+    }
+  )
+  .subscribe();
+
 function renderMessages(data){
   const box = document.getElementById("messages");
   box.innerHTML="";
