@@ -189,6 +189,10 @@ async function init(){
 
   userRow = data;
 
+  if(userRow.blocked){
+    alert("You are banned! You can check your account info but you won't be able to play any games!")
+  };
+
   await supabase.from("users").update({
     ip: ipAddr,
     browser:info.browser,
