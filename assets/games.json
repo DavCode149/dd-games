@@ -243,5 +243,15 @@
 	  "name": "Five Nights at Epstein's",
     "image": "/dd-games/assets/images/fhefuferg.png",
     "link": "/dd-games/games/0-five-nights-at-epstein.html"
+  },
+  {
+	"name": "3D flight sim",
+    "image": "/dd-games/assets/images/3dflight.png",
+    "link": "/dd-games/games/0-3Dflightsimulator.html"
+  },
+  {
+	"name": "fruit ninja",
+    "image": "/dd-games/assets/images/fruit.png",
+    "link": "/dd-games/games/0-fruitninja.html"
   }
 ]
