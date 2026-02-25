@@ -190,7 +190,6 @@ async function init(){
   userRow = data;
 
   if(userRow.blocked){
-    el(launchbutton).disabled = true;
     el(launchbutton).textContent = "BANNED";
   }
 
@@ -275,6 +274,8 @@ window.launchSite=function(){
   if(!userRow.Access){
     show(noAccess)
     return;
+  } else if(userRow.blocked) {
+    alert("Wuh oh! You've been banned from DD Games for breaking the TOS.")
   } else {
   document.body.style.margin = "0";
   document.body.style.height = "100vh";
