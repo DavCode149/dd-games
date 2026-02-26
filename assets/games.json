@@ -216,7 +216,7 @@
   },
   {
       "name": "slime rancher",
-    "image": "/dd-games/assets/images/slime.jng",
+    "image": "/dd-games/assets/images/slime.jpg",
     "link": "/dd-games/games/0-slime.html"
   },
   {
@@ -246,7 +246,12 @@
   },
   {
 	"name": "fruit ninja",
-    "image": "/dd-games/assets/images/fruit.png",
+    "image": "/dd-games/assets/images/fruit.jpg",
     "link": "/dd-games/games/0-fruitninja.html"
-  }
+  },
+  {
+   "name": "bad piggies",
+    "image": "/dd-games/assets/images/badpigies.jpg",
+    "link": "/dd-games/games/0-badpiggies.html"
+  } 
 ]
