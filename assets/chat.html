@@ -53,18 +53,36 @@ if(!me.premium){document.body.innerHTML="Premium only";throw"";}
 const input=document.getElementById("input");
 if(me.muted){input.disabled=true;input.placeholder="Muted";}
 
-/* PUBLIC CONVO */
-let publicConvo;
-const { data:pub }=await supabase.from("conversations")
-.select("*").eq("is_public",true).maybeSingle();
+let publicConvo = null;
 
-if(!pub){
-  const { data:newPub }=await supabase.from("conversations")
-  .insert({is_public:true}).select().single();
-  publicConvo=newPub;
-}else publicConvo=pub;
+const { data:pub, error:pubErr } = await supabase
+  .from("conversations")
+  .select("*")
+  .eq("is_public", true)
+  .maybeSingle();
 
-let currentID=publicConvo.id;
+if (pubErr) {
+  console.error("Public convo lookup failed", pubErr);
+}
+
+if (pub) {
+  publicConvo = pub;
+} else {
+  const { data:newPub, error:newErr } = await supabase
+    .from("conversations")
+    .insert({ is_public: true })
+    .select()
+    .maybeSingle();
+
+  if (newErr || !newPub) {
+    document.body.innerHTML = "<h1>Chat unavailable</h1>";
+    throw new Error("Failed to create public conversation");
+  }
+
+  publicConvo = newPub;
+}
+
+let currentID = publicConvo.id;
 
 /* PREMIUM USERS */
 const { data:users }=await supabase.from("users")
