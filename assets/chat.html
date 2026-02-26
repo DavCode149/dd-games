@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>DD Chat - Test</title>
+<title>DD Games - Chat Test</title>
 <style>
 body {
   margin:0;
@@ -18,43 +18,26 @@ body {
   padding:10px;
 }
 .msg {
-  background:#1e293b;
   margin-bottom:8px;
-  padding:8px;
+  padding:6px 10px;
+  background:#1e293b;
   border-radius:8px;
 }
-.name {
-  font-weight:bold;
+.admin {
   color:#38bdf8;
 }
-.time {
-  font-size:12px;
-  color:#94a3b8;
-}
-.deleteBtn, .muteBtn {
-  color:red;
-  cursor:pointer;
-  font-size:12px;
-  margin-left:6px;
-}
-.hashtag {
-  color:#22c55e;
-}
-#input {
+#inputBar {
   display:flex;
-  padding:10px;
-  background:#020617;
+  border-top:2px solid #1e293b;
 }
 input {
   flex:1;
-  padding:10px;
-  border-radius:8px;
+  padding:12px;
   border:none;
+  outline:none;
 }
 button {
-  margin-left:8px;
-  padding:10px;
-  border-radius:8px;
+  padding:12px;
   border:none;
   cursor:pointer;
 }
@@ -64,8 +47,8 @@ button {
 
 <div id="messages"></div>
 
-<div id="input">
-  <input id="msgInput" placeholder="Type a message...">
+<div id="inputBar">
+  <input id="msgInput" placeholder="Type a message..." />
   <button onclick="sendMessage()">Send</button>
 </div>
 
@@ -78,11 +61,9 @@ const supabase = createClient(
 );
 
 /* CONFIG */
-const MOD_USERS = [
-  "PUT-YOUR-DEVICE-ID-HERE"
-];
-
-const HASHTAG_WORDS = ["game","update","bug","help","news"];
+const bannedWords = ["nigger","nigga","fuck"];
+const adminIDs = ["aa6e4111-dacb-48a1-bc10-7a71d20d79c3","58c564aa-70b0-4680-bf43-9252189ef42a"];
+const mutedUsers = [];
 
 /* DEVICE ID */
 function getDeviceID(){
@@ -93,139 +74,99 @@ function getDeviceID(){
   }
   return id;
 }
-
 const deviceID = getDeviceID();
 
-/* GET USER */
-const { data: userRow } = await supabase
+/* ELEMENTS */
+const messagesDiv = document.getElementById("messages");
+const input = document.getElementById("msgInput");
+
+/* CENSOR */
+function censorMessage(text){
+  let result = text;
+  bannedWords.forEach(word=>{
+    const r = new RegExp(word,"gi");
+    result = result.replace(r,"#".repeat(word.length));
+  });
+  return result;
+}
+
+/* LOAD USER */
+const { data: me } = await supabase
   .from("users")
-  .select('"Name", muted')
-  .eq("user_id", deviceID)
+  .select("Name,blocked")
+  .eq("user_id",deviceID)
   .maybeSingle();
 
-const userName = userRow?.Name || "Guest";
-let isMuted = userRow?.muted || false;
+if(!me || me.blocked){
+  document.body.innerHTML="<h1>You have been banned from DD Games for breaking the TOS.</h1>";
+  throw new Error("Blocked");
+}
 
-/* FORMAT MESSAGE */
-function applyHashtags(text){
-  HASHTAG_WORDS.forEach(word=>{
-    const regex = new RegExp(`\\b${word}\\b`,"gi");
-    text = text.replace(regex, `#${word}`);
+/* SEND */
+window.sendMessage = async function(){
+  if(mutedUsers.includes(deviceID)) return alert("You are muted.");
+
+  const text = input.value.trim();
+  if(!text) return;
+
+  const clean = censorMessage(text);
+
+  await supabase.from("messages").insert({
+    user_id: deviceID,
+    content: clean
   });
-  return text;
+
+  input.value="";
+};
+
+/* RENDER */
+function renderMessage(m){
+  const div=document.createElement("div");
+  div.className="msg";
+
+  const isAdmin = adminIDs.includes(m.user_id);
+
+  div.innerHTML = `
+    <b class="${isAdmin?'admin':''}">${m.user_id}</b>: ${m.content}
+    ${adminIDs.includes(deviceID) ? `<button onclick="deleteMsg('${m.id}')">🗑</button>`:""}
+  `;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-function formatText(text){
-  return text.replace(/#(\w+)/g,'<span class="hashtag">#$1</span>');
-}
+/* DELETE */
+window.deleteMsg = async function(id){
+  await supabase.from("messages").delete().eq("id",id);
+};
 
-/* LOAD MESSAGES */
+/* LOAD INITIAL */
 async function loadMessages(){
   const { data } = await supabase
     .from("messages")
     .select("*")
     .order("created_at",{ascending:true});
 
-  renderMessages(data);
+  messagesDiv.innerHTML="";
+  data.forEach(renderMessage);
 }
-
-supabase
-  .channel("realtime-messages")
-  .on(
-    "postgres_changes",
-    { event: "*", schema: "public", table: "messages" },
-    payload => {
-      loadMessages(); // reload when anything changes
-    }
-  )
-  .subscribe();
-
-function renderMessages(data){
-  const box = document.getElementById("messages");
-  box.innerHTML="";
-
-  data.forEach(m=>{
-    const div=document.createElement("div");
-    div.className="msg";
-
-    let controls = "";
-    if(MOD_USERS.includes(deviceID)){
-      controls = `
-        <span class="deleteBtn" onclick="deleteMsg('${m.id}')">[delete]</span>
-        <span class="muteBtn" onclick="muteUser('${m.user_id}')">[mute]</span>
-      `;
-    }
-
-    div.innerHTML = `
-      <div class="name">${m.name} ${controls}</div>
-      <div>${formatText(m.message)}</div>
-      <div class="time">${new Date(m.created_at).toLocaleTimeString()}</div>
-    `;
-    box.appendChild(div);
-  });
-
-  box.scrollTop = box.scrollHeight;
-}
-
-/* REALTIME */
-supabase.channel("chat-room")
-  .on(
-    "postgres_changes",
-    { event: "*", schema: "public", table: "messages" },
-    payload => {
-      loadMessages();
-    }
-  )
-  .subscribe();
-
-/* SEND MESSAGE */
-window.sendMessage = async function(){
-  if(isMuted){
-    alert("You are muted.");
-    return;
-  }
-
-  const input=document.getElementById("msgInput");
-  let msg=input.value.trim();
-  if(!msg) return;
-
-  msg = applyHashtags(msg);
-
-  await supabase.from("messages").insert({
-    user_id: deviceID,
-    name: userName,
-    message: msg
-  });
-
-  input.value="";
-};
-
-/* DELETE MESSAGE */
-window.deleteMsg = async function(id){
-  await supabase.from("messages").delete().eq("id",id);
-};
-
-/* MUTE USER */
-window.muteUser = async function(uid){
-  await supabase.from("users").update({ muted:true }).eq("user_id",uid);
-  alert("User muted");
-};
-
-/* INITIAL LOAD */
 loadMessages();
 
-/* CHECK MUTE STATUS LIVE */
-setInterval(async ()=>{
-  const { data } = await supabase
-    .from("users")
-    .select("muted")
-    .eq("user_id",deviceID)
-    .maybeSingle();
+/* REALTIME */
+supabase.channel("chat")
+  .on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},payload=>{
+    renderMessage(payload.new);
+  })
+  .on("postgres_changes",{event:"DELETE",schema:"public",table:"messages"},()=>{
+    loadMessages();
+  })
+  .subscribe();
 
-  isMuted = data?.muted || false;
-},5000);
+/* AUTO DELETE AFTER 6 HOURS */
+setInterval(async ()=>{
+  const sixHoursAgo = new Date(Date.now()-21600000).toISOString();
+  await supabase.from("messages").delete().lt("created_at", sixHoursAgo);
+}, 60000);
 
 </script>
-
 </body>
 </html>
