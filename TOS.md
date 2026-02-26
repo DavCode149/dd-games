@@ -57,7 +57,7 @@ This information may be used for:
 
 - Improving the site
 
-We do not sell personal data.
+We do NOT sell your personal data.
 
 ## 4. Cookies & Local Storage
 

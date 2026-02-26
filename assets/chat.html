@@ -3,269 +3,219 @@
 <head>
 <title>Chat</title>
 <style>
-body {
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-}
-#topBar {
-  display:flex;
-  gap:10px;
-  padding:10px;
-  background:#020617;
-}
-select, input, button {
-  padding:8px;
-  border:none;
-  border-radius:6px;
-}
-#messages {
-  flex:1;
-  overflow-y:auto;
-  padding:10px;
-}
-.msg {
-  margin-bottom:6px;
-  padding:6px 10px;
-  background:#1e293b;
-  border-radius:8px;
-}
-.name {
-  color:#38bdf8;
-  font-weight:bold;
-}
-#inputBar {
-  display:flex;
-  border-top:2px solid #1e293b;
-}
-#msgInput {
-  flex:1;
-}
+body{margin:0;font-family:Arial;background:#0f172a;color:white;display:flex;flex-direction:column;height:100vh}
+#top{display:flex;gap:10px;padding:10px;background:#020617}
+#messages{flex:1;overflow-y:auto;padding:10px}
+.msg{background:#1e293b;padding:6px 10px;border-radius:8px;margin-bottom:5px}
+.name{color:#38bdf8;font-weight:bold}
+#typing{font-size:12px;color:#94a3b8;margin-left:10px}
+#inputBar{display:flex;border-top:2px solid #1e293b}
+input,select,button{padding:8px;border-radius:6px;border:none}
+img,video{max-width:300px;border-radius:8px}
+.hidden{display:none}
 </style>
 </head>
 <body>
 
-<div id="topBar">
-  <select id="conversationSelect"></select>
+<div id="top">
+  <button onclick="openCreate()">➕ Create Conversation</button>
+  <select id="userDropdown" class="hidden"></select>
+  <span id="typing"></span>
 </div>
 
 <div id="messages"></div>
 
 <div id="inputBar">
-  <input id="msgInput" placeholder="Type message..." />
-  <button onclick="sendMessage()">Send</button>
+  <input id="input" placeholder="Message..." />
+  <button onclick="sendMsg()">Send</button>
 </div>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-const supabase = createClient(
+const supabase=createClient(
   "https://lqfcntoldutgkzaboqfk.supabase.co",
   "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
 );
 
-/* CONFIG */
-const bannedWords=["badword1","badword2"];
+/* DEVICE */
+let myID=localStorage.getItem("device_id");
+if(!myID){myID=crypto.randomUUID();localStorage.setItem("device_id",myID);}
 
-/* DEVICE ID */
-function getID(){
-  let id=localStorage.getItem("device_id");
-  if(!id){
-    id=crypto.randomUUID();
-    localStorage.setItem("device_id",id);
-  }
-  return id;
+/* ME */
+const { data:me }=await supabase.from("users")
+.select('"Name",premium,muted,blocked')
+.eq("user_id",myID)
+.maybeSingle();
+
+if(!me||me.blocked){document.body.innerHTML="Blocked";throw"";}
+if(!me.premium){document.body.innerHTML="Premium only";throw"";}
+
+const input=document.getElementById("input");
+if(me.muted){input.disabled=true;input.placeholder="Muted";}
+
+/* PUBLIC CONVO */
+let publicConvo;
+const { data:pub }=await supabase.from("conversations")
+.select("*").eq("is_public",true).maybeSingle();
+
+if(!pub){
+  const { data:newPub }=await supabase.from("conversations")
+  .insert({is_public:true}).select().single();
+  publicConvo=newPub;
+}else publicConvo=pub;
+
+let currentID=publicConvo.id;
+
+/* PREMIUM USERS */
+const { data:users }=await supabase.from("users")
+.select('user_id,"Name",premium')
+.eq("premium",true);
+
+const dropdown=document.getElementById("userDropdown");
+
+function buildDropdown(){
+  dropdown.innerHTML="";
+  users.forEach(u=>{
+    if(u.user_id===myID) return;
+    const opt=document.createElement("option");
+    opt.value=u.user_id;
+    opt.textContent=u.Name||u.user_id;
+    dropdown.appendChild(opt);
+  });
 }
-const deviceID=getID();
+buildDropdown();
 
-/* ELEMENTS */
-const convoSelect=document.getElementById("conversationSelect");
-const messagesDiv=document.getElementById("messages");
-const input=document.getElementById("msgInput");
+/* CREATE BUTTON */
+window.openCreate=()=>{
+  dropdown.classList.toggle("hidden");
+};
+
+/* GET OR CREATE DM */
+async function getDM(other){
+  const { data:mine }=await supabase.from("conversation_members")
+  .select("conversation_id").eq("user_id",myID);
+
+  for(const c of mine){
+    const { data:m }=await supabase.from("conversation_members")
+    .select("user_id").eq("conversation_id",c.conversation_id);
+    if(m.length===2 && m.some(x=>x.user_id===other))
+      return c.conversation_id;
+  }
+
+  const { data:newC }=await supabase.from("conversations")
+  .insert({is_public:false}).select().single();
+
+  await supabase.from("conversation_members").insert([
+    {conversation_id:newC.id,user_id:myID},
+    {conversation_id:newC.id,user_id:other}
+  ]);
+
+  return newC.id;
+}
+
+/* SELECT USER */
+dropdown.onchange=async()=>{
+  const other=dropdown.value;
+  currentID=await getDM(other);
+  dropdown.classList.add("hidden");
+  load();
+};
 
 /* CENSOR */
-function censor(text){
-  let t=text;
+const bannedWords=["badword1","badword2"];
+function censor(t){
   bannedWords.forEach(w=>{
     t=t.replace(new RegExp(w,"gi"),"#".repeat(w.length));
   });
   return t;
 }
 
-/* LOAD ME */
-const { data: me } = await supabase
-  .from("users")
-  .select('"Name", premium, muted, blocked')
-  .eq("user_id",deviceID)
-  .maybeSingle();
+/* RENDER */
+function render(txt){
+  txt=txt.replace(/\*\*(.*?)\*\*/g,"<b>$1</b>")
+         .replace(/\*(.*?)\*/g,"<i>$1</i>")
+         .replace(/\n/g,"<br>");
 
-if(!me || me.blocked){
-  document.body.innerHTML="<h1>You have been banned from DD Games for breaking the TOS.</h1>";
-  throw "blocked";
-}
-
-if(!me.premium){
-  document.body.innerHTML="<h1>Chat is a Premium feature</h1>";
-  throw "not premium";
-}
-
-if(me.muted){
-  input.disabled=true;
-  input.placeholder="Muted";
-}
-
-/* GET PUBLIC CONVO */
-let publicConvo;
-let { data: pub } = await supabase
-  .from("conversations")
-  .select("*")
-  .eq("is_public",true)
-  .maybeSingle();
-
-if(!pub){
-  const { data:newPub } = await supabase
-    .from("conversations")
-    .insert({is_public:true})
-    .select()
-    .single();
-  publicConvo=newPub;
-}else{
-  publicConvo=pub;
-}
-
-/* LOAD USERS */
-const { data: users } = await supabase
-  .from("users")
-  .select('user_id,"Name"');
-
-/* BUILD DROPDOWN */
-function buildDropdown(){
-  convoSelect.innerHTML="";
-  const opt=document.createElement("option");
-  opt.value=publicConvo.id;
-  opt.textContent="🌐 Public Chat";
-  convoSelect.appendChild(opt);
-
-  users.forEach(u=>{
-    if(u.user_id===deviceID) return;
-    const o=document.createElement("option");
-    o.value=u.user_id;
-    o.textContent="DM: "+(u.Name||u.user_id);
-    convoSelect.appendChild(o);
-  });
-}
-buildDropdown();
-
-let currentConversationId=publicConvo.id;
-
-/* SWITCH */
-convoSelect.onchange=async()=>{
-  const val=convoSelect.value;
-  if(val===publicConvo.id){
-    currentConversationId=publicConvo.id;
-    loadMessages();
-  } else {
-    currentConversationId=await getOrCreateDM(val);
-    loadMessages();
-  }
-};
-
-/* CREATE DM */
-async function getOrCreateDM(otherUser){
-  const { data: convos } = await supabase
-    .from("conversation_members")
-    .select("conversation_id")
-    .eq("user_id",deviceID);
-
-  for(const c of convos){
-    const { data: members } = await supabase
-      .from("conversation_members")
-      .select("user_id")
-      .eq("conversation_id",c.conversation_id);
-
-    if(members.length===2 &&
-       members.some(m=>m.user_id===otherUser)){
-      return c.conversation_id;
-    }
-  }
-
-  const { data:newConvo } = await supabase
-    .from("conversations")
-    .insert({is_public:false})
-    .select()
-    .single();
-
-  await supabase.from("conversation_members").insert([
-    {conversation_id:newConvo.id,user_id:deviceID},
-    {conversation_id:newConvo.id,user_id:otherUser}
-  ]);
-
-  return newConvo.id;
+  if(txt.match(/\.(gif|png|jpg|jpeg|webp)$/i))
+    return `<img src="${txt}">`;
+  if(txt.match(/\.(mp4|webm)$/i))
+    return `<video src="${txt}" controls></video>`;
+  return txt;
 }
 
 /* SEND */
-window.sendMessage=async()=>{
-  const txt=input.value.trim();
-  if(!txt) return;
+window.sendMsg=async()=>{
+  if(me.muted) return;
+  const t=input.value.trim();
+  if(!t) return;
   await supabase.from("messages").insert({
-    conversation_id: currentConversationId,
-    user_id: deviceID,
-    content: censor(txt)
+    conversation_id:currentID,
+    user_id:myID,
+    content:censor(t),
+    read_by:[myID]
   });
   input.value="";
 };
 
 /* NAME CACHE */
-const nameCache={};
-async function getName(id){
-  if(nameCache[id]) return nameCache[id];
-  const { data } = await supabase.from("users")
-    .select('"Name"')
-    .eq("user_id",id)
-    .maybeSingle();
-  const n=data?.Name||"Unknown";
-  nameCache[id]=n;
-  return n;
+const cache={};
+async function nameOf(id){
+  if(cache[id]) return cache[id];
+  const { data }=await supabase.from("users")
+  .select('"Name"').eq("user_id",id).maybeSingle();
+  cache[id]=data?.Name||"User";
+  return cache[id];
 }
 
-/* LOAD MESSAGES */
-async function loadMessages(){
-  const { data } = await supabase
-    .from("messages")
-    .select("*")
-    .eq("conversation_id",currentConversationId)
-    .order("created_at",{ascending:true});
+/* LOAD */
+const box=document.getElementById("messages");
+async function load(){
+  const { data }=await supabase.from("messages")
+  .select("*").eq("conversation_id",currentID)
+  .order("created_at");
 
-  messagesDiv.innerHTML="";
+  box.innerHTML="";
   for(const m of data){
     const div=document.createElement("div");
     div.className="msg";
-    const name=await getName(m.user_id);
-    div.innerHTML=`<span class="name">${name}</span>: ${m.content}`;
-    messagesDiv.appendChild(div);
+    const n=await nameOf(m.user_id);
+    const read=m.read_by?.length>1?" ✔✔":" ✔";
+    div.innerHTML=`<span class="name">${n}</span>: ${render(m.content)} ${read}`;
+    box.appendChild(div);
   }
-  messagesDiv.scrollTop=messagesDiv.scrollHeight;
+  box.scrollTop=box.scrollHeight;
 }
-loadMessages();
+load();
+
+/* READ RECEIPTS */
+setInterval(async()=>{
+  const { data }=await supabase.from("messages")
+  .select("id,read_by")
+  .eq("conversation_id",currentID);
+
+  for(const m of data){
+    if(!m.read_by?.includes(myID)){
+      await supabase.from("messages").update({
+        read_by:[...(m.read_by||[]),myID]
+      }).eq("id",m.id);
+    }
+  }
+},3000);
 
 /* REALTIME */
-supabase.channel("chat")
-  .on("postgres_changes",{event:"INSERT",table:"messages"},payload=>{
-    if(payload.new.conversation_id===currentConversationId){
-      loadMessages();
-    }
-  })
-  .subscribe();
+const typing=document.getElementById("typing");
 
-/* AUTO DELETE 6H */
+supabase.channel("chat")
+.on("postgres_changes",{event:"INSERT",table:"messages"},p=>{
+  if(p.new.conversation_id!==currentID) return;
+  load();
+}).subscribe();
+
+/* AUTO DELETE 6 HOURS */
 setInterval(async()=>{
   const t=new Date(Date.now()-21600000).toISOString();
   await supabase.from("messages").delete().lt("created_at",t);
 },60000);
-
 </script>
 </body>
 </html>
