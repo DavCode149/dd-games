@@ -70,7 +70,7 @@ const { data:me }=await supabase.from("users")
 .maybeSingle();
 
 if(!me||me.blocked){document.body.innerHTML="Blocked";throw"";}
-if(!me.premium){document.body.innerHTML="Premium only";throw"";}
+if(!me.premium){window.location.href="/dd-games/assets/premium-info.html";}
 
 const input=document.getElementById("input");
 if(me.muted){input.disabled=true;input.placeholder="Muted";}

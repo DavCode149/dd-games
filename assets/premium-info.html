@@ -91,7 +91,7 @@ small{
 
 <div id="card">
   <h1>✨ Go Premium</h1>
-  <p>Unlock the full experience and chat with everyone.</p>
+  <p>Unlock the full experience and get exclusive content!</p>
 
   <div class="price">
     $3.50<span>/ month</span>
@@ -106,8 +106,8 @@ small{
     <li>No Ads (Ads coming to Free soon)</li>
   </ul>
   <p>Please note that DD Games Premium has not released yet.</p>
-  <button disabled onclick="buyPremiumViaPayPal()">Pay with PayPal</button>
-  <button disabled onclick="buyPremium()">Pay Physically</button>
+  <button onclick="buyPremiumDisabled()">Pay with PayPal</button>
+  <button onclick="buyPremiumDisabled()">Pay Physically</button>
 
   <small>No contracts. Cancel anytime. Prices in CAD</small>
 </div>
@@ -119,6 +119,9 @@ function buyPremiumViaPayPal(){
 }
 function buyPremium(){
     alert("Please give $3.50 to David irl. If you can't due to location, contact your DD Games supplier.")
+}
+function buyPremiumDisabled(){
+    alert("DD Games Premium is currently not available!")
 }
 </script>
 
