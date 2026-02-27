@@ -4,14 +4,14 @@
 <title>Chat</title>
 <style>
 body{margin:0;font-family:Arial;background:#0f172a;color:white;display:flex;flex-direction:column;height:100vh}
-#top{display:flex;gap:10px;padding:10px;background:#020617}
+#top{display:flex;gap:10px;padding:10px;background:#020617;align-items:center}
 #messages{flex:1;overflow-y:auto;padding:10px}
 .msg{background:#1e293b;padding:6px 10px;border-radius:8px;margin-bottom:5px}
 .name{color:#38bdf8;font-weight:bold}
-#typing{font-size:12px;color:#94a3b8;margin-left:10px}
+#typing{font-size:12px;color:#94a3b8;margin-left:auto}
 #inputBar{display:flex;border-top:2px solid #1e293b}
 input,select,button{padding:8px;border-radius:6px;border:none}
-img,video{max-width:300px;border-radius:8px}
+img,video{max-width:300px;border-radius:8px;display:block;margin-top:5px}
 .hidden{display:none}
 </style>
 </head>
@@ -53,15 +53,11 @@ if(!me.premium){document.body.innerHTML="Premium only";throw"";}
 const input=document.getElementById("input");
 if(me.muted){input.disabled=true;input.placeholder="Muted";}
 
-let publicConvo=null;
+/* PUBLIC CONVO */
+let { data:publicConvo } = await supabase
+.from("conversations").select("*").eq("is_public",true).maybeSingle();
 
-/* GET OR CREATE PUBLIC */
-const { data:pub }=await supabase.from("conversations")
-.select("*").eq("is_public",true).maybeSingle();
-
-if(pub){
-  publicConvo=pub;
-}else{
+if(!publicConvo){
   const { data:newPub }=await supabase.from("conversations")
   .insert({is_public:true}).select().single();
   publicConvo=newPub;
@@ -69,22 +65,14 @@ if(pub){
 
 let currentID=publicConvo.id;
 
-/* PREMIUM USERS */
+/* USERS */
 const { data:users }=await supabase.from("users")
-.select('user_id,"Name",premium')
-.eq("premium",true);
+.select('user_id,"Name"').eq("premium",true);
 
 const dropdown=document.getElementById("userDropdown");
 
 function buildDropdown(){
-  dropdown.innerHTML="";
-  const placeholder=document.createElement("option");
-  placeholder.textContent="Select user…";
-  placeholder.value="";
-  placeholder.disabled=true;
-  placeholder.selected=true;
-  dropdown.appendChild(placeholder);
-
+  dropdown.innerHTML="<option disabled selected>Select user</option>";
   users.forEach(u=>{
     if(u.user_id===myID) return;
     const opt=document.createElement("option");
@@ -96,19 +84,17 @@ function buildDropdown(){
 buildDropdown();
 
 /* CREATE BUTTON */
-window.openCreate=()=>{
-  dropdown.classList.toggle("hidden");
-};
+window.openCreate=()=>dropdown.classList.toggle("hidden");
 
 /* GET OR CREATE DM */
 async function getDM(other){
   const { data:mine }=await supabase.from("conversation_members")
   .select("conversation_id").eq("user_id",myID);
 
-  for(const c of mine){
+  for(const c of mine||[]){
     const { data:m }=await supabase.from("conversation_members")
     .select("user_id").eq("conversation_id",c.conversation_id);
-    if(m.length===2 && m.some(x=>x.user_id===other))
+    if(m?.length===2 && m.some(x=>x.user_id===other))
       return c.conversation_id;
   }
 
@@ -123,12 +109,9 @@ async function getDM(other){
   return newC.id;
 }
 
-/* SELECT USER */
 dropdown.onchange=async()=>{
-  if(!dropdown.value) return;
   currentID=await getDM(dropdown.value);
   dropdown.classList.add("hidden");
-  dropdown.selectedIndex=0;
   load();
 };
 
@@ -166,6 +149,7 @@ window.sendMsg=async()=>{
     read_by:[myID]
   });
   input.value="";
+  typingChannel.send({type:"broadcast",event:"typing",payload:{user:null}});
 };
 
 /* NAME CACHE */
@@ -181,9 +165,11 @@ async function nameOf(id){
 /* LOAD */
 const box=document.getElementById("messages");
 async function load(){
-  const { data }=await supabase.from("messages")
+  const { data, error }=await supabase.from("messages")
   .select("*").eq("conversation_id",currentID)
   .order("created_at");
+
+  if(error||!data) return;
 
   box.innerHTML="";
   for(const m of data){
@@ -204,6 +190,8 @@ setInterval(async()=>{
   .select("id,read_by")
   .eq("conversation_id",currentID);
 
+  if(!data) return;
+
   for(const m of data){
     if(!m.read_by?.includes(myID)){
       await supabase.from("messages").update({
@@ -216,8 +204,22 @@ setInterval(async()=>{
 /* REALTIME */
 supabase.channel("chat")
 .on("postgres_changes",{event:"INSERT",table:"messages"},p=>{
-  if(p.new.conversation_id!==currentID) return;
-  load();
+  if(p.new.conversation_id===currentID) load();
+}).subscribe();
+
+/* TYPING INDICATOR */
+const typing=document.getElementById("typing");
+const typingChannel=supabase.channel("typing");
+
+input.oninput=()=>typingChannel.send({
+  type:"broadcast",event:"typing",payload:{user:me.Name}
+});
+
+typingChannel.on("broadcast",{event:"typing"},p=>{
+  if(p.payload.user && p.payload.user!==me.Name){
+    typing.textContent=p.payload.user+" is typing...";
+    setTimeout(()=>typing.textContent="",1500);
+  }
 }).subscribe();
 
 /* AUTO DELETE 6 HOURS */
