@@ -3,7 +3,22 @@
 <head>
 <title>Chat</title>
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:white;display:flex;flex-direction:column;height:100vh}
+body{
+  margin:0;font-family:Arial;background:#0f172a;color:white;
+  display:flex;height:100vh
+}
+#sidebar{
+  width:220px;background:#020617;display:flex;flex-direction:column
+}
+#sidebar h3{margin:10px}
+#convoList{flex:1;overflow-y:auto}
+.convo{
+  padding:10px;cursor:pointer;border-bottom:1px solid #1e293b
+}
+.convo:hover{background:#1e293b}
+.convo.active{background:#2563eb}
+#main{flex:1;display:flex;flex-direction:column}
+
 #top{display:flex;gap:10px;padding:10px;background:#020617;align-items:center}
 #messages{flex:1;overflow-y:auto;padding:10px}
 .msg{background:#1e293b;padding:6px 10px;border-radius:8px;margin-bottom:5px}
@@ -17,17 +32,24 @@ img,video{max-width:300px;border-radius:8px;display:block;margin-top:5px}
 </head>
 <body>
 
-<div id="top">
-  <button onclick="openCreate()">➕ Create Conversation</button>
-  <select id="userDropdown" class="hidden"></select>
-  <span id="typing"></span>
+<div id="sidebar">
+  <h3>Chats</h3>
+  <div id="convoList"></div>
 </div>
 
-<div id="messages"></div>
+<div id="main">
+  <div id="top">
+    <button onclick="openCreate()">➕ New DM</button>
+    <select id="userDropdown" class="hidden"></select>
+    <span id="typing"></span>
+  </div>
 
-<div id="inputBar">
-  <input id="input" placeholder="Message..." />
-  <button onclick="sendMsg()">Send</button>
+  <div id="messages"></div>
+
+  <div id="inputBar">
+    <input id="input" placeholder="Message..." />
+    <button onclick="sendMsg()">Send</button>
+  </div>
 </div>
 
 <script type="module">
@@ -69,8 +91,8 @@ let currentID=publicConvo.id;
 const { data:users }=await supabase.from("users")
 .select('user_id,"Name"').eq("premium",true);
 
+/* DROPDOWN */
 const dropdown=document.getElementById("userDropdown");
-
 function buildDropdown(){
   dropdown.innerHTML="<option disabled selected>Select user</option>";
   users.forEach(u=>{
@@ -83,7 +105,6 @@ function buildDropdown(){
 }
 buildDropdown();
 
-/* CREATE BUTTON */
 window.openCreate=()=>dropdown.classList.toggle("hidden");
 
 /* GET OR CREATE DM */
@@ -112,6 +133,7 @@ async function getDM(other){
 dropdown.onchange=async()=>{
   currentID=await getDM(dropdown.value);
   dropdown.classList.add("hidden");
+  await loadConvos();
   load();
 };
 
@@ -149,7 +171,6 @@ window.sendMsg=async()=>{
     read_by:[myID]
   });
   input.value="";
-  typingChannel.send({type:"broadcast",event:"typing",payload:{user:null}});
 };
 
 /* NAME CACHE */
@@ -162,14 +183,50 @@ async function nameOf(id){
   return cache[id];
 }
 
-/* LOAD */
+/* LOAD CONVERSATIONS (SIDEBAR) */
+const convoList=document.getElementById("convoList");
+
+async function loadConvos(){
+  convoList.innerHTML="";
+
+  // Public always first
+  addConvo(publicConvo.id,"🌍 Public");
+
+  const { data:mine }=await supabase.from("conversation_members")
+  .select("conversation_id").eq("user_id",myID);
+
+  for(const c of mine||[]){
+    if(c.conversation_id===publicConvo.id) continue;
+
+    const { data:members }=await supabase.from("conversation_members")
+    .select("user_id").eq("conversation_id",c.conversation_id);
+
+    const other=members.find(m=>m.user_id!==myID);
+    const name=await nameOf(other.user_id);
+    addConvo(c.conversation_id,"💬 "+name);
+  }
+}
+
+function addConvo(id,label){
+  const div=document.createElement("div");
+  div.className="convo"+(id===currentID?" active":"");
+  div.textContent=label;
+  div.onclick=()=>{
+    currentID=id;
+    loadConvos();
+    load();
+  };
+  convoList.appendChild(div);
+}
+
+/* LOAD MESSAGES */
 const box=document.getElementById("messages");
 async function load(){
-  const { data, error }=await supabase.from("messages")
+  const { data }=await supabase.from("messages")
   .select("*").eq("conversation_id",currentID)
   .order("created_at");
 
-  if(error||!data) return;
+  if(!data) return;
 
   box.innerHTML="";
   for(const m of data){
@@ -182,44 +239,15 @@ async function load(){
   }
   box.scrollTop=box.scrollHeight;
 }
+
+await loadConvos();
 load();
-
-/* READ RECEIPTS */
-setInterval(async()=>{
-  const { data }=await supabase.from("messages")
-  .select("id,read_by")
-  .eq("conversation_id",currentID);
-
-  if(!data) return;
-
-  for(const m of data){
-    if(!m.read_by?.includes(myID)){
-      await supabase.from("messages").update({
-        read_by:[...(m.read_by||[]),myID]
-      }).eq("id",m.id);
-    }
-  }
-},3000);
 
 /* REALTIME */
 supabase.channel("chat")
 .on("postgres_changes",{event:"INSERT",table:"messages"},p=>{
   if(p.new.conversation_id===currentID) load();
-}).subscribe();
-
-/* TYPING INDICATOR */
-const typing=document.getElementById("typing");
-const typingChannel=supabase.channel("typing");
-
-input.oninput=()=>typingChannel.send({
-  type:"broadcast",event:"typing",payload:{user:me.Name}
-});
-
-typingChannel.on("broadcast",{event:"typing"},p=>{
-  if(p.payload.user && p.payload.user!==me.Name){
-    typing.textContent=p.payload.user+" is typing...";
-    setTimeout(()=>typing.textContent="",1500);
-  }
+  loadConvos();
 }).subscribe();
 
 /* AUTO DELETE 6 HOURS */
