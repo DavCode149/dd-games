@@ -53,36 +53,21 @@ if(!me.premium){document.body.innerHTML="Premium only";throw"";}
 const input=document.getElementById("input");
 if(me.muted){input.disabled=true;input.placeholder="Muted";}
 
-let publicConvo = null;
+let publicConvo=null;
 
-const { data:pub, error:pubErr } = await supabase
-  .from("conversations")
-  .select("*")
-  .eq("is_public", true)
-  .maybeSingle();
+/* GET OR CREATE PUBLIC */
+const { data:pub }=await supabase.from("conversations")
+.select("*").eq("is_public",true).maybeSingle();
 
-if (pubErr) {
-  console.error("Public convo lookup failed", pubErr);
+if(pub){
+  publicConvo=pub;
+}else{
+  const { data:newPub }=await supabase.from("conversations")
+  .insert({is_public:true}).select().single();
+  publicConvo=newPub;
 }
 
-if (pub) {
-  publicConvo = pub;
-} else {
-  const { data:newPub, error:newErr } = await supabase
-    .from("conversations")
-    .insert({ is_public: true })
-    .select()
-    .maybeSingle();
-
-  if (newErr || !newPub) {
-    document.body.innerHTML = "<h1>Chat unavailable</h1>";
-    throw new Error("Failed to create public conversation");
-  }
-
-  publicConvo = newPub;
-}
-
-let currentID = publicConvo.id;
+let currentID=publicConvo.id;
 
 /* PREMIUM USERS */
 const { data:users }=await supabase.from("users")
@@ -93,6 +78,13 @@ const dropdown=document.getElementById("userDropdown");
 
 function buildDropdown(){
   dropdown.innerHTML="";
+  const placeholder=document.createElement("option");
+  placeholder.textContent="Select user…";
+  placeholder.value="";
+  placeholder.disabled=true;
+  placeholder.selected=true;
+  dropdown.appendChild(placeholder);
+
   users.forEach(u=>{
     if(u.user_id===myID) return;
     const opt=document.createElement("option");
@@ -133,9 +125,10 @@ async function getDM(other){
 
 /* SELECT USER */
 dropdown.onchange=async()=>{
-  const other=dropdown.value;
-  currentID=await getDM(other);
+  if(!dropdown.value) return;
+  currentID=await getDM(dropdown.value);
   dropdown.classList.add("hidden");
+  dropdown.selectedIndex=0;
   load();
 };
 
@@ -221,8 +214,6 @@ setInterval(async()=>{
 },3000);
 
 /* REALTIME */
-const typing=document.getElementById("typing");
-
 supabase.channel("chat")
 .on("postgres_changes",{event:"INSERT",table:"messages"},p=>{
   if(p.new.conversation_id!==currentID) return;
