@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DD Games - Premium</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(135deg,#020617,#0f172a);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+#card{
+  background:#020617;
+  border-radius:20px;
+  padding:40px;
+  max-width:500px;
+  width:90%;
+  box-shadow:0 0 40px rgba(56,189,248,.25);
+  text-align:center;
+  animation:pop .6s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(.8);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+h1{
+  font-size:36px;
+  margin-bottom:10px;
+  color:#38bdf8;
+}
+
+.price{
+  font-size:42px;
+  margin:20px 0;
+}
+
+.price span{
+  font-size:18px;
+  color:#94a3b8;
+}
+
+ul{
+  text-align:left;
+  margin:25px 0;
+  padding:0;
+  list-style:none;
+}
+
+li{
+  margin:12px 0;
+  font-size:16px;
+}
+
+li::before{
+  content:"✔";
+  color:#22c55e;
+  margin-right:8px;
+}
+
+button{
+  background:#38bdf8;
+  color:#020617;
+  border:none;
+  padding:15px 30px;
+  font-size:18px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+button:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 20px #38bdf8;
+}
+
+small{
+  display:block;
+  margin-top:15px;
+  color:#94a3b8;
+}
+</style>
+</head>
+<body>
+
+<div id="card">
+  <h1>✨ Go Premium</h1>
+  <p>Unlock the full experience and chat with everyone.</p>
+
+  <div class="price">
+    $3.50<span>/ month</span>
+  </div>
+
+  <ul>
+    <li>Access to our Messaging Service!</li>
+    <li>Direct messages (DMs)</li>
+    <li>Premium-only Games</li>
+    <li>Early-Access to new features</li>
+    <li>Priority features & updates</li>
+    <li>No Ads (Ads coming to Free soon)</li>
+  </ul>
+  <p>Please note that DD Games Premium has not released yet.</p>
+  <button disabled onclick="buyPremiumViaPayPal()">Pay with PayPal</button>
+  <button disabled onclick="buyPremium()">Pay Physically</button>
+
+  <small>No contracts. Cancel anytime. Prices in CAD</small>
+</div>
+
+<script>
+function buyPremiumViaPayPal(){
+  alert("Please screenshot the transaction and include a note with your name and User ID. User ID can be found on the Account page.");
+  window.open(URL="https://paypal.me/dhackett149/3.5")
+}
+function buyPremium(){
+    alert("Please give $3.50 to David irl. If you can't due to location, contact your DD Games supplier.")
+}
+</script>
+
+</body>
+</html>
