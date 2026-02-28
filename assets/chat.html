@@ -171,16 +171,14 @@ window.sendMsg = async () => {
     return;
   }
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("messages")
     .insert({
       conversation_id: currentID,
       user_id: myID,
       content: censor(t),
       read_by: [myID]
-    })
-    .select()
-    .single();
+    });
 
   if (error) {
     console.error("SEND ERROR:", error);
@@ -189,7 +187,7 @@ window.sendMsg = async () => {
   }
 
   input.value = "";
-  load();
+  // ❌ DO NOT call load() here (prevents duplicate)
 };
 
 /* NAME CACHE */
@@ -202,13 +200,11 @@ async function nameOf(id){
   return cache[id];
 }
 
-/* LOAD CONVERSATIONS (SIDEBAR) */
+/* LOAD CONVERSATIONS */
 const convoList=document.getElementById("convoList");
 
 async function loadConvos(){
   convoList.innerHTML="";
-
-  // Public always first
   addConvo(publicConvo.id,"🌍 Public");
 
   const { data:mine }=await supabase.from("conversation_members")
@@ -265,7 +261,13 @@ load();
 /* REALTIME */
 supabase.channel("chat")
 .on("postgres_changes",{event:"INSERT",table:"messages"},p=>{
-  if(p.new.conversation_id===currentID) load();
+  if(p.new.conversation_id !== currentID) return;
+
+  // ✅ ignore my own message echo
+  if(p.new.user_id !== myID){
+    load();
+  }
+
   loadConvos();
 }).subscribe();
 
