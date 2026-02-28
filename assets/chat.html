@@ -160,17 +160,36 @@ function render(txt){
 }
 
 /* SEND */
-window.sendMsg=async()=>{
-  if(me.muted) return;
-  const t=input.value.trim();
-  if(!t) return;
-  await supabase.from("messages").insert({
-    conversation_id:currentID,
-    user_id:myID,
-    content:censor(t),
-    read_by:[myID]
-  });
-  input.value="";
+window.sendMsg = async () => {
+  if (me.muted) return;
+
+  const t = input.value.trim();
+  if (!t) return;
+
+  if (!currentID) {
+    alert("No conversation selected");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("messages")
+    .insert({
+      conversation_id: currentID,
+      user_id: myID,
+      content: censor(t),
+      read_by: [myID]
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("SEND ERROR:", error);
+    alert("Message failed: " + error.message);
+    return;
+  }
+
+  input.value = "";
+  load();
 };
 
 /* NAME CACHE */
