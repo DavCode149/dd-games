@@ -162,7 +162,8 @@ function brainrot() {
 
 <button class="back-button" onclick="window.location.href='https://davcode149.github.io/dd-games/main.html'">← Back</button>
 <h2 style="color:white;margin-top:30px;">Quick Links</h2>
-
+<script async="async" data-cfasync="false" src="https://pl28818800.effectivegatecpm.com/f6bb7ff2099400e0cb363a9ed7fd1648/invoke.js"></script>
+<div id="container-f6bb7ff2099400e0cb363a9ed7fd1648"></div>
 <div class="grid-container" id="quickLinks">
 
   <div class="grid-item" onclick="window.location.href='https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Jrm3b-vtT02C6AwQ5Ee1cNLNR-GLk9tJrwn7dwbdJRtUM0FXU0JTWTExME9PM1U3T1ZHS1lSSlJJRy4u'">
@@ -208,6 +209,25 @@ function showErrorPopup(code) {
   popupOverlay.classList.add("show");
 }
 
+function renderGames() {
+  let isPremiumUser = false;
+
+/* GET USER */
+async function loadUser() {
+  let myID = localStorage.getItem("device_id");
+  if (!myID) {
+    myID = crypto.randomUUID();
+    localStorage.setItem("device_id", myID);
+  }
+
+  const { data: me } = await fetch("https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users?user_id=eq." + myID, {
+    headers: {
+      "apikey": "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
+    }
+  }).then(r => r.json());
+
+  if (me && me[0]?.premium) isPremiumUser = true;
+}
 async function loadGames() {
   await loadUser()
   try {
@@ -240,27 +260,6 @@ async function loadGames() {
   }
 }
 setInterval(loadGames, 60000);
-
-function renderGames() {
-  let isPremiumUser = false;
-
-/* GET USER */
-async function loadUser() {
-  let myID = localStorage.getItem("device_id");
-  if (!myID) {
-    myID = crypto.randomUUID();
-    localStorage.setItem("device_id", myID);
-  }
-
-  const { data: me } = await fetch("https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users?user_id=eq." + myID, {
-    headers: {
-      "apikey": "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
-    }
-  }).then(r => r.json());
-
-  if (me && me[0]?.premium) isPremiumUser = true;
-}
-
 async function renderGames() {
   const grid = document.getElementById("gameGrid");
   const search = document.getElementById("searchInput").value.toLowerCase();
