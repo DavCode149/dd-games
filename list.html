@@ -94,13 +94,11 @@ body {
   cursor: pointer;
 }
 
-/* STACK SECTIONS VERTICALLY IN GRID CONTAINER */
 .section {
-  grid-column: 1 / -1; /* full width */
-  display: flex;
-  flex-direction: column;
-  gap: 12px; /* spacing between games */
-  margin-bottom: 30px; /* spacing between sections */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;          /* space between items in a section */
+  margin-bottom: 30px; /* space between sections */
 }
 
 /* ===== POPUP ===== */
@@ -170,6 +168,7 @@ function brainrot() {
 <body>
 
 <button class="back-button" onclick="window.location.href='https://davcode149.github.io/dd-games/main.html'">← Back</button>
+<br>
 <script>
   atOptions = {
     'key' : 'a19f6c85731f299418a7856e52d88a41',
@@ -319,6 +318,8 @@ function renderGames() {
 
   if (isPremiumUser) {
     grid.appendChild(premiumSection);
+    const adElement = document.getElementById("atContainer-a19f6c85731f299418a7856e52d88a41");
+    if (adElement) adElement.style.display = "none";
   } else {
     const locked = document.createElement("div");
     locked.className = "section";
