@@ -209,6 +209,7 @@ function showErrorPopup(code) {
 }
 
 async function loadGames() {
+  await loadUser()
   try {
     const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
       cache: "no-store"
@@ -238,10 +239,29 @@ async function loadGames() {
     showErrorPopup(err.message);
   }
 }
-
 setInterval(loadGames, 60000);
 
 function renderGames() {
+  let isPremiumUser = false;
+
+/* GET USER */
+async function loadUser() {
+  let myID = localStorage.getItem("device_id");
+  if (!myID) {
+    myID = crypto.randomUUID();
+    localStorage.setItem("device_id", myID);
+  }
+
+  const { data: me } = await fetch("https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users?user_id=eq." + myID, {
+    headers: {
+      "apikey": "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
+    }
+  }).then(r => r.json());
+
+  if (me && me[0]?.premium) isPremiumUser = true;
+}
+
+async function renderGames() {
   const grid = document.getElementById("gameGrid");
   const search = document.getElementById("searchInput").value.toLowerCase();
   const sort = document.getElementById("sortSelect").value;
@@ -257,28 +277,55 @@ function renderGames() {
 
   grid.innerHTML = "";
 
+  const freeSection = document.createElement("div");
+  const premiumSection = document.createElement("div");
+
+  freeSection.innerHTML = `<h2 style="color:white;">🎮 Free Games</h2>`;
+  premiumSection.innerHTML = `<h2 style="color:gold;">🌟 Premium Games</h2>`;
+
   filtered.forEach((game, index) => {
-    setTimeout(() => {
-      const item = document.createElement("div");
-      item.className = "grid-item";
+    const item = document.createElement("div");
+    item.className = "grid-item";
 
-      const img = document.createElement("img");
-      img.src = game.image;
+    const img = document.createElement("img");
+    img.src = game.image;
 
-      if (game.special === "brainrot") {
-        item.onclick = brainrot;
-      } else {
+    const title = document.createElement("h3");
+    title.textContent = game.name;
+
+    item.appendChild(img);
+    item.appendChild(title);
+
+    if (game.premium) {
+      if (isPremiumUser) {
         item.onclick = () => window.location.href = game.link;
+        premiumSection.appendChild(item);
       }
-
-      const title = document.createElement("h3");
-      title.textContent = game.name;
-
-      item.appendChild(img);
-      item.appendChild(title);
-      grid.appendChild(item);
-    }, index * 80);
+    } else {
+      item.onclick = () => window.location.href = game.link;
+      freeSection.appendChild(item);
+    }
   });
+
+  grid.appendChild(freeSection);
+
+  if (isPremiumUser) {
+    grid.appendChild(premiumSection);
+  } else {
+    const locked = document.createElement("div");
+    locked.innerHTML = `
+      <h2 style="color:gold;">🔒 Premium Games</h2>
+      <p style="color:white;">
+        Unlock exclusive games with DD Games Premium!
+      </p>
+      <button onclick="window.location.href='premium-info.html'"
+        style="padding:10px 16px;border:none;border-radius:8px;background:gold;cursor:pointer;">
+        Get Premium – $3.50/month
+      </button>
+    `;
+    grid.appendChild(locked);
+  }
+}
 }
 
 document.getElementById("searchInput").addEventListener("input", renderGames);
