@@ -107,23 +107,19 @@ small{
     <li>Have your name on a special list</li>
     <li>Support DD Games' Development!</li>
   </ul>
-  <p>Please note that DD Games Premium has not released yet.</p>
-  <button onclick="buyPremiumDisabled()">Pay with PayPal</button>
-  <button onclick="buyPremiumDisabled()">Pay Physically</button>
+  <button onclick="buyPremiumViaPayPal()">Pay with PayPal</button>
+  <button onclick="buyPremium()">Pay Physically</button>
 
   <small>No contracts. Cancel anytime. Prices in CAD</small>
 </div>
 
 <script>
 function buyPremiumViaPayPal(){
-  alert("Please screenshot the transaction and include a note with your name and User ID. User ID can be found on the Account page.");
+  alert("Please screenshot the payment and include a note when prompted by PayPal with your name and User ID. User ID can be found on the Account page.");
   window.open(URL="https://paypal.me/dhackett149/3.5")
 }
 function buyPremium(){
-    alert("Please give $3.50 to David irl. If you can't due to your location, contact your DD Games supplier.")
-}
-function buyPremiumDisabled(){
-    alert("DD Games Premium is currently not available!")
+    alert("Please give $3.50 to your DD Games supplier. They'll have premium enabled for you within 24 hours.")
 }
 </script>
 <script type="module" src="/dd-games/assets/management.js"></script>
