@@ -2,498 +2,462 @@
 <html>
 <head>
   <title>Classroom</title>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
 
-<style>
-body {
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(270deg, #6a11cb, #2575fc);
-  background-size: 400% 400%;
-  animation: gradientMove 3s ease infinite;
-  font-family: Arial, sans-serif;
-}
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(270deg, #6a11cb, #2575fc);
+      background-size: 400% 400%;
+      animation: gradientMove 3s ease infinite;
+      font-family: Arial, sans-serif;
+    }
 
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-/* Controls */
-.controls {
-  margin-top: 80px;
-  display: flex;
-  gap: 10px;
-}
+    /* Controls */
+    .controls {
+      margin-top: 80px;
+      display: flex;
+      gap: 10px;
+    }
 
-.controls input, .controls select {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  font-size: 16px;
-}
+    .controls input, .controls select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
 
-/* Grid */
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
-  width: 90%;
-  max-width: 1000px;
-  padding: 20px;
-}
+    /* Grid */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      width: 90%;
+      max-width: 1000px;
+      padding: 20px;
+    }
 
-/* Items */
-.grid-item {
-  background-color: rgba(255,255,255,0.9);
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  text-align: center;
-  cursor: pointer;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(10px);
-  animation: fadeIn 0.5s ease forwards;
-}
+    /* Items */
+    .grid-item {
+      background-color: rgba(255,255,255,0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      text-align: center;
+      cursor: pointer;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.5s ease forwards;
+      position: relative;
+    }
 
-.grid-item:hover {
-  transform: scale(1.05);
-}
+    .grid-item:hover {
+      transform: scale(1.05);
+    }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-.grid-item img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-}
+    .grid-item img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
 
-.grid-item h3 {
-  margin: 10px;
-}
+    .grid-item h3 {
+      margin: 10px;
+    }
 
-.back-button {
-  top: 20px;
-  left: 20px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  cursor: pointer;
-}
+    /* Premium badge */
+    .premium-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 16px;
+      background: gold;
+      padding: 2px 6px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
 
-/* ===== POPUP ===== */
-#popupOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-  z-index: 9999;
-}
-#popupOverlay.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-#popupBox {
-  background: white;
-  border-radius: 14px;
-  padding: 30px 35px;
-  width: min(500px, 85%);
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-  transform: scale(0.9);
-  transition: transform 0.4s ease;
-}
-#popupOverlay.show #popupBox {
-  transform: scale(1);
-}
-#popupBox button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: #2575fc;
-  color: white;
-  cursor: pointer;
-}
+    .back-button {
+      top: 20px;
+      left: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      position: absolute;
+    }
 
-/* ===== COUNTER BADGE ===== */
-#userCounter {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(0,0,0,0.75);
-  color: white;
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 14px;
-  z-index: 9998;
-}
-</style>
+    /* ===== POPUP ===== */
+    #popupOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 9999;
+    }
+    #popupOverlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #popupBox {
+      background: white;
+      border-radius: 14px;
+      padding: 30px 35px;
+      width: min(500px, 85%);
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      transform: scale(0.9);
+      transition: transform 0.4s ease;
+    }
+    #popupOverlay.show #popupBox {
+      transform: scale(1);
+    }
+    #popupBox button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      background: #2575fc;
+      color: white;
+      cursor: pointer;
+    }
 
-<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+    /* ===== COUNTER BADGE ===== */
+    #userCounter {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      z-index: 9998;
+    }
+  </style>
 
-<script>
-function brainrot() {
-  alert("WARNING: These games may result in loss of braincells!");
-  window.location.assign("https://davcode149.github.io/dd-games/0-games/0-brainrot/select.html");
-}
-</script>
+  <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+  <script>
+    function brainrot() {
+      alert("WARNING: These games may result in loss of braincells!");
+      window.location.assign("https://davcode149.github.io/dd-games/0-games/0-brainrot/select.html");
+    }
+  </script>
 </head>
 
 <body>
+  <button class="back-button" onclick="window.location.href='https://davcode149.github.io/dd-games/main.html'">← Back</button>
+  <h2 style="color:white;margin-top:30px;">Quick Links</h2>
 
-<button class="back-button" onclick="window.location.href='https://davcode149.github.io/dd-games/main.html'">← Back</button>
-<h2 style="color:white;margin-top:30px;">Quick Links</h2>
+  <div class="grid-container" id="quickLinks">
+    <div class="grid-item" onclick="window.location.href='https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Jrm3b-vtT02C6AwQ5Ee1cNLNR-GLk9tJrwn7dwbdJRtUM0FXU0JTWTExME9PM1U3T1ZHS1lSSlJJRy4u'">
+      <img src="/dd-games/assets/images/request.jpg">
+      <h3>🎮 Request a Game</h3>
+    </div>
 
-<div class="grid-container" id="quickLinks">
+    <div class="grid-item" onclick="window.location.href='/dd-games/assets/premium-info.html'">
+      <img src="/dd-games/assets/logo.png">
+      <h3>🌟 DD Games Premium</h3>
+    </div>
 
-  <div class="grid-item" onclick="window.location.href='https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Jrm3b-vtT02C6AwQ5Ee1cNLNR-GLk9tJrwn7dwbdJRtUM0FXU0JTWTExME9PM1U3T1ZHS1lSSlJJRy4u'">
-    <img src="/dd-games/assets/images/request.jpg">
-    <h3>🎮 Request a Game</h3>
+    <div class="grid-item" onclick="window.location.href='/dd-games/assets/leaderboard.html'">
+      <img src="/dd-games/assets/logo.png">
+      <h3> Leaderboard</h3>
+    </div>
   </div>
 
-  <div class="grid-item" onclick="window.location.href='/dd-games/assets/premium-info.html'">
-    <img src="/dd-games/assets/logo.png">
-    <h3>🌟 DD Games Premium</h3>
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Search games...">
+    <select id="sortSelect">
+      <option value="az">Sort A–Z</option>
+      <option value="za">Sort Z–A</option>
+    </select>
   </div>
 
-  <div class="grid-item" onclick="window.location.href='/dd-games/assets/leaderboard.html'">
-    <img src="/dd-games/assets/logo.png">
-    <h3> Leaderboard</h3>
+  <div class="grid-container" id="gameGrid"></div>
+
+  <!-- POPUP -->
+  <div id="popupOverlay">
+    <div id="popupBox">
+      <h2 id="popupTitle"></h2>
+      <p id="popupDesc"></p>
+      <button onclick="dismissPopup()">Dismiss</button>
+    </div>
   </div>
-</div>
-<div class="controls">
-  <input type="text" id="searchInput" placeholder="Search games...">
-  <select id="sortSelect">
-    <option value="az">Sort A–Z</option>
-    <option value="za">Sort Z–A</option>
-  </select>
-</div>
 
-<div class="grid-container" id="gameGrid"></div>
+  <script>
+    let allGames = [];
 
-<!-- POPUP -->
-<div id="popupOverlay">
-  <div id="popupBox">
-    <h2 id="popupTitle"></h2>
-    <p id="popupDesc"></p>
-    <button onclick="dismissPopup()">Dismiss</button>
-  </div>
-</div>
+    function showErrorPopup(code) {
+      popupTitle.textContent = "An error has occurred.";
+      popupDesc.textContent = "Error code: " + code;
+      popupOverlay.classList.add("show");
+    }
 
-<script>
-let allGames = [];
+    async function loadUser() {
+      let myID = localStorage.getItem("device_id");
+      if (!myID) {
+        myID = crypto.randomUUID();
+        localStorage.setItem("device_id", myID);
+      }
 
-function showErrorPopup(code) {
-  popupTitle.textContent = "An error has occurred.";
-  popupDesc.textContent = "Error code: " + code;
-  popupOverlay.classList.add("show");
-}
+      const { data: me } = await fetch(
+        "https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users?user_id=eq." + myID,
+        { headers: { "apikey": "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d" } }
+      ).then(r => r.json());
 
-async function loadGames() {
-  await loadUser()
-  try {
-    const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
-      cache: "no-store"
+      return me && me[0]?.premium;
+    }
+
+    async function loadGames() {
+      try {
+        const isPremiumUser = await loadUser();
+        const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP_" + res.status);
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error("NOT_ARRAY");
+        allGames = data;
+        renderGames(isPremiumUser);
+      } catch (err) {
+        showErrorPopup(err.message);
+      }
+    }
+    setInterval(loadGames, 60000);
+
+    function renderGames(isPremiumUser) {
+      const grid = document.getElementById("gameGrid");
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const sort = document.getElementById("sortSelect").value;
+
+      let filtered = allGames.filter(g => g.name.toLowerCase().includes(search));
+      filtered.sort((a,b) => sort === "az" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+
+      grid.innerHTML = "";
+
+      filtered.forEach(game => {
+        const item = document.createElement("div");
+        item.className = "grid-item";
+
+        const img = document.createElement("img");
+        img.src = game.image;
+
+        const title = document.createElement("h3");
+        title.textContent = game.name;
+
+        item.appendChild(img);
+        item.appendChild(title);
+
+        if (game.premium) {
+          const badge = document.createElement("span");
+          badge.textContent = "🌟";
+          badge.className = "premium-badge";
+          item.appendChild(badge);
+
+          if (!isPremiumUser) {
+            item.style.opacity = "0.6";
+            item.onclick = () => window.location.href = "/dd-games/assets/premium-info.html";
+            return grid.appendChild(item);
+          }
+        }
+
+        item.onclick = () => window.location.href = game.link;
+        grid.appendChild(item);
+      });
+    }
+
+    document.getElementById("searchInput").addEventListener("input", () => loadGames());
+    document.getElementById("sortSelect").addEventListener("change", () => loadGames());
+
+    loadGames();
+
+    /* ===== POPUP CONFIG ===== */
+    const popupTitleText = "⚠️ IMPORTANT: PLEASE READ ⚠️";
+    const popupDescText = "Due to our recent breach, we're adding a lot of new security features to prevent one from happening again. We're now requiring that you use your REAL name for the site. This is so we can get rid of Leakers who are staying annoymous, if you lose access, just simply use the request form to confirm your identity and get your access back. Thank you for understanding.";
+    const popupExpireTime = "2026-02-26T23:59:59";
+
+    function showPopupIfValid() {
+      if (!popupTitleText || !popupDescText) return;
+      if (popupExpireTime) {
+        if (new Date() > new Date(popupExpireTime)) return;
+      }
+      popupTitle.textContent = popupTitleText;
+      popupDesc.textContent = popupDescText;
+      popupOverlay.classList.add("show");
+    }
+    function dismissPopup() {
+      popupOverlay.classList.remove("show");
+    }
+    showPopupIfValid();
+  </script>
+
+  <!-- Live User Counter -->
+  <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+  <script>
+    /* === 1️⃣ Unique persistent browser ID === */
+    let browserId = localStorage.getItem('ablyBrowserId');
+    if (!browserId) {
+      browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem('ablyBrowserId', browserId);
+    }
+
+    /* === 2️⃣ Setup Ably connection === */
+    const ably = new Ably.Realtime({
+      key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
+      clientId: browserId
+    });
+    const channel = ably.channels.get('site-active-users');
+
+    /* === 3️⃣ Shared-tab logic === */
+    const isMainTabKey = "ablyMainTabActive";
+    const heartbeatKey = "ablyHeartbeat";
+    const heartbeatInterval = 3000; // ms
+
+    function setMainTab(active) {
+      if (active) {
+        localStorage.setItem(isMainTabKey, "true");
+        localStorage.setItem(heartbeatKey, Date.now());
+      } else {
+        localStorage.removeItem(isMainTabKey);
+        localStorage.removeItem(heartbeatKey);
+      }
+    }
+
+    function isMainTab() {
+      const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
+      return Date.now() - lastBeat < heartbeatInterval * 2;
+    }
+
+    /* === 4️⃣ Keep heartbeat alive if this is the main tab === */
+    setInterval(() => {
+      if (localStorage.getItem(isMainTabKey) === "true") {
+        localStorage.setItem(heartbeatKey, Date.now());
+      }
+    }, heartbeatInterval);
+
+    /* === 5️⃣ Only the first tab enters Ably presence === */
+    async function tryEnterPresence() {
+      if (!isMainTab()) {
+        setMainTab(true);
+        try {
+          await channel.attach();
+          channel.presence.enter("online");
+        } catch (err) {
+          console.error("Error entering presence:", err);
+        }
+      }
+    }
+
+    /* === 6️⃣ Listen for other tabs closing/opening === */
+    window.addEventListener("storage", async (event) => {
+      if (event.key === heartbeatKey) {
+        if (!isMainTab()) {
+          tryEnterPresence();
+        }
+      }
     });
 
-    if (!res.ok) {
-      throw new Error("HTTP_" + res.status);
-    }
-
-    const text = await res.text();
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error("INVALID_JSON");
-    }
-
-    if (!Array.isArray(data)) {
-      throw new Error("NOT_ARRAY");
-    }
-
-    allGames = data;
-    renderGames();
-
-  } catch (err) {
-    showErrorPopup(err.message);
-  }
-}
-setInterval(loadGames, 60000);
-
-function renderGames() {
-  let isPremiumUser = false;
-
-/* GET USER */
-async function loadUser() {
-  let myID = localStorage.getItem("device_id");
-  if (!myID) {
-    myID = crypto.randomUUID();
-    localStorage.setItem("device_id", myID);
-  }
-
-  const { data: me } = await fetch("https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users?user_id=eq." + myID, {
-    headers: {
-      "apikey": "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
-    }
-  }).then(r => r.json());
-
-  if (me && me[0]?.premium) isPremiumUser = true;
-}
-
-async function renderGames() {
-  const grid = document.getElementById("gameGrid");
-  const search = document.getElementById("searchInput").value.toLowerCase();
-  const sort = document.getElementById("sortSelect").value;
-
-  let filtered = allGames.filter(g =>
-    g.name.toLowerCase().includes(search)
-  );
-
-  filtered.sort((a, b) => {
-    if (sort === "az") return a.name.localeCompare(b.name);
-    if (sort === "za") return b.name.localeCompare(a.name);
-  });
-
-  grid.innerHTML = "";
-
-  const freeSection = document.createElement("div");
-  const premiumSection = document.createElement("div");
-
-  freeSection.innerHTML = `<h2 style="color:white;">🎮 Free Games</h2>`;
-  premiumSection.innerHTML = `<h2 style="color:gold;">🌟 Premium Games</h2>`;
-
-  filtered.forEach((game, index) => {
-    const item = document.createElement("div");
-    item.className = "grid-item";
-
-    const img = document.createElement("img");
-    img.src = game.image;
-
-    const title = document.createElement("h3");
-    title.textContent = game.name;
-
-    item.appendChild(img);
-    item.appendChild(title);
-
-    if (game.premium) {
-      if (isPremiumUser) {
-        item.onclick = () => window.location.href = game.link;
-        premiumSection.appendChild(item);
+    /* === 7️⃣ Leave presence when tab is closed === */
+    window.addEventListener("beforeunload", () => {
+      if (isMainTab()) {
+        channel.presence.leave("online");
+        setMainTab(false);
       }
-    } else {
-      item.onclick = () => window.location.href = game.link;
-      freeSection.appendChild(item);
-    }
-  });
+    });
 
-  grid.appendChild(freeSection);
+    /* === 8️⃣ Create counter element === */
+    const counter = document.createElement("div");
+    counter.id = "userCounter";
+    Object.assign(counter.style, {
+      position: "fixed",
+      bottom: "15px",
+      right: "15px",
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      padding: "8px 14px",
+      background: "linear-gradient(90deg, #2575fc, #6a11cb)",
+      color: "white",
+      fontFamily: "Arial, sans-serif",
+      fontSize: "14px",
+      borderRadius: "12px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+      zIndex: "999",
+      opacity: "0.9",
+      transition: "opacity 0.3s ease"
+    });
 
-  if (isPremiumUser) {
-    grid.appendChild(premiumSection);
-  } else {
-    const locked = document.createElement("div");
-    locked.innerHTML = `
-      <h2 style="color:gold;">🔒 Premium Games</h2>
-      <p style="color:white;">
-        Unlock exclusive games with DD Games Premium!
-      </p>
-      <button onclick="window.location.href='premium-info.html'"
-        style="padding:10px 16px;border:none;border-radius:8px;background:gold;cursor:pointer;">
-        Get Premium – $3.50/month
-      </button>
+    counter.innerHTML = `
+      <div id="statusDot" style="
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: limegreen;
+        box-shadow: 0 0 6px 2px rgba(0,255,0,0.5);
+        animation: pulse 1.5s infinite;
+      "></div>
+      <span id="userText">Connecting...</span>
     `;
-    grid.appendChild(locked);
-  }
-}
-}
+    document.body.appendChild(counter);
 
-document.getElementById("searchInput").addEventListener("input", renderGames);
-document.getElementById("sortSelect").addEventListener("change", renderGames);
+    /* === 9️⃣ Glow animation === */
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.3); opacity: 0.7; }
+      }
+    `;
+    document.head.appendChild(style);
 
-loadGames();
-
-/* ===== POPUP CONFIG ===== */
-const popupTitleText = "⚠️ IMPORTANT: PLEASE READ ⚠️";
-const popupDescText = "Due to our recent breach, we're adding a lot of new security features to prevent one from happening again. We're now requiring that you use your REAL name for the site. This is so we can get rid of Leakers who are staying annoymous, if you lose access, just simply use the request form to confirm your identity and get your access back. Thank you for understanding.";
-const popupExpireTime = "2026-02-26T23:59:59";
-
-function showPopupIfValid() {
-  if (!popupTitleText || !popupDescText) return;
-  if (popupExpireTime) {
-    if (new Date() > new Date(popupExpireTime)) return;
-  }
-  popupTitle.textContent = popupTitleText;
-  popupDesc.textContent = popupDescText;
-  popupOverlay.classList.add("show");
-}
-function dismissPopup() {
-  popupOverlay.classList.remove("show");
-}
-showPopupIfValid();
-</script>
-<!-- Live User Counter -->
-<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
-<script>
-/* === 1️⃣ Unique persistent browser ID === */
-let browserId = localStorage.getItem('ablyBrowserId');
-if (!browserId) {
-  browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
-  localStorage.setItem('ablyBrowserId', browserId);
-}
-
-/* === 2️⃣ Setup Ably connection === */
-const ably = new Ably.Realtime({
-  key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
-  clientId: browserId
-});
-const channel = ably.channels.get('site-active-users');
-
-/* === 3️⃣ Shared-tab logic === */
-const isMainTabKey = "ablyMainTabActive";
-const heartbeatKey = "ablyHeartbeat";
-const heartbeatInterval = 3000; // ms
-
-function setMainTab(active) {
-  if (active) {
-    localStorage.setItem(isMainTabKey, "true");
-    localStorage.setItem(heartbeatKey, Date.now());
-  } else {
-    localStorage.removeItem(isMainTabKey);
-    localStorage.removeItem(heartbeatKey);
-  }
-}
-
-function isMainTab() {
-  const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
-  return Date.now() - lastBeat < heartbeatInterval * 2;
-}
-
-/* === 4️⃣ Keep heartbeat alive if this is the main tab === */
-setInterval(() => {
-  if (localStorage.getItem(isMainTabKey) === "true") {
-    localStorage.setItem(heartbeatKey, Date.now());
-  }
-}, heartbeatInterval);
-
-/* === 5️⃣ Only the first tab enters Ably presence === */
-async function tryEnterPresence() {
-  if (!isMainTab()) {
-    setMainTab(true);
-    try {
-      await channel.attach();
-      channel.presence.enter("online");
-    } catch (err) {
-      console.error("Error entering presence:", err);
+    /* === 🔟 Count updater === */
+    function updateCount() {
+      channel.presence.get((err, members) => {
+        if (err) return;
+        const unique = new Set(members.map(m => m.clientId));
+        const count = unique.size;
+        document.getElementById("userText").textContent =
+          `${count} user(s) online`;
+      });
     }
-  }
-}
 
-/* === 6️⃣ Listen for other tabs closing/opening === */
-window.addEventListener("storage", async (event) => {
-  if (event.key === heartbeatKey) {
-    if (!isMainTab()) {
-      tryEnterPresence();
-    }
-  }
-});
+    channel.presence.subscribe("enter", updateCount);
+    channel.presence.subscribe("leave", updateCount);
+    setTimeout(updateCount, 1500);
 
-/* === 7️⃣ Leave presence when tab is closed === */
-window.addEventListener("beforeunload", () => {
-  if (isMainTab()) {
-    channel.presence.leave("online");
-    setMainTab(false);
-  }
-});
+    /* === 11️⃣ Hover effect === */
+    counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
+    counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
 
-/* === 8️⃣ Create counter element === */
-const counter = document.createElement("div");
-counter.id = "userCounter";
-Object.assign(counter.style, {
-  position: "fixed",
-  bottom: "15px",
-  right: "15px",
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  padding: "8px 14px",
-  background: "linear-gradient(90deg, #2575fc, #6a11cb)",
-  color: "white",
-  fontFamily: "Arial, sans-serif",
-  fontSize: "14px",
-  borderRadius: "12px",
-  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-  zIndex: "999",
-  opacity: "0.9",
-  transition: "opacity 0.3s ease"
-});
+    /* Start main process after connected */
+    ably.connection.once("connected", tryEnterPresence);
+  </script>
 
-counter.innerHTML = `
-  <div id="statusDot" style="
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: limegreen;
-    box-shadow: 0 0 6px 2px rgba(0,255,0,0.5);
-    animation: pulse 1.5s infinite;
-  "></div>
-  <span id="userText">Connecting...</span>
-`;
-
-document.body.appendChild(counter);
-
-/* === 9️⃣ Glow animation === */
-const style = document.createElement("style");
-style.textContent = `
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.7; }
-}
-`;
-document.head.appendChild(style);
-
-/* === 🔟 Count updater === */
-function updateCount() {
-  channel.presence.get((err, members) => {
-    if (err) return;
-    const unique = new Set(members.map(m => m.clientId));
-    const count = unique.size;
-    document.getElementById("userText").textContent =
-      `${count} user(s) online`;
-  });
-}
-
-channel.presence.subscribe("enter", updateCount);
-channel.presence.subscribe("leave", updateCount);
-setTimeout(updateCount, 1500);
-
-/* === 11️⃣ Hover effect === */
-counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
-counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
-
-/* Start main process after connected */
-ably.connection.once("connected", tryEnterPresence);
-</script>
-<script type="module" src="/dd-games/assets/management.js"></script>
+  <script type="module" src="/dd-games/assets/management.js"></script>
 </body>
-</html> 
+</html>
