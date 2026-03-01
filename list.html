@@ -161,8 +161,16 @@ function brainrot() {
 <body>
 
 <button class="back-button" onclick="window.location.href='https://davcode149.github.io/dd-games/main.html'">← Back</button>
-<script async="async" data-cfasync="false" src="https://pl28818800.effectivegatecpm.com/f6bb7ff2099400e0cb363a9ed7fd1648/invoke.js"></script>
-<div id="container-f6bb7ff2099400e0cb363a9ed7fd1648"></div>
+<script>
+  atOptions = {
+    'key' : 'a19f6c85731f299418a7856e52d88a41',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/a19f6c85731f299418a7856e52d88a41/invoke.js"></script>
 <h2 style="color:white;margin-top:30px;">Quick Links</h2>
 <div class="grid-container" id="quickLinks">
 
@@ -262,12 +270,17 @@ function renderGames() {
 
   grid.innerHTML = "";
 
+  // CREATE SECTIONS
   const freeSection = document.createElement("div");
   const premiumSection = document.createElement("div");
+
+  freeSection.className = "section";
+  premiumSection.className = "section";
 
   freeSection.innerHTML = `<h2 style="color:white;">🎮 Free Games</h2>`;
   premiumSection.innerHTML = `<h2 style="color:gold;">🌟 Premium Games</h2>`;
 
+  // ADD GAMES TO SECTIONS
   filtered.forEach(game => {
     const item = document.createElement("div");
     item.className = "grid-item";
@@ -292,12 +305,14 @@ function renderGames() {
     }
   });
 
+  // APPEND SECTIONS VERTICALLY
   grid.appendChild(freeSection);
 
   if (isPremiumUser) {
     grid.appendChild(premiumSection);
   } else {
     const locked = document.createElement("div");
+    locked.className = "section";
     locked.innerHTML = `
       <h2 style="color:gold;">🔒 Premium Games</h2>
       <p style="color:white;">
@@ -311,7 +326,6 @@ function renderGames() {
     grid.appendChild(locked);
   }
 }
-
 /* ===== POPUP ===== */
 const popupTitleText = "⚠️ IMPORTANT: PLEASE READ ⚠️";
 const popupDescText = "Due to our recent breach, we're adding a lot of new security features to prevent one from happening again. We're now requiring that you use your REAL name for the site. This is so we can get rid of Leakers who are staying annoymous, if you lose access, just simply use the request form to confirm your identity and get your access back. Thank you for understanding.";
