@@ -161,9 +161,9 @@ function brainrot() {
 <body>
 
 <button class="back-button" onclick="window.location.href='https://davcode149.github.io/dd-games/main.html'">← Back</button>
-<h2 style="color:white;margin-top:30px;">Quick Links</h2>
 <script async="async" data-cfasync="false" src="https://pl28818800.effectivegatecpm.com/f6bb7ff2099400e0cb363a9ed7fd1648/invoke.js"></script>
 <div id="container-f6bb7ff2099400e0cb363a9ed7fd1648"></div>
+<h2 style="color:white;margin-top:30px;">Quick Links</h2>
 <div class="grid-container" id="quickLinks">
 
   <div class="grid-item" onclick="window.location.href='https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Jrm3b-vtT02C6AwQ5Ee1cNLNR-GLk9tJrwn7dwbdJRtUM0FXU0JTWTExME9PM1U3T1ZHS1lSSlJJRy4u'">
@@ -202,17 +202,9 @@ function brainrot() {
 
 <script>
 let allGames = [];
+let isPremiumUser = false;
 
-function showErrorPopup(code) {
-  popupTitle.textContent = "An error has occurred.";
-  popupDesc.textContent = "Error code: " + code;
-  popupOverlay.classList.add("show");
-}
-
-function renderGames() {
-  let isPremiumUser = false;
-
-/* GET USER */
+/* ===== USER FETCH ===== */
 async function loadUser() {
   let myID = localStorage.getItem("device_id");
   if (!myID) {
@@ -220,59 +212,53 @@ async function loadUser() {
     localStorage.setItem("device_id", myID);
   }
 
-  const { data: me } = await fetch("https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users?user_id=eq." + myID, {
-    headers: {
-      "apikey": "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
-    }
-  }).then(r => r.json());
-
-  if (me && me[0]?.premium) isPremiumUser = true;
+  try {
+    const res = await fetch(
+      "https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users?user_id=eq." + myID,
+      {
+        headers: {
+          "apikey": "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
+        }
+      }
+    );
+    const me = await res.json();
+    isPremiumUser = me && me[0]?.premium ? true : false;
+  } catch (err) {
+    console.error("Failed to load user:", err);
+  }
 }
+
+/* ===== GAMES FETCH ===== */
 async function loadGames() {
-  await loadUser()
+  await loadUser();
+
   try {
     const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
       cache: "no-store"
     });
+    if (!res.ok) throw new Error("HTTP_" + res.status);
 
-    if (!res.ok) {
-      throw new Error("HTTP_" + res.status);
-    }
-
-    const text = await res.text();
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error("INVALID_JSON");
-    }
-
-    if (!Array.isArray(data)) {
-      throw new Error("NOT_ARRAY");
-    }
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error("NOT_ARRAY");
 
     allGames = data;
     renderGames();
-
   } catch (err) {
     showErrorPopup(err.message);
   }
 }
-setInterval(loadGames, 60000);
-async function renderGames() {
+
+/* ===== RENDER GAMES ===== */
+function renderGames() {
   const grid = document.getElementById("gameGrid");
   const search = document.getElementById("searchInput").value.toLowerCase();
   const sort = document.getElementById("sortSelect").value;
 
-  let filtered = allGames.filter(g =>
-    g.name.toLowerCase().includes(search)
-  );
+  let filtered = allGames.filter(g => g.name.toLowerCase().includes(search));
 
-  filtered.sort((a, b) => {
-    if (sort === "az") return a.name.localeCompare(b.name);
-    if (sort === "za") return b.name.localeCompare(a.name);
-  });
+  filtered.sort((a, b) =>
+    sort === "az" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+  );
 
   grid.innerHTML = "";
 
@@ -282,7 +268,7 @@ async function renderGames() {
   freeSection.innerHTML = `<h2 style="color:white;">🎮 Free Games</h2>`;
   premiumSection.innerHTML = `<h2 style="color:gold;">🌟 Premium Games</h2>`;
 
-  filtered.forEach((game, index) => {
+  filtered.forEach(game => {
     const item = document.createElement("div");
     item.className = "grid-item";
 
@@ -325,53 +311,58 @@ async function renderGames() {
     grid.appendChild(locked);
   }
 }
-}
 
-document.getElementById("searchInput").addEventListener("input", renderGames);
-document.getElementById("sortSelect").addEventListener("change", renderGames);
-
-loadGames();
-
-/* ===== POPUP CONFIG ===== */
+/* ===== POPUP ===== */
 const popupTitleText = "⚠️ IMPORTANT: PLEASE READ ⚠️";
 const popupDescText = "Due to our recent breach, we're adding a lot of new security features to prevent one from happening again. We're now requiring that you use your REAL name for the site. This is so we can get rid of Leakers who are staying annoymous, if you lose access, just simply use the request form to confirm your identity and get your access back. Thank you for understanding.";
 const popupExpireTime = "2026-02-26T23:59:59";
 
 function showPopupIfValid() {
   if (!popupTitleText || !popupDescText) return;
-  if (popupExpireTime) {
-    if (new Date() > new Date(popupExpireTime)) return;
-  }
-  popupTitle.textContent = popupTitleText;
-  popupDesc.textContent = popupDescText;
-  popupOverlay.classList.add("show");
+  if (popupExpireTime && new Date() > new Date(popupExpireTime)) return;
+  document.getElementById("popupTitle").textContent = popupTitleText;
+  document.getElementById("popupDesc").textContent = popupDescText;
+  document.getElementById("popupOverlay").classList.add("show");
 }
+
 function dismissPopup() {
-  popupOverlay.classList.remove("show");
+  document.getElementById("popupOverlay").classList.remove("show");
 }
+
 showPopupIfValid();
-</script>
-<!-- Live User Counter -->
-<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
-<script>
-/* === 1️⃣ Unique persistent browser ID === */
+
+/* ===== ERROR POPUP ===== */
+function showErrorPopup(code) {
+  document.getElementById("popupTitle").textContent = "An error has occurred.";
+  document.getElementById("popupDesc").textContent = "Error code: " + code;
+  document.getElementById("popupOverlay").classList.add("show");
+}
+
+/* ===== SEARCH & SORT EVENTS ===== */
+document.getElementById("searchInput").addEventListener("input", renderGames);
+document.getElementById("sortSelect").addEventListener("change", renderGames);
+
+/* ===== INITIAL LOAD & INTERVAL ===== */
+loadGames();
+setInterval(loadGames, 60000);
+
+/* ===== ABLY LIVE USER COUNTER ===== */
 let browserId = localStorage.getItem('ablyBrowserId');
 if (!browserId) {
   browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
   localStorage.setItem('ablyBrowserId', browserId);
 }
 
-/* === 2️⃣ Setup Ably connection === */
 const ably = new Ably.Realtime({
   key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
   clientId: browserId
 });
+
 const channel = ably.channels.get('site-active-users');
 
-/* === 3️⃣ Shared-tab logic === */
 const isMainTabKey = "ablyMainTabActive";
 const heartbeatKey = "ablyHeartbeat";
-const heartbeatInterval = 3000; // ms
+const heartbeatInterval = 3000;
 
 function setMainTab(active) {
   if (active) {
@@ -388,14 +379,12 @@ function isMainTab() {
   return Date.now() - lastBeat < heartbeatInterval * 2;
 }
 
-/* === 4️⃣ Keep heartbeat alive if this is the main tab === */
 setInterval(() => {
   if (localStorage.getItem(isMainTabKey) === "true") {
     localStorage.setItem(heartbeatKey, Date.now());
   }
 }, heartbeatInterval);
 
-/* === 5️⃣ Only the first tab enters Ably presence === */
 async function tryEnterPresence() {
   if (!isMainTab()) {
     setMainTab(true);
@@ -408,16 +397,12 @@ async function tryEnterPresence() {
   }
 }
 
-/* === 6️⃣ Listen for other tabs closing/opening === */
 window.addEventListener("storage", async (event) => {
-  if (event.key === heartbeatKey) {
-    if (!isMainTab()) {
-      tryEnterPresence();
-    }
+  if (event.key === heartbeatKey && !isMainTab()) {
+    tryEnterPresence();
   }
 });
 
-/* === 7️⃣ Leave presence when tab is closed === */
 window.addEventListener("beforeunload", () => {
   if (isMainTab()) {
     channel.presence.leave("online");
@@ -425,7 +410,6 @@ window.addEventListener("beforeunload", () => {
   }
 });
 
-/* === 8️⃣ Create counter element === */
 const counter = document.createElement("div");
 counter.id = "userCounter";
 Object.assign(counter.style, {
@@ -446,7 +430,6 @@ Object.assign(counter.style, {
   opacity: "0.9",
   transition: "opacity 0.3s ease"
 });
-
 counter.innerHTML = `
   <div id="statusDot" style="
     width: 10px;
@@ -458,10 +441,8 @@ counter.innerHTML = `
   "></div>
   <span id="userText">Connecting...</span>
 `;
-
 document.body.appendChild(counter);
 
-/* === 9️⃣ Glow animation === */
 const style = document.createElement("style");
 style.textContent = `
 @keyframes pulse {
@@ -471,7 +452,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-/* === 🔟 Count updater === */
 function updateCount() {
   channel.presence.get((err, members) => {
     if (err) return;
@@ -486,11 +466,9 @@ channel.presence.subscribe("enter", updateCount);
 channel.presence.subscribe("leave", updateCount);
 setTimeout(updateCount, 1500);
 
-/* === 11️⃣ Hover effect === */
 counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
 counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
 
-/* Start main process after connected */
 ably.connection.once("connected", tryEnterPresence);
 </script>
 <script type="module" src="/dd-games/assets/management.js"></script>

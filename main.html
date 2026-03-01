@@ -281,6 +281,9 @@ window.launchSite=function(){
   document.body.style.height = "100vh";
 
   document.body.innerHTML = `
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <iframe 
       src="/dd-games/list.html"
       style="border:none; width:100vw; height:100vh;"
