@@ -4,6 +4,8 @@ const supabaseUrl = "https://lqfcntoldutgkzaboqfk.supabase.co";
 const supabaseKey = "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+const PREMIUM_PAGE_URL = "/dd-games/assets/premium-info.html";
+
 /* DEVICE ID */
 function getOrCreateDeviceID() {
   let id = localStorage.getItem("device_id");
@@ -22,6 +24,11 @@ function getDeviceInfo() {
     device: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop",
     page: location.pathname
   };
+}
+
+/* CHECK IF THIS PAGE IS PREMIUM */
+function pageIsPremium() {
+  return document.body.dataset.premium === "true";
 }
 
 const deviceID = getOrCreateDeviceID();
@@ -55,13 +62,23 @@ if (!existingUser) {
     visit_count: 1,
     blocked: false,
     "Name": "",
-    "Playtime": 0
+    "Playtime": 0,
+    "Premium": false
   });
 
 } else {
   if (existingUser.blocked) {
     document.body.innerHTML = "<h1>Access denied.</h1>";
     throw new Error("Blocked");
+  }
+
+  /* 🚫 PREMIUM PAGE CHECK */
+  const isPremiumPage = pageIsPremium();
+  const hasPremium = existingUser.Premium === true;
+
+  if (isPremiumPage && !hasPremium) {
+    window.location.href = PREMIUM_PAGE_URL;
+    throw new Error("Premium required");
   }
 
   // Redirect if no name
@@ -86,7 +103,7 @@ if (!existingUser) {
 setInterval(async () => {
   const { data, error } = await supabase
     .from("users")
-    .select('"Playtime", blocked')
+    .select('"Playtime", blocked, "Premium"')
     .eq("user_id", deviceID)
     .maybeSingle();
 
@@ -99,6 +116,12 @@ setInterval(async () => {
 
   if (data.blocked) {
     document.body.innerHTML = "<h1>You have been Blocked for breaking DD Games' TOS.</h1>";
+    return;
+  }
+
+  /* 🚫 STILL CHECK PREMIUM WHILE PLAYING */
+  if (pageIsPremium() && data.Premium !== true) {
+    window.location.href = PREMIUM_PAGE_URL;
     return;
   }
 
