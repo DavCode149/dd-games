@@ -40,12 +40,13 @@ body {
 }
 
 /* Grid */
+
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 20px;
   width: 90%;
-  max-width: 1000px;
+  max-width: 200px;
   padding: 20px;
 }
 
@@ -94,13 +95,13 @@ body {
   cursor: pointer;
 }
 
-.section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;          /* space between items in a section */
-  margin-bottom: 30px; /* space between sections */
+/* Section wrapper to separate grids vertically */
+.section-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;       /* spacing between title and grid */
+  margin-bottom: 30px; /* spacing between sections */
 }
-
 /* ===== POPUP ===== */
 #popupOverlay {
   position: fixed;
@@ -266,7 +267,7 @@ async function loadGames() {
 
 /* ===== RENDER GAMES ===== */
 function renderGames() {
-  const grid = document.getElementById("gameGrid");
+  const mainGrid = document.getElementById("gameGrid");
   const search = document.getElementById("searchInput").value.toLowerCase();
   const sort = document.getElementById("sortSelect").value;
 
@@ -276,42 +277,85 @@ function renderGames() {
     sort === "az" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
   );
 
-  grid.innerHTML = "";
+  mainGrid.innerHTML = ""; // clear everything
 
-  // CREATE SECTIONS
+  // --- FREE GAMES GRID ---
   const freeSection = document.createElement("div");
-  const premiumSection = document.createElement("div");
-
-  freeSection.className = "section";
-  premiumSection.className = "section";
-
+  freeSection.className = "section-container"; // new wrapper
   freeSection.innerHTML = `<h2 style="color:white;">🎮 Free Games</h2>`;
-  premiumSection.innerHTML = `<h2 style="color:gold;">🌟 Premium Games</h2>`;
 
-  // ADD GAMES TO SECTIONS
+  const freeGrid = document.createElement("div");
+  freeGrid.className = "grid-container"; // independent grid for free games
+
   filtered.forEach(game => {
-    const item = document.createElement("div");
-    item.className = "grid-item";
+    if (!game.premium) {
+      const item = document.createElement("div");
+      item.className = "grid-item";
 
-    const img = document.createElement("img");
-    img.src = game.image;
+      const img = document.createElement("img");
+      img.src = game.image;
 
-    const title = document.createElement("h3");
-    title.textContent = game.name;
+      const title = document.createElement("h3");
+      title.textContent = game.name;
 
-    item.appendChild(img);
-    item.appendChild(title);
-
-    if (game.premium) {
-      if (isPremiumUser) {
-        item.onclick = () => window.location.href = game.link;
-        premiumSection.appendChild(item);
-      }
-    } else {
+      item.appendChild(img);
+      item.appendChild(title);
       item.onclick = () => window.location.href = game.link;
-      freeSection.appendChild(item);
+
+      freeGrid.appendChild(item);
     }
   });
+
+  freeSection.appendChild(freeGrid);
+  mainGrid.appendChild(freeSection);
+
+  // --- PREMIUM GAMES GRID ---
+  if (isPremiumUser) {
+    const premiumSection = document.createElement("div");
+    premiumSection.className = "section-container";
+    premiumSection.innerHTML = `<h2 style="color:gold;">🌟 Premium Games</h2>`;
+
+    const premiumGrid = document.createElement("div");
+    premiumGrid.className = "grid-container"; // independent grid for premium games
+
+    filtered.forEach(game => {
+      if (game.premium) {
+        const item = document.createElement("div");
+        item.className = "grid-item";
+
+        const img = document.createElement("img");
+        img.src = game.image;
+
+        const title = document.createElement("h3");
+        title.textContent = game.name;
+
+        item.appendChild(img);
+        item.appendChild(title);
+        item.onclick = () => window.location.href = game.link;
+
+        premiumGrid.appendChild(item);
+      }
+    });
+
+    premiumSection.appendChild(premiumGrid);
+    mainGrid.appendChild(premiumSection);
+  } else {
+    // Locked section
+    const lockedSection = document.createElement("div");
+    lockedSection.className = "section-container";
+    lockedSection.innerHTML = `
+      <h2 style="color:gold;">🔒 Premium Games</h2>
+      <p style="color:white;">
+        Unlock exclusive games with DD Games Premium!
+      </p>
+      <button onclick="window.location.href='premium-info.html'"
+        style="padding:10px 16px;border:none;border-radius:8px;background:gold;cursor:pointer;">
+        Get Premium – $3.50/month
+      </button>
+    `;
+    mainGrid.appendChild(lockedSection);
+  }
+}
 
   // APPEND SECTIONS VERTICALLY
   grid.appendChild(freeSection);
