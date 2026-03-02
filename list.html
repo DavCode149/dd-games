@@ -234,31 +234,6 @@ async function loadUser() {
   return data[0].premium === true;
 }
 
-/* ===== AD LOADER ===== */
-function loadAdIfNotPremium(isPremiumUser) {
-  if (isPremiumUser) return; // 🚫 premium = no ads
-
-  const adSlot = document.getElementById("ad-slot");
-  if (!adSlot) return;
-
-  adSlot.innerHTML = ""; // prevent duplicates
-
-  window.atOptions = {
-    key: "a19f6c85731f299418a7856e52d88a41",
-    format: "iframe",
-    height: 90,
-    width: 728,
-    params: {}
-  };
-
-  const script = document.createElement("script");
-  script.src =
-    "https://www.highperformanceformat.com/a19f6c85731f299418a7856e52d88a41/invoke.js";
-  script.async = true;
-
-  adSlot.appendChild(script);
-}
-
 /* ===== RENDER GAMES ===== */
 function renderGames(isPremiumUser) {
   const grid = document.getElementById("gameGrid");
@@ -314,8 +289,6 @@ function renderGames(isPremiumUser) {
 /* ===== LOAD GAMES ===== */
 async function loadGames() {
   const isPremiumUser = await loadUser();
-
-  loadAdIfNotPremium(isPremiumUser);
 
   const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
     cache: "no-store"
