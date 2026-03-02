@@ -316,6 +316,12 @@
     "image": "/dd-games/assets/images/iron-lung.png",
     "link": "/dd-games/games/0-iron-lung.html",
     "premium": true
+},
+{
+    "name": "Untitled Goose Game",
+    "image": "/dd-games/assets/images/untitled-goose-game.png",
+    "link": "/dd-games/games/0-untitled-goose-game.html",
+    "premium": true
 }
 
 ]
