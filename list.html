@@ -165,16 +165,7 @@ body {
   </div>
 </div>
 <button class="back-button" onclick="window.location.href='https://davcode149.github.io/dd-games/main.html'">← Back</button>
-<script>
-  atOptions = {
-    'key' : 'a19f6c85731f299418a7856e52d88a41',
-    'format' : 'iframe',
-    'height' : 90,
-    'width' : 728,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/a19f6c85731f299418a7856e52d88a41/invoke.js"></script>
+<div id="ad-slot"></div>
 <h2 style="color:white;margin-top:30px;">Quick Links</h2>
 <div class="grid-container" id="quickLinks">
 
@@ -246,6 +237,7 @@ async function loadUser() {
 /* ===== LOAD GAMES ===== */
 async function loadGames() {
   const isPremiumUser = await loadUser();
+  loadAdIfNotPremium(isPremiumUser);
 
   const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
     cache: "no-store"
@@ -306,10 +298,27 @@ function renderGames(isPremiumUser) {
 
     grid.appendChild(item);
   });
-  // remove ads for premium users
-  if (isPremiumUser) {
-    document.getElementById("atContainer-a19f6c85731f299418a7856e52d88a41")?.remove();
-  }
+  function loadAdIfNotPremium(isPremiumUser) {
+  if (isPremiumUser) return; // 🚫 Premium users get no ads
+
+  const adSlot = document.getElementById("ad-slot");
+  if (!adSlot) return;
+
+  // Adsterra config
+  window.atOptions = {
+    key: "a19f6c85731f299418a7856e52d88a41",
+    format: "iframe",
+    height: 90,
+    width: 728,
+    params: {}
+  };
+
+  const script = document.createElement("script");
+  script.src = "https://www.highperformanceformat.com/a19f6c85731f299418a7856e52d88a41/invoke.js";
+  script.async = true;
+
+  adSlot.appendChild(script);
+}
 }
 
 document.getElementById("searchInput").addEventListener("input", loadGames);
