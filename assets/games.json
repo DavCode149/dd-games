@@ -334,6 +334,12 @@
     "image": "/dd-games/assets/images/polytrack.png",
     "link": "/dd-games/games/0-polytrack.html",
     "premium": false
+},
+{
+	"name": "stacktris",
+    "image": "/dd-games/assets/images/stacktris.png",
+    "link": "/dd-games/games/0-stacktris.html",
+    "premium": false
 }
 
 ]
