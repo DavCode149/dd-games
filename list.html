@@ -229,10 +229,34 @@ async function loadUser() {
   }
 
   const data = await res.json();
-
   if (!data || !data[0]) return false;
 
   return data[0].premium === true;
+}
+
+/* ===== AD LOADER ===== */
+function loadAdIfNotPremium(isPremiumUser) {
+  if (isPremiumUser) return; // 🚫 premium = no ads
+
+  const adSlot = document.getElementById("ad-slot");
+  if (!adSlot) return;
+
+  adSlot.innerHTML = ""; // prevent duplicates
+
+  window.atOptions = {
+    key: "a19f6c85731f299418a7856e52d88a41",
+    format: "iframe",
+    height: 90,
+    width: 728,
+    params: {}
+  };
+
+  const script = document.createElement("script");
+  script.src =
+    "https://www.highperformanceformat.com/a19f6c85731f299418a7856e52d88a41/invoke.js";
+  script.async = true;
+
+  adSlot.appendChild(script);
 }
 
 /* ===== RENDER GAMES ===== */
@@ -267,7 +291,7 @@ function renderGames(isPremiumUser) {
     item.appendChild(title);
 
     if (game.premium && !isPremiumUser) {
-      img.classList.add("blur");
+      img.style.filter = "blur(4px)";
 
       const lock = document.createElement("div");
       lock.className = "lock-overlay";
@@ -285,31 +309,12 @@ function renderGames(isPremiumUser) {
 
     grid.appendChild(item);
   });
-  function loadAdIfNotPremium(isPremiumUser) {
-  if (isPremiumUser) return; // 🚫 Premium users get no ads
-
-  const adSlot = document.getElementById("ad-slot");
-  if (!adSlot) return;
-
-  // Adsterra config
-  window.atOptions = {
-    key: "a19f6c85731f299418a7856e52d88a41",
-    format: "iframe",
-    height: 90,
-    width: 728,
-    params: {}
-  };
-
-  const script = document.createElement("script");
-  script.src = "https://www.highperformanceformat.com/a19f6c85731f299418a7856e52d88a41/invoke.js";
-  script.async = true;
-
-  adSlot.appendChild(script);
 }
-}
+
 /* ===== LOAD GAMES ===== */
 async function loadGames() {
   const isPremiumUser = await loadUser();
+
   loadAdIfNotPremium(isPremiumUser);
 
   const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
@@ -318,15 +323,19 @@ async function loadGames() {
 
   const data = await res.json();
   allGames = data;
+
   renderGames(isPremiumUser);
 }
+
 document.getElementById("searchInput").addEventListener("input", loadGames);
 document.getElementById("sortSelect").addEventListener("change", loadGames);
 
 loadGames();
 
+/* ===== POPUP ===== */
 const popupTitleText = "Launching DD Games Premium!";
-const popupDescText = "Introducing DD Games Premium! A monthly subscription of $3.50 CAD will boost your experience! Get access to our chatting platform, play Premium-only games, and go Ad-Free! You'll also get early access to new updates, priority features & updates, and more! Get more info & check out it out via Quick Links.";
+const popupDescText =
+  "Introducing DD Games Premium! A monthly subscription of $3.50 CAD will boost your experience! Get access to our chatting platform, play Premium-only games, and go Ad-Free!";
 const popupExpireTime = "2026-03-06T23:59:59";
 
 function showPopupIfValid() {
@@ -343,7 +352,6 @@ function dismissPopup() {
 }
 
 showPopupIfValid();
-
 </script>
 <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
