@@ -322,6 +322,12 @@
     "image": "/dd-games/assets/images/untitled-goose-game.png",
     "link": "/dd-games/games/0-untitled-goose-game.html",
     "premium": true
+},
+{
+    "name": "Cuphead",
+    "image": "/dd-games/assets/images/cuphead.png",
+    "link": "/dd-games/games/0-cuphead.html",
+    "premium": true
 }
 
 ]
