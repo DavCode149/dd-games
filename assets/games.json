@@ -328,6 +328,12 @@
     "image": "/dd-games/assets/images/cuphead.png",
     "link": "/dd-games/games/0-cuphead.html",
     "premium": true
+},
+{
+  "name": "polytrack",
+    "image": "/dd-games/assets/images/polytrack.png",
+    "link": "/dd-games/games/0-polytrack.html",
+    "premium": false
 }
 
 ]
