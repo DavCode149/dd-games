@@ -77,7 +77,7 @@ if (!existingUser) {
   const hasPremium = existingUser.Premium === true;
 
   if (isPremiumPage && !hasPremium) {
-    window.location.href = PREMIUM_PAGE_URL;
+    window.location.href = "/dd-games/assets/premium-info.html";
     throw new Error("Premium required");
   }
 

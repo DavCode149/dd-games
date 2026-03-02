@@ -7,15 +7,53 @@
   gtag('config', 'G-L7856P3VNT');
 </script><!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <base href="https://cdn.jsdelivr.net/gh/web-ports/fnae@c9c8b513a27155bf37c4ab3dee74e99b12b895ba/">
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Five Night's at BIG E</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
+
+<head>
+  <base href="https://cdn.jsdelivr.net/gh/web-ports/iron-lung@main/">
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>IRON LUNG</title>
   <style>
-#sidebarad1,
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #unity-canvas {
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      display: block;
+    }
+    #loading-text {
+  font-weight: bold;
+  background: linear-gradient(
+    270deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #8f00ff
+  );
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 3s ease infinite;
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+  #sidebarad1,
 #sidebarad2 {
   position: fixed;
   top: 50%;
@@ -55,8 +93,9 @@
 }
 </style>
 </head>
-  <body data-premium="true">
-     <!-- ▼ Dropdown menu toggle -->
+
+<body data-premium="true">
+      <!-- ▼ Dropdown menu toggle -->
 <div class="menu-container">
   <div class="menu-toggle" onclick="toggleMenu()">▼</div>
   <div class="dropdown-menu" id="dropdownMenu">
@@ -147,17 +186,9 @@
   <div id="loading-text"
     style="color: white; font-size: 48px; font-family: cursive; text-align: center; margin-top: 20px;"> LOADING...
   </div>
-    <div id="unity-container">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
-      </div>
-    </div>
-    <script>
-var loadingText = document.querySelector("#loading-text");
+  <canvas id="unity-canvas"></canvas>
+  <script src="Build/built.loader.js"></script>
+  <script>var loadingText = document.querySelector("#loading-text");
     let totalBytes = 0;
     let loadedBytes = 0;
 
@@ -176,7 +207,7 @@ var loadingText = document.querySelector("#loading-text");
         loadedBytes += value.length;
         chunks.push(value);
         let mbDone = (loadedBytes / (1024 * 1024)).toFixed(2);
-        let mbTotal = '155.84';
+        let mbTotal = '60.7';
         loadingText.textContent = `LOADING... ${mbDone} MB / ${mbTotal} MB`;
       }
       let fullBuffer = new Uint8Array(received);
@@ -187,7 +218,6 @@ var loadingText = document.querySelector("#loading-text");
       }
       return fullBuffer.buffer;
     }
-
     async function mergeFiles(fileParts, cacheKey) {
       const buffers = await Promise.all(
         fileParts.map(part => fetchWithProgress(part))
@@ -204,80 +234,32 @@ var loadingText = document.querySelector("#loading-text");
       return parts;
     }
     (async () => {
-      const [dataUrl, wasmUrl, webm] = await Promise.all([
-        mergeFiles(getParts("Build/fnae.data", 1, 3), "fnae.data"),
-        mergeFiles(getParts("Build/fnae.wasm", 1, 3), "fnae.wasm"),
-        mergeFiles(getParts("StreamingAssets/202512191935.webm", 1, 3), "202512191935.webm"),
+      const [dataUrl, wasmUrl] = await Promise.all([
+        mergeFiles(getParts("Build/built.data", 1, 2), "built.data"),
+        mergeFiles(getParts("Build/built.wasm", 1, 2), "built.wasm"),
       ]);
-
-window.randomwebm = webm;
-const realSrc = Object.getOwnPropertyDescriptor(
-  HTMLMediaElement.prototype,
-  "src"
-);
-
-Object.defineProperty(HTMLMediaElement.prototype, "src", {
-  set(value) {
-    if (typeof value === "string" && value.includes("202512191935.mp4") || value.includes("202512191935.webm")) {
-      value = window.randomwebm;
-    }
-    return realSrc.set.call(this, value);
-  },
-  get() {
-    return realSrc.get.call(this);
-  }
-});
-
-
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var warningBanner = document.querySelector("#unity-warning");
-
-      function unityShowBanner(msg, type) {
-
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var phoneScreenFixer = document.createElement('meta');
+        phoneScreenFixer.name = 'viewport';
+        phoneScreenFixer.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(phoneScreenFixer);
       }
 
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/fnae.loader.js";
-      var config = {
-        arguments: [],
+      var hugeCanvas = document.querySelector("#unity-canvas");
+
+      createUnityInstance(hugeCanvas, {
         dataUrl: dataUrl,
-        frameworkUrl: buildUrl + "/fnae.framework.js",
+        frameworkUrl: "Build/built.framework.js",
         codeUrl: wasmUrl,
         streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "fnae",
+        companyName: "98Corbins",
+        productName: "Iron Lung",
         productVersion: "1.0",
-        showBanner: unityShowBanner,
-      };
-
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-      }
-
-
-      loadingBar.style.display = "block";
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-          loadingText.remove();
-        }).catch((message) => {
-        });
-      };
-      document.body.appendChild(script);
+      });
+      loadingText.remove();
     })();
-    </script>
-  <div id="sidebarad1">
+  </script>
+<div id="sidebarad1">
   <div class="sidebar-close" onclick="this.parentElement.style.display='none'">✕</div>
 </div>
 <div id="sidebarad2">
@@ -366,4 +348,5 @@ Object.defineProperty(HTMLMediaElement.prototype, "src", {
 </script>
 <script type="module" src="/dd-games/assets/management.js"></script>
 </body>
+
 </html>
