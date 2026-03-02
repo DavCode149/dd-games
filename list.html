@@ -306,6 +306,14 @@ function renderGames(isPremiumUser) {
 
     grid.appendChild(item);
   });
+  // remove ads for premium users
+  if (isPremiumUser) {
+    setInterval(() => {
+      document
+        .getElementById("atContainer-a19f6c85731f299418a7856e52d88a41")
+        ?.remove();
+    }, 500);
+  }
 }
 
 document.getElementById("searchInput").addEventListener("input", loadGames);
@@ -332,14 +340,6 @@ function dismissPopup() {
 
 showPopupIfValid();
 
-// remove ads for premium users
-  if (isPremiumUser) {
-    setInterval(() => {
-      document
-        .getElementById("atContainer-a19f6c85731f299418a7856e52d88a41")
-        ?.remove();
-    }, 500);
-  }
 </script>
 <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
