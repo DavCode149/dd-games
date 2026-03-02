@@ -182,23 +182,30 @@ async function loadUser() {
     localStorage.setItem("device_id", myID);
   }
 
-  const res = await fetch(
-    "https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users?select=Premium&user_id=eq." + myID,
-    {
-      headers: {
-        "apikey": "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d",
-        "Authorization": "Bearer sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
-      }
+  const url =
+    "https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users" +
+    "?select=%22Premium%22" +
+    "&user_id=eq." + encodeURIComponent(myID);
+
+  const res = await fetch(url, {
+    headers: {
+      "apikey": "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d",
+      "Authorization": "Bearer sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d",
+      "Accept": "application/json"
     }
-  );
+  });
+
+  if (!res.ok) {
+    console.error("Supabase error:", await res.text());
+    return false;
+  }
 
   const data = await res.json();
 
   if (!data || !data[0]) return false;
 
-  return data[0].Premium === true || data[0].Premium === "true";
+  return data[0].Premium === true;
 }
-
 /* ===== LOAD GAMES ===== */
 async function loadGames() {
   const isPremiumUser = await loadUser();
