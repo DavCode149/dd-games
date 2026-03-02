@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Chat</title>
+<title>DD Games Chat</title>
 <style>
 body{
   margin:0;font-family:Arial;background:#0f172a;color:white;
@@ -138,7 +138,7 @@ dropdown.onchange=async()=>{
 };
 
 /* CENSOR */
-const bannedWords=["badword1","badword2"];
+const bannedWords=["Nigger","nigger", "Nigga", "nigga", "Sex", "sex"];
 function censor(t){
   bannedWords.forEach(w=>{
     t=t.replace(new RegExp(w,"gi"),"#".repeat(w.length));

@@ -1,6 +1,6 @@
 # Terms of Service
 
-Last updated: Febuary 6, 2026
+Last updated: March 1, 2026
 
 To use this site, you must agree to these **Terms of Service.** If you do not agree, you will be **denied** access until accepted.
 
@@ -16,6 +16,8 @@ You may not:
 - Use bots, scripts, or automated tools without permission
 
 - Abuse or misuse site features (including games, counters, or systems)
+
+- Use Violent/Slurs/Vulgar language in DD Games Chat
 
 ## 2. Blocking & Enforcement
 

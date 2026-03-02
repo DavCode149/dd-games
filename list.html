@@ -156,11 +156,39 @@ body {
 </head>
 
 <body>
-
+<!-- POPUP -->
+<div id="popupOverlay">
+  <div id="popupBox">
+    <h2 id="popupTitle"></h2>
+    <p id="popupDesc"></p>
+    <button onclick="dismissPopup()">Dismiss</button>
+  </div>
+</div>
 <button class="back-button" onclick="window.location.href='https://davcode149.github.io/dd-games/main.html'">← Back</button>
 
-<h2 style="color:white;margin-top:30px;">Games</h2>
+<h2 style="color:white;margin-top:30px;">Quick Links</h2>
+<div class="grid-container" id="quickLinks">
 
+  <div class="grid-item" onclick="window.location.href='https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=Jrm3b-vtT02C6AwQ5Ee1cNLNR-GLk9tJrwn7dwbdJRtUM0FXU0JTWTExME9PM1U3T1ZHS1lSSlJJRy4u'">
+    <img src="/dd-games/assets/images/request.jpg">
+    <h3>🎮 Request a Game</h3>
+  </div>
+
+  <div class="grid-item" onclick="window.location.href='/dd-games/assets/premium-info.html'">
+    <img src="/dd-games/assets/logo.png">
+    <h3>🌟 DD Games Premium</h3>
+  </div>
+
+  <div class="grid-item" onclick="window.location.href='/dd-games/assets/leaderboard.html'">
+    <img src="/dd-games/assets/logo.png">
+    <h3>🏆 Leaderboard</h3>
+  </div>
+
+  <div class="grid-item" onclick="window.location.href='/dd-games/assets/chat.html'">
+    <img src="/dd-games/assets/logo.png">
+    <h3>💬 DD Games Chat (PREMIUM)</h3>
+  </div>
+</div>
 <div class="controls">
   <input type="text" id="searchInput" placeholder="Search games...">
   <select id="sortSelect">
@@ -275,7 +303,126 @@ document.getElementById("searchInput").addEventListener("input", loadGames);
 document.getElementById("sortSelect").addEventListener("change", loadGames);
 
 loadGames();
-</script>
 
+const popupTitleText = "Launching DD Games Premium!";
+const popupDescText = "Introducing DD Games Premium! A monthly subscription of $3.50 CAD will boost your experience! Get access to our chatting platform, play Premium-only games, and go Ad-Free! You'll also get early access to new updates, priority features & updates, and more! Get more info & check out it out via Quick Links.";
+const popupExpireTime = "2026-03-06T23:59:59";
+
+function showPopupIfValid() {
+  if (!popupTitleText || !popupDescText) return;
+  if (popupExpireTime && new Date() > new Date(popupExpireTime)) return;
+
+  popupTitle.textContent = popupTitleText;
+  popupDesc.textContent = popupDescText;
+  popupOverlay.classList.add("show");
+}
+
+function dismissPopup() {
+  popupOverlay.classList.remove("show");
+}
+
+showPopupIfValid();
+</script>
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+<script>
+let browserId = localStorage.getItem('ablyBrowserId');
+if (!browserId) {
+  browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+  localStorage.setItem('ablyBrowserId', browserId);
+}
+
+const ably = new Ably.Realtime({
+  key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
+  clientId: browserId
+});
+const channel = ably.channels.get('site-active-users');
+
+const isMainTabKey = "ablyMainTabActive";
+const heartbeatKey = "ablyHeartbeat";
+const heartbeatInterval = 3000;
+
+function setMainTab(active) {
+  if (active) {
+    localStorage.setItem(isMainTabKey, "true");
+    localStorage.setItem(heartbeatKey, Date.now());
+  } else {
+    localStorage.removeItem(isMainTabKey);
+    localStorage.removeItem(heartbeatKey);
+  }
+}
+
+function isMainTab() {
+  const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
+  return Date.now() - lastBeat < heartbeatInterval * 2;
+}
+
+setInterval(() => {
+  if (localStorage.getItem(isMainTabKey) === "true") {
+    localStorage.setItem(heartbeatKey, Date.now());
+  }
+}, heartbeatInterval);
+
+async function tryEnterPresence() {
+  if (!isMainTab()) {
+    setMainTab(true);
+    await channel.attach();
+    channel.presence.enter("online");
+  }
+}
+
+window.addEventListener("storage", (event) => {
+  if (event.key === heartbeatKey) {
+    if (!isMainTab()) tryEnterPresence();
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  if (isMainTab()) {
+    channel.presence.leave("online");
+    setMainTab(false);
+  }
+});
+
+const counter = document.createElement("div");
+counter.id = "userCounter";
+Object.assign(counter.style, {
+  position: "fixed",
+  bottom: "15px",
+  right: "15px",
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  padding: "8px 14px",
+  background: "linear-gradient(90deg, #2575fc, #6a11cb)",
+  color: "white",
+  fontFamily: "Arial, sans-serif",
+  fontSize: "14px",
+  borderRadius: "12px",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+  zIndex: "999",
+  opacity: "0.9"
+});
+
+counter.innerHTML = `
+<div style="width:10px;height:10px;border-radius:50%;background:limegreen;box-shadow:0 0 6px rgba(0,255,0,0.7);"></div>
+<span id="userText">Connecting...</span>
+`;
+
+document.body.appendChild(counter);
+
+function updateCount() {
+  channel.presence.get((err, members) => {
+    if (err) return;
+    const unique = new Set(members.map(m => m.clientId));
+    document.getElementById("userText").textContent =
+      unique.size + " user(s) online";
+  });
+}
+
+channel.presence.subscribe("enter", updateCount);
+channel.presence.subscribe("leave", updateCount);
+
+ably.connection.once("connected", tryEnterPresence);
+</script>
 </body>
 </html>
