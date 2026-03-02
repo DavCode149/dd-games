@@ -165,7 +165,16 @@ body {
   </div>
 </div>
 <button class="back-button" onclick="window.location.href='https://davcode149.github.io/dd-games/main.html'">← Back</button>
-
+<script>
+  atOptions = {
+    'key' : 'a19f6c85731f299418a7856e52d88a41',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/a19f6c85731f299418a7856e52d88a41/invoke.js"></script>
 <h2 style="color:white;margin-top:30px;">Quick Links</h2>
 <div class="grid-container" id="quickLinks">
 
@@ -322,6 +331,15 @@ function dismissPopup() {
 }
 
 showPopupIfValid();
+
+// remove ads for premium users
+  if (isPremiumUser) {
+    setInterval(() => {
+      document
+        .getElementById("atContainer-a19f6c85731f299418a7856e52d88a41")
+        ?.remove();
+    }, 500);
+  }
 </script>
 <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>

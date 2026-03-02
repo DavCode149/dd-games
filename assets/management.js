@@ -80,7 +80,13 @@ if (!existingUser) {
     window.location.href = "/dd-games/assets/premium-info.html";
     throw new Error("Premium required");
   }
-
+  if (hasPremium) {
+    setInterval(() => {
+      document
+        .getElementById("atContainer-a19f6c85731f299418a7856e52d88a41")
+        ?.remove();
+    }, 500);
+  }
   // Redirect if no name
   if (!existingUser.Name || existingUser.Name.trim() === "") {
     if (!location.pathname.endsWith("main.html")) {
