@@ -212,9 +212,8 @@ function brainrot() {
 
 <script>
 let allGames = [];
-let isPremiumUser = false;
 
-/* ===== LOAD USER (FIXED & GLOBAL) ===== */
+/* ===== LOAD USER ===== */
 async function loadUser() {
   let myID = localStorage.getItem("device_id");
   if (!myID) {
@@ -231,52 +230,37 @@ async function loadUser() {
     }
   ).then(r => r.json());
 
-  if (me && me[0]?.Premium === true) {
-    isPremiumUser = true;
-  }
-}
-
-/* ===== POPUP ERROR ===== */
-function showErrorPopup(code) {
-  popupTitle.textContent = "An error has occurred.";
-  popupDesc.textContent = "Error code: " + code;
-  popupOverlay.classList.add("show");
+  return me && me[0]?.Premium === true;
 }
 
 /* ===== LOAD GAMES ===== */
 async function loadGames() {
-  await loadUser(); // ✅ NOW EXISTS
-
   try {
+    const isPremiumUser = await loadUser();
+
     const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
       cache: "no-store"
     });
 
     if (!res.ok) throw new Error("HTTP_" + res.status);
 
-    const text = await res.text();
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error("INVALID_JSON");
-    }
-
+    const data = await res.json();
     if (!Array.isArray(data)) throw new Error("NOT_ARRAY");
 
     allGames = data;
-    renderGames();
+    renderGames(isPremiumUser);
 
   } catch (err) {
-    showErrorPopup(err.message);
+    popupTitle.textContent = "An error has occurred.";
+    popupDesc.textContent = "Error code: " + err.message;
+    popupOverlay.classList.add("show");
   }
 }
 
 setInterval(loadGames, 60000);
 
-/* ===== RENDER GAMES ===== */
-function renderGames() {
+/* ===== RENDER WITH BADGES ===== */
+function renderGames(isPremiumUser) {
   const grid = document.getElementById("gameGrid");
   const search = document.getElementById("searchInput").value.toLowerCase();
   const sort = document.getElementById("sortSelect").value;
@@ -285,18 +269,13 @@ function renderGames() {
     g.name.toLowerCase().includes(search)
   );
 
-  filtered.sort((a, b) => {
-    if (sort === "az") return a.name.localeCompare(b.name);
-    if (sort === "za") return b.name.localeCompare(a.name);
-  });
+  filtered.sort((a, b) =>
+    sort === "az"
+      ? a.name.localeCompare(b.name)
+      : b.name.localeCompare(a.name)
+  );
 
   grid.innerHTML = "";
-
-  const freeSection = document.createElement("div");
-  const premiumSection = document.createElement("div");
-
-  freeSection.innerHTML = `<h2 style="color:white;">🎮 Free Games</h2>`;
-  premiumSection.innerHTML = `<h2 style="color:gold;">🌟 Premium Games</h2>`;
 
   filtered.forEach(game => {
     const item = document.createElement("div");
@@ -312,48 +291,204 @@ function renderGames() {
     item.appendChild(title);
 
     if (game.premium) {
-      if (isPremiumUser) {
-        item.onclick = () => window.location.href = game.link;
-        premiumSection.appendChild(item);
+      const badge = document.createElement("span");
+      badge.textContent = "🌟";
+      badge.className = "premium-badge";
+      item.appendChild(badge);
+
+      if (!isPremiumUser) {
+        item.style.opacity = "0.6";
+        item.onclick = () => {
+          window.location.href = "/dd-games/assets/premium-info.html";
+        };
+        grid.appendChild(item);
+        return;
       }
-    } else {
-      item.onclick = () => window.location.href = game.link;
-      freeSection.appendChild(item);
     }
+
+    item.onclick = () => {
+      window.location.href = game.link;
+    };
+
+    grid.appendChild(item);
   });
 
-  grid.appendChild(freeSection);
-
+  // remove ads for premium users
   if (isPremiumUser) {
-    grid.appendChild(premiumSection);
-
-    // remove ads for premium
     setInterval(() => {
-      document.getElementById("atContainer-a19f6c85731f299418a7856e52d88a41")?.remove();
+      document
+        .getElementById("atContainer-a19f6c85731f299418a7856e52d88a41")
+        ?.remove();
     }, 500);
-
-  } else {
-    const locked = document.createElement("div");
-    locked.innerHTML = `
-      <h2 style="color:gold;">🔒 Premium Games</h2>
-      <p style="color:white;">
-        Unlock exclusive games with DD Games Premium!
-      </p>
-      <button onclick="window.location.href='premium-info.html'"
-        style="padding:10px 16px;border:none;border-radius:8px;background:gold;cursor:pointer;">
-        Get Premium – $3.50/month
-      </button>
-    `;
-    grid.appendChild(locked);
   }
 }
 
 /* ===== SEARCH & SORT ===== */
-document.getElementById("searchInput").addEventListener("input", renderGames);
-document.getElementById("sortSelect").addEventListener("change", renderGames);
+document.getElementById("searchInput").addEventListener("input", loadGames);
+document.getElementById("sortSelect").addEventListener("change", loadGames);
 
-/* ===== START ===== */
 loadGames();
+
+/* ===== POPUP CONFIG ===== */
+const popupTitleText = "⚠️ IMPORTANT: PLEASE READ ⚠️";
+const popupDescText = "Due to our recent breach, we're adding a lot of new security features to prevent one from happening again. We're now requiring that you use your REAL name for the site. This is so we can get rid of Leakers who are staying annoymous, if you lose access, just simply use the request form to confirm your identity and get your access back. Thank you for understanding.";
+const popupExpireTime = "2026-02-26T23:59:59";
+
+function showPopupIfValid() {
+  if (!popupTitleText || !popupDescText) return;
+  if (popupExpireTime) {
+    if (new Date() > new Date(popupExpireTime)) return;
+  }
+  popupTitle.textContent = popupTitleText;
+  popupDesc.textContent = popupDescText;
+  popupOverlay.classList.add("show");
+}
+function dismissPopup() {
+  popupOverlay.classList.remove("show");
+}
+showPopupIfValid();
+</script>
+<!-- Live User Counter -->
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+<script>
+/* === 1️⃣ Unique persistent browser ID === */
+let browserId = localStorage.getItem('ablyBrowserId');
+if (!browserId) {
+  browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+  localStorage.setItem('ablyBrowserId', browserId);
+}
+
+/* === 2️⃣ Setup Ably connection === */
+const ably = new Ably.Realtime({
+  key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
+  clientId: browserId
+});
+const channel = ably.channels.get('site-active-users');
+
+/* === 3️⃣ Shared-tab logic === */
+const isMainTabKey = "ablyMainTabActive";
+const heartbeatKey = "ablyHeartbeat";
+const heartbeatInterval = 3000; // ms
+
+function setMainTab(active) {
+  if (active) {
+    localStorage.setItem(isMainTabKey, "true");
+    localStorage.setItem(heartbeatKey, Date.now());
+  } else {
+    localStorage.removeItem(isMainTabKey);
+    localStorage.removeItem(heartbeatKey);
+  }
+}
+
+function isMainTab() {
+  const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
+  return Date.now() - lastBeat < heartbeatInterval * 2;
+}
+
+/* === 4️⃣ Keep heartbeat alive if this is the main tab === */
+setInterval(() => {
+  if (localStorage.getItem(isMainTabKey) === "true") {
+    localStorage.setItem(heartbeatKey, Date.now());
+  }
+}, heartbeatInterval);
+
+/* === 5️⃣ Only the first tab enters Ably presence === */
+async function tryEnterPresence() {
+  if (!isMainTab()) {
+    setMainTab(true);
+    try {
+      await channel.attach();
+      channel.presence.enter("online");
+    } catch (err) {
+      console.error("Error entering presence:", err);
+    }
+  }
+}
+
+/* === 6️⃣ Listen for other tabs closing/opening === */
+window.addEventListener("storage", async (event) => {
+  if (event.key === heartbeatKey) {
+    if (!isMainTab()) {
+      tryEnterPresence();
+    }
+  }
+});
+
+/* === 7️⃣ Leave presence when tab is closed === */
+window.addEventListener("beforeunload", () => {
+  if (isMainTab()) {
+    channel.presence.leave("online");
+    setMainTab(false);
+  }
+});
+
+/* === 8️⃣ Create counter element === */
+const counter = document.createElement("div");
+counter.id = "userCounter";
+Object.assign(counter.style, {
+  position: "fixed",
+  bottom: "15px",
+  right: "15px",
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  padding: "8px 14px",
+  background: "linear-gradient(90deg, #2575fc, #6a11cb)",
+  color: "white",
+  fontFamily: "Arial, sans-serif",
+  fontSize: "14px",
+  borderRadius: "12px",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+  zIndex: "999",
+  opacity: "0.9",
+  transition: "opacity 0.3s ease"
+});
+
+counter.innerHTML = `
+  <div id="statusDot" style="
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: limegreen;
+    box-shadow: 0 0 6px 2px rgba(0,255,0,0.5);
+    animation: pulse 1.5s infinite;
+  "></div>
+  <span id="userText">Connecting...</span>
+`;
+
+document.body.appendChild(counter);
+
+/* === 9️⃣ Glow animation === */
+const style = document.createElement("style");
+style.textContent = `
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+`;
+document.head.appendChild(style);
+
+/* === 🔟 Count updater === */
+function updateCount() {
+  channel.presence.get((err, members) => {
+    if (err) return;
+    const unique = new Set(members.map(m => m.clientId));
+    const count = unique.size;
+    document.getElementById("userText").textContent =
+      `${count} user(s) online`;
+  });
+}
+
+channel.presence.subscribe("enter", updateCount);
+channel.presence.subscribe("leave", updateCount);
+setTimeout(updateCount, 1500);
+
+/* === 11️⃣ Hover effect === */
+counter.addEventListener("mouseenter", () => counter.style.opacity = "1");
+counter.addEventListener("mouseleave", () => counter.style.opacity = "0.9");
+
+/* Start main process after connected */
+ably.connection.once("connected", tryEnterPresence);
 </script>
 <script type="module" src="/dd-games/assets/management.js"></script>
 </body>
