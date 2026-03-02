@@ -184,7 +184,7 @@ async function loadUser() {
 
   const url =
     "https://lqfcntoldutgkzaboqfk.supabase.co/rest/v1/users" +
-    "?select=%22Premium%22" +
+    "?select=premium" +
     "&user_id=eq." + encodeURIComponent(myID);
 
   const res = await fetch(url, {
@@ -204,7 +204,7 @@ async function loadUser() {
 
   if (!data || !data[0]) return false;
 
-  return data[0].Premium === true;
+  return data[0].premium === true;
 }
 /* ===== LOAD GAMES ===== */
 async function loadGames() {
