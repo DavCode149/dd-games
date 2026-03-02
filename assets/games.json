@@ -240,25 +240,25 @@
     "premium": false
 },
   {
-    "name": "escaping the prison",
+    "name": "Henry Stickman - Escaping the Prison",
     "image": "/dd-games/assets/images/escapingtheprison.png",
     "link": "/dd-games/games/0-escaping-the-prison.html",
     "premium": false
 },
   {
-    "name": "The impossible quiz",
+    "name": "The Impossible Quiz",
     "image": "/dd-games/assets/images/theimpossiblequiz.png",
     "link": "/dd-games/games/0-theimpossiblequiz.html",
     "premium": false
 },
   {
-    "name": "pokerogue",
+    "name": "PokeRogue",
     "image": "/dd-games/assets/images/pokerogue",
     "link": "/dd-games/games/pokerogue/pokerogue-1.11.10/pokerogue-1.11.10/index.html",
     "premium": false
 },
   {
-      "name": "slime rancher",
+      "name": "Slime Rancher",
     "image": "/dd-games/assets/images/slime.jpg",
     "link": "/dd-games/games/0-slime.html",
   "premium": false
@@ -270,44 +270,44 @@
   "premium": false
 },
   {
-    "name": "stealing the diamond",
+    "name": "Henry Stickman - Stealing the Diamond",
     "image": "/dd-games/assets/images/stealingthediamond.png",
     "link": "/dd-games/games/0-stealingthediamond.html",
     "premium": false
 },
   {
-	  "name": "breaking the bank",
+	  "name": "Henry Stickman - Breaking the Bank",
     "image": "/dd-games/assets/images/breakingthebank.png",
     "link": "/dd-games/games/0-breakingthebank.html",
     "premium": false
 },
   {
-	  "name": "awesome tanks",
-    "image": "/dd-games/assets/images/awesometanks.png",
+	  "name": "Awesome Tanks",
+    "image": "/dd-games/assets/images/awesome-tanks.png",
     "link": "/dd-games/games/0-awesometanks.html",
     "premium": false
 },
   {
-	  "name": "3D flight sim",
+	  "name": "3D Flight Simulator",
     "image": "/dd-games/assets/images/3dflight.png",
     "link": "/dd-games/games/0-3Dflightsimulator.html",
     "premium": false
 },
   {
-	  "name": "fruit ninja",
+	  "name": "Fruit Ninja",
     "image": "/dd-games/assets/images/fruit.jpg",
     "link": "/dd-games/games/0-fruitninja.html",
     "premium": false
 },
   {
-   "name": "bad piggies",
-    "image": "/dd-games/assets/images/badpigies.jpg",
+    "name": "Bad Piggies",
+    "image": "/dd-games/assets/images/bad-piggies.png",
     "link": "/dd-games/games/0-badpiggies.html",
     "premium": false
   },
   {
-   "name": "Five Nights at Epstein's",
-    "image": "/dd-games/assets/images/five-nights.jpg",
+    "name": "Five Nights at Epstein's",
+    "image": "/dd-games/assets/images/five-nights.png",
     "link": "/dd-games/games/0-five-night-at-epstein.html",
     "premium": true
 }
