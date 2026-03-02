@@ -308,11 +308,7 @@ function renderGames(isPremiumUser) {
   });
   // remove ads for premium users
   if (isPremiumUser) {
-    setInterval(() => {
-      document
-        .getElementById("atContainer-a19f6c85731f299418a7856e52d88a41")
-        ?.remove();
-    }, 500);
+    document.getElementById("atContainer-a19f6c85731f299418a7856e52d88a41")?.remove();
   }
 }
 
