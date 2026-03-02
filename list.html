@@ -234,19 +234,6 @@ async function loadUser() {
 
   return data[0].premium === true;
 }
-/* ===== LOAD GAMES ===== */
-async function loadGames() {
-  const isPremiumUser = await loadUser();
-  loadAdIfNotPremium(isPremiumUser);
-
-  const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
-    cache: "no-store"
-  });
-
-  const data = await res.json();
-  allGames = data;
-  renderGames(isPremiumUser);
-}
 
 /* ===== RENDER GAMES ===== */
 function renderGames(isPremiumUser) {
@@ -320,7 +307,19 @@ function renderGames(isPremiumUser) {
   adSlot.appendChild(script);
 }
 }
+/* ===== LOAD GAMES ===== */
+async function loadGames() {
+  const isPremiumUser = await loadUser();
+  loadAdIfNotPremium(isPremiumUser);
 
+  const res = await fetch("/dd-games/assets/games.json?v=" + Date.now(), {
+    cache: "no-store"
+  });
+
+  const data = await res.json();
+  allGames = data;
+  renderGames(isPremiumUser);
+}
 document.getElementById("searchInput").addEventListener("input", loadGames);
 document.getElementById("sortSelect").addEventListener("change", loadGames);
 
