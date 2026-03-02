@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<base href="https://cdn.jsdelivr.net/gh/aukak/hollow-knight@latest/">
+<meta charset="utf-8">
+<title>Unity WebGL Player | Hollow Knight</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#000;overflow:hidden}#loading-text{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font:24px Arial}#unity-canvas{width:100vw;height:100vh;display:block}#unity-mobile-warning{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;background:rgba(0,0,0,.9);padding:20px;border-radius:8px;font:14px Arial}#fps-graph{position:fixed;top:12px;left:12px;width:200px;height:70px;background:rgba(0,0,0,.8);border-radius:6px;padding:10px;z-index:9999;transition:.3s}#fps-canvas{width:100%;height:100%;display:block}.savebtn{position:fixed;top:12px;right:12px;padding:10px 18px;cursor:pointer;background:rgba(50,50,50,.85);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:6px;font:14px Arial;z-index:9999;transition:.3s}.savebtn:hover{background:rgba(70,70,70,.95)}.hidden{opacity:0;pointer-events:none}
+</style>
+</head>
+<body data-premium="true">
+<!-- ▼ Dropdown menu toggle -->
+<div class="menu-container">
+  <div class="menu-toggle" onclick="toggleMenu()">▼</div>
+  <div class="dropdown-menu" id="dropdownMenu">
+    <button onclick="window.location.href='https://davcode149.github.io/dd-games/list.html'">Return</button>
+  </div>
+</div>
+
+<style>
+  /* Position menu at top center */
+  .menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+
+  /* The arrow toggle */
+  .menu-toggle {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.2s;
+  }
+
+  .menu-toggle:hover {
+    background-color: rgba(240, 240, 240, 0.95);
+    transform: scale(1.1);
+  }
+
+  /* Dropdown panel */
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    padding: 10px;
+    min-width: 120px;
+    text-align: center;
+    animation: dropdownFade 0.2s ease;
+  }
+
+  /* Animation for fade-in */
+  @keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-menu button {
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .dropdown-menu button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+<script>
+  function toggleMenu() {
+    var menu = document.getElementById("dropdownMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
+
+  // Optional: Close menu when clicking outside
+  window.addEventListener("click", function(e) {
+    if (!e.target.closest(".menu-container")) {
+      document.getElementById("dropdownMenu").style.display = "none";
+    }
+  });
+</script>
+<div id="loading-text">truffed.lol</div>
+<div id="unity-mobile-warning">WebGL not supported on mobile</div>
+<canvas id="unity-canvas"></canvas>
+<div id="fps-graph" style="display:none"><canvas id="fps-canvas"></canvas></div>
+  
+<script>
+alert("port by bog")
+const lt=document.getElementById("loading-text"),cv=document.getElementById("unity-canvas"),mw=document.getElementById("unity-mobile-warning"),fg=document.getElementById("fps-graph"),fc=document.getElementById("fps-canvas");let lb=0,hd=false,tm_id;const tm='912.81',fh=[],ml=90;fc.width=180;fc.height=50;const ctx=fc.getContext('2d');let lft=performance.now(),fr=0,fps=60,sb;function uf(){const nt=performance.now(),dt=(nt-lft)/1000;lft=nt;fps=dt>0?1/dt:60;fr++;if(fr%3===0){fh.push(fps);if(fh.length>ml)fh.shift();ctx.clearRect(0,0,180,50);for(let i=0;i<fh.length;i++){const f=fh[i],h=Math.min(f/60,1)*35,c=f>50?'#0f0':f>30?'#fa0':'#f33';ctx.fillStyle=c;ctx.fillRect(i*2,50-h,1.8,h);}ctx.fillStyle='#fff';ctx.font='bold 13px monospace';ctx.shadowColor='#000';ctx.shadowBlur=4;ctx.fillText(Math.round(fps)+' FPS',6,16);ctx.shadowBlur=0;}requestAnimationFrame(uf);}function shw(){hd=false;fg.classList.remove('hidden');if(sb)sb.classList.remove('hidden');}function rst(){clearTimeout(tm_id);if(!hd){hd=true;fg.classList.add('hidden');if(sb)sb.classList.add('hidden');}tm_id=setTimeout(shw,5000);}document.addEventListener('keydown',rst);if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){const m=document.createElement('meta');m.name='viewport';m.content='width=device-width,height=device-height,initial-scale=1,user-scalable=no,shrink-to-fit=yes';document.head.appendChild(m);mw.style.display="block";setTimeout(()=>mw.style.display="none",5000);}async function fwp(u){const r=await fetch(u),rd=r.body.getReader(),ch=[];while(true){const{done,value}=await rd.read();if(done)break;lb+=value.length;ch.push(value);lt.textContent=`${(lb/1048576).toFixed(2)} MB / ${tm} MB`;}return URL.createObjectURL(new Blob(ch));}async function mf(p){const b=await Promise.all(p.map(fwp)),bl=await Promise.all(b.map(u=>fetch(u).then(r=>r.blob())));return URL.createObjectURL(new Blob(bl));}function gp(f,s,e){return Array.from({length:e-s+1},(_,i)=>`${f}.part${s+i}`);}(async()=>{const[du,wu]=await Promise.all([mf(gp("Build/hktruffled.data",1,45)),mf(gp("Build/hktruffled.wasm",1,2))]),sc=document.createElement("script");sc.src="Build/hktruffled.loader.js";sc.onload=()=>{createUnityInstance(cv,{dataUrl:du,frameworkUrl:"Build/hktruffled.framework.js",codeUrl:wu,streamingAssetsUrl:"StreamingAssets",companyName:"Team Cherry",productName:"Hollow Knight",productVersion:"1.0"}).then(()=>{lt.remove();asb();fg.style.display='block';uf();}).catch(alert);};document.body.appendChild(sc);})();function asb(){sb=document.createElement('button');sb.className='savebtn';sb.textContent='download';sb.onclick=sdl;document.body.appendChild(sb);}function odb(n){return new Promise((ok,bd)=>{const r=indexedDB.open(n);r.onsuccess=()=>ok(r.result);r.onerror=()=>bd(r.error);});}function ga(d,s){return new Promise((ok,bd)=>{const t=d.transaction([s],'readonly'),st=t.objectStore(s),r=st.getAll();r.onsuccess=()=>ok(r.result);r.onerror=()=>bd(r.error);});}async function sdl(){try{const dbs=await indexedDB.databases();let sv={},fd=false;for(const inf of dbs){const db=await odb(inf.name);for(const st of db.objectStoreNames){try{const dt=await ga(db,st);if(dt&&dt.length>0){const fx=dt.map(it=>{if(it.contents&&it.contents instanceof Uint8Array){return{...it,contents:Array.from(it.contents)};}return it;});sv[`${inf.name}/${st}`]=fx;fd=true;}}catch(e){}}db.close();}if(!fd){alert('No save found');return;}const js=JSON.stringify(sv),bl=new Blob([js],{type:'application/octet-stream'}),u=URL.createObjectURL(bl),a=document.createElement('a');a.href=u;a.download='hk_save.dat';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}catch(e){alert('Download failed: '+e.message);}}
+</script>
+<!-- Include Ably client -->
+<script src="https://cdn.jsdelivr.net/npm/ably@1.2.44/browser/static/ably.min.js"></script>
+
+<!-- Active User Tracker (No Display) -->
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+<script>
+  // === 1️⃣ Persistent browser ID ===
+  let browserId = localStorage.getItem('ablyBrowserId');
+  if (!browserId) {
+    browserId = 'browser-' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('ablyBrowserId', browserId);
+  }
+
+  // === 2️⃣ Connect to Ably ===
+  const ably = new Ably.Realtime({
+    key: 'f4iV1g.CdzItg:DMBDb8oONqNtkeH6dq25U4DYKAfd-7GQ6uEKXuqUJVw',
+    clientId: browserId
+  });
+  const channel = ably.channels.get('site-active-users');
+
+  // === 3️⃣ Shared-tab logic (one connection per browser) ===
+  const isMainTabKey = "ablyMainTabActive";
+  const heartbeatKey = "ablyHeartbeat";
+  const heartbeatInterval = 3000; // ms
+
+  function setMainTab(active) {
+    if (active) {
+      localStorage.setItem(isMainTabKey, "true");
+      localStorage.setItem(heartbeatKey, Date.now());
+    } else {
+      localStorage.removeItem(isMainTabKey);
+      localStorage.removeItem(heartbeatKey);
+    }
+  }
+
+  function isMainTab() {
+    const lastBeat = parseInt(localStorage.getItem(heartbeatKey) || "0");
+    return Date.now() - lastBeat < heartbeatInterval * 2;
+  }
+
+  // === 4️⃣ Keep heartbeat alive for main tab ===
+  setInterval(() => {
+    if (localStorage.getItem(isMainTabKey) === "true") {
+      localStorage.setItem(heartbeatKey, Date.now());
+    }
+  }, heartbeatInterval);
+
+  // === 5️⃣ Only first tab joins presence ===
+  async function tryEnterPresence() {
+    if (!isMainTab()) {
+      setMainTab(true);
+      try {
+        await channel.attach();
+        channel.presence.enter("online");
+      } catch (err) {
+        console.error("Error entering presence:", err);
+      }
+    }
+  }
+
+  // === 6️⃣ Detect other tabs closing/opening ===
+  window.addEventListener("storage", async (event) => {
+    if (event.key === heartbeatKey) {
+      if (!isMainTab()) {
+        tryEnterPresence();
+      }
+    }
+  });
+
+  // === 7️⃣ Leave presence when main tab closes ===
+  window.addEventListener("beforeunload", () => {
+    if (isMainTab()) {
+      channel.presence.leave("online");
+      setMainTab(false);
+    }
+  });
+
+  // === 8️⃣ Connect ===
+  ably.connection.once("connected", tryEnterPresence);
+</script>
+<script type="module" src="/dd-games/assets/management.js"></script>
+</body>
+</html>
