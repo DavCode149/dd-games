@@ -340,6 +340,12 @@
     "image": "/dd-games/assets/images/stacktris.png",
     "link": "/dd-games/games/0-stacktris.html",
     "premium": false
+},
+{
+	"name": "Hollow Kinight",
+    "image": "/dd-games/assets/images/hollowknight.png",
+    "link": "/dd-games/games/0-hollowknight.html",
+    "premium": true
 }
 
 ]
