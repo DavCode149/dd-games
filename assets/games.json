@@ -346,6 +346,18 @@
     "image": "/dd-games/assets/images/hollowknight.png",
     "link": "/dd-games/games/0-hollowknight.html",
     "premium": true
+},
+{
+"name": "FNaF world",
+    "image": "/dd-games/assets/images/fnaf_world.png",
+    "link": "/dd-games/games/0-fnafworld.html",
+    "premium": false
+},
+{
+"name": "FNaF world refreshed",
+    "image": "/dd-games/assets/images/fnaf_worldrefreshed.png",
+    "link": "/dd-games/games/0-fnafworldrefreshed.html",
+    "premium": false
 }
 
 ]
