@@ -5,19 +5,19 @@ const supabaseKey = "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const PREMIUM_PAGE_URL = "/dd-games/assets/premium-info.html";
+const GUEST_ID = "00000000-0000-0000-0000-000000000000";
 
-/* DEVICE ID */
-function getOrCreateDeviceID() {
+// ── Device ID ────────────────────────────────────────────
+function getOrCreateDeviceID(){
   let id = localStorage.getItem("device_id");
-  if (!id) {
+  if(!id){
     id = crypto.randomUUID();
     localStorage.setItem("device_id", id);
   }
   return id;
 }
 
-/* DEVICE INFO */
-function getDeviceInfo() {
+function getDeviceInfo(){
   return {
     browser: navigator.userAgent,
     os: navigator.platform,
@@ -26,31 +26,39 @@ function getDeviceInfo() {
   };
 }
 
-/* CHECK IF THIS PAGE IS PREMIUM */
-function pageIsPremium() {
+// ── Premium page detection ───────────────────────────────
+// Pages mark themselves with <body data-premium="true">
+// We read it AFTER the DOM is ready via document.body.dataset.premium
+function pageIsPremium(){
   return document.body.dataset.premium === "true";
 }
 
 const deviceID = getOrCreateDeviceID();
 const info = getDeviceInfo();
 
-/* IP */
+// ── Guest mode ───────────────────────────────────────────
+if(deviceID === GUEST_ID){
+  if(pageIsPremium()){
+    window.location.href = PREMIUM_PAGE_URL;
+    throw new Error("Guests cannot access premium pages");
+  }
+  // No tracking, no DB writes for guests — stop here
+  throw new Error("Guest mode — skipping management");
+}
+
+// ── IP ───────────────────────────────────────────────────
 const ipRes = await fetch("https://api.ipify.org?format=json");
 const ip = (await ipRes.json()).ip;
 
-/* LOOKUP USER */
+// ── Lookup user ──────────────────────────────────────────
 const { data: existingUser, error: lookupError } = await supabase
-  .from("users")
-  .select('*')
-  .eq("user_id", deviceID)
-  .maybeSingle();
+  .from("users").select("*")
+  .eq("user_id", deviceID).maybeSingle();
 
-if (lookupError) {
-  console.error("Lookup error:", lookupError);
-}
+if(lookupError) console.error("Lookup error:", lookupError);
 
-/* CREATE USER */
-if (!existingUser) {
+// ── New user ─────────────────────────────────────────────
+if(!existingUser){
   await supabase.from("users").insert({
     user_id: deviceID,
     ip,
@@ -61,33 +69,36 @@ if (!existingUser) {
     last_seen: new Date(),
     visit_count: 1,
     blocked: false,
-    "Name": "",
-    "Playtime": 0,
-    "Premium": false
+    Name: "",
+    Playtime: 0,
+    Access: true,
+    Premium: true   // default true
   });
 
 } else {
-  if (existingUser.blocked) {
+
+  // ── Blocked check ──────────────────────────────────────
+  if(existingUser.blocked){
     document.body.innerHTML = "<h1>Access denied.</h1>";
     throw new Error("Blocked");
   }
 
-  /* 🚫 PREMIUM PAGE CHECK */
-  const isPremiumPage = pageIsPremium();
-  const hasPremium = existingUser.Premium === true;
-
-  if (isPremiumPage && !hasPremium) {
-    window.location.href = "/dd-games/assets/premium-info.html";
+  // ── Premium page check ─────────────────────────────────
+  // pageIsPremium() reads data-premium="true" from <body>
+  // Premium is false only if explicitly set false in DB
+  if(pageIsPremium() && existingUser.Premium !== true){
+    window.location.href = PREMIUM_PAGE_URL;
     throw new Error("Premium required");
   }
-  }
-  // Redirect if no name
-  if (!existingUser.Name || existingUser.Name.trim() === "") {
-    if (!location.pathname.endsWith("main.html")) {
+
+  // ── Name check — redirect to setup if missing ──────────
+  if(!existingUser.Name || existingUser.Name.trim() === ""){
+    if(!location.pathname.endsWith("main.html")){
       window.location.href = "/dd-games/main.html";
     }
   }
 
+  // ── Update visit info ──────────────────────────────────
   await supabase.from("users").update({
     ip,
     browser: info.browser,
@@ -97,35 +108,30 @@ if (!existingUser) {
     last_seen: new Date(),
     visit_count: (existingUser.visit_count || 0) + 1
   }).eq("user_id", deviceID);
+}
 
-/* PLAYTIME TIMER (every minute) */
+// ── Playtime timer (every minute) ────────────────────────
 setInterval(async () => {
   const { data, error } = await supabase
     .from("users")
     .select('"Playtime", blocked, "Premium"')
-    .eq("user_id", deviceID)
-    .maybeSingle();
+    .eq("user_id", deviceID).maybeSingle();
 
-  if (error) {
-    console.error("Playtime fetch error:", error);
+  if(error){ console.error("Playtime fetch error:", error); return; }
+  if(!data) return;
+
+  if(data.blocked){
+    document.body.innerHTML = "<h1>You have been blocked for breaking DD Games' TOS.</h1>";
     return;
   }
 
-  if (!data) return;
-
-  if (data.blocked) {
-    document.body.innerHTML = "<h1>You have been Blocked for breaking DD Games' TOS.</h1>";
-    return;
-  }
-
-  /* 🚫 STILL CHECK PREMIUM WHILE PLAYING */
-  if (pageIsPremium() && data.Premium !== true) {
+  if(pageIsPremium() && data.Premium !== true){
     window.location.href = PREMIUM_PAGE_URL;
     return;
   }
 
   await supabase.from("users").update({
-    "Playtime": (data["Playtime"] || 0) + 1,
+    Playtime: (data["Playtime"] || 0) + 1,
     last_seen: new Date()
   }).eq("user_id", deviceID);
 

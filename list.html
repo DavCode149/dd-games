@@ -264,22 +264,25 @@ function renderGames(isPremiumUser) {
     item.appendChild(img);
     item.appendChild(title);
 
-    if (game.premium && !isPremiumUser) {
-      img.style.filter = "blur(4px)";
+   if(game.premium && !isPremiumUser){
+  img.style.filter = "blur(4px)";
 
-      const lock = document.createElement("div");
-      lock.className = "lock-overlay";
-      lock.textContent = "🔒 Premium Only";
-      item.appendChild(lock);
+  const lock = document.createElement("div");
+  lock.className = "lock-overlay";
+  lock.textContent = "🔒 Registered Users Only";
+  item.appendChild(lock);
 
-      item.onclick = () => {
-        window.location.href = "/dd-games/assets/premium-info.html";
-      };
+  item.onclick = () => {
+    // Send guest to account setup, others to premium info
+    const id = localStorage.getItem("device_id");
+    const GUEST_ID = "00000000-0000-0000-0000-000000000000";
+    if(!id || id === GUEST_ID){
+      window.location.href = "/dd-games/main.html";
     } else {
-      item.onclick = () => {
-        window.location.href = game.link;
-      };
+      window.location.href = game.link;
     }
+  };
+}
 
     grid.appendChild(item);
   });
@@ -305,10 +308,10 @@ document.getElementById("sortSelect").addEventListener("change", loadGames);
 loadGames();
 
 /* ===== POPUP ===== */
-const popupTitleText = "Notice";
+const popupTitleText = "Updates on the way!";
 const popupDescText =
-  "Many things to say. Free DD Games Premium for everyone while things get decided, and tons of people pissed at whoever reported the site. I'm dealing with a lot, but I'm going to try to keep this site up and running, but new games aren't likely to be added. Enjoy for now.";
-const popupExpireTime = "2026-03-30T23:59:59";
+  "Guess what? I'm going start updating DD Games now! That's right! You may have notice some additions and improvements to the account, and everyone now has a guest mode option! If you have multiple devices with seperate accounts, use the new Link Account button in Acount Info! Just enter a quick code on the device you want to sign into, and boom! Your account is signed into both devices! If you have playtime and stats on both, they will be added together!";
+const popupExpireTime = "2026-04-30T23:59:59";
 
 function showPopupIfValid() {
   if (!popupTitleText || !popupDescText) return;

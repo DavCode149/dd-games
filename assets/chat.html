@@ -60,8 +60,27 @@ const supabase=createClient(
 );
 
 /* DEVICE */
-let myID=localStorage.getItem("device_id");
-if(!myID){myID=crypto.randomUUID();localStorage.setItem("device_id",myID);}
+const GUEST_ID = "00000000-0000-0000-0000-000000000000";
+let myID = localStorage.getItem("device_id");
+if(!myID){ myID = crypto.randomUUID(); localStorage.setItem("device_id", myID); }
+
+// Block guests from chat
+if(myID === GUEST_ID){
+  document.body.innerHTML = `
+    <div style="display:flex;height:100vh;justify-content:center;align-items:center;
+      background:#0f172a;color:white;font-family:Arial;text-align:center;">
+      <div>
+        <h2>Chat is for registered users only</h2>
+        <p>Create a free account to join the conversation.</p>
+        <button onclick="window.location.href='/dd-games/main.html'"
+          style="padding:10px 20px;border-radius:8px;border:none;
+          background:#2563eb;color:white;cursor:pointer;font-size:16px;">
+          Create Account
+        </button>
+      </div>
+    </div>`;
+  throw "";
+}
 
 /* ME */
 const { data:me }=await supabase.from("users")

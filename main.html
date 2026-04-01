@@ -18,15 +18,12 @@ body {
   justify-content:center;
   align-items:center;
 }
-
 @keyframes bg {
   0%{background-position:0% 50%}
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
 }
-
 .hidden { display:none; }
-
 #screen {
   width:100%;
   height:100%;
@@ -36,7 +33,6 @@ body {
   align-items:center;
   text-align:center;
 }
-
 input, button {
   padding:12px;
   border-radius:10px;
@@ -44,73 +40,111 @@ input, button {
   font-size:16px;
   margin-top:10px;
 }
-
-button {
-  background:#00d4ff;
-  cursor:pointer;
-  min-width:200px;
-}
-
+button { background:#00d4ff; cursor:pointer; min-width:200px; }
+button.secondary { background:#555; }
+button.danger { background:#c0392b; }
 #weather { margin-top:10px; }
 #time { font-size:18px; margin-top:5px; }
-
 .panel {
   background:rgba(0,0,0,.4);
   padding:30px;
   border-radius:16px;
   box-shadow:0 10px 30px rgba(0,0,0,.3);
+  min-width:300px;
 }
+.code-box {
+  font-size:36px;
+  font-weight:bold;
+  letter-spacing:8px;
+  background:rgba(0,0,0,0.5);
+  padding:16px 24px;
+  border-radius:12px;
+  margin:16px auto;
+  display:inline-block;
+  font-family:monospace;
+}
+.code-hint { font-size:13px; color:#aaa; margin-top:6px; }
+hr { border-color:#ffffff33; margin:16px 0; }
 </style>
 </head>
-
 <body>
-
 <div id="screen">
 
-<div id="loading" class="panel">
-  <img src="/dd-games/assets/logo-transparent.png" width="250" height="250">
-  <h2 id="loaderText">Loading...</h2>
+  <!-- LOADING -->
+  <div id="loading" class="panel">
+    <img src="/dd-games/assets/logo-transparent.png" width="250" height="250">
+    <h2 id="loaderText">Loading...</h2>
+  </div>
+
+  <!-- SETUP -->
+  <div id="setup" class="panel hidden">
+    <h2>Welcome to DD Games</h2>
+    <input id="nameInput" placeholder="Enter your name">
+    <button onclick="createAccount()">Create Account</button>
+    <hr>
+    <button class="secondary" onclick="showPanel('linkEntry')">🔗 Link Existing Account</button>
+    <button class="secondary" onclick="continueAsGuest()">👤 Continue as Guest</button>
+  </div>
+
+  <!-- LINK ENTRY (new device enters code) -->
+  <div id="linkEntry" class="panel hidden">
+    <h2>Link Account</h2>
+    <p>Enter the 6-digit code shown on your other device.</p>
+    <input id="linkCodeInput" placeholder="000000" maxlength="6"
+      style="text-align:center;font-size:28px;letter-spacing:6px;width:160px;">
+    <br>
+    <button onclick="submitLinkCode()">✅ Link Account</button>
+    <button class="secondary" onclick="showPanel('setup')">← Back</button>
+    <p id="linkError" style="color:#f87171;margin-top:8px;display:none;"></p>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main" class="panel hidden">
+    <img src="/dd-games/assets/logo-transparent.png" width="250" height="250">
+    <h1 id="welcome"></h1>
+    <div id="time"></div>
+    <div id="weather"></div>
+    <br>
+    <button onclick="launchSite()">Launch Site</button>
+    <!-- guests see Create Account, registered users see Account -->
+    <button id="accountBtn" onclick="openAccount()">Account</button>
+  </div>
+
+  <!-- ACCOUNT INFO -->
+  <div id="account" class="panel hidden">
+    <h2>Account Info</h2>
+    <p>User ID: <span id="uid"></span></p>
+    <p>Device: <span id="deviceSpan"></span></p>
+    <p>OS: <span id="osSpan"></span></p>
+    <p>Browser: <span id="browserSpan"></span></p>
+    <p>IP: <span id="ipSpan"></span></p>
+    <input id="editName">
+    <button onclick="saveName()">Save Name</button>
+    <hr>
+    <button class="secondary" onclick="showGenerateCode()">🔗 Link Another Device</button>
+    <button onclick="backMain()">← Back</button>
+  </div>
+
+  <!-- GENERATE CODE (logged-in device) -->
+  <div id="generateCode" class="panel hidden">
+    <h2>Link Another Device</h2>
+    <p>Enter this code on your other device.<br>It expires in <b>5 minutes</b>.</p>
+    <div class="code-box" id="generatedCode">------</div>
+    <div class="code-hint" id="codeTimer"></div>
+    <br>
+    <button onclick="generateLinkCode()">🔄 New Code</button>
+    <button class="secondary" onclick="showPanel('account')">← Back</button>
+  </div>
+
+  <!-- NO ACCESS -->
+  <div id="noAccess" class="panel hidden">
+    <h1>Access Pending</h1>
+    <p>You do not currently have access. Please request it below.</p>
+    <button onclick="RequestForm()">Request Access</button>
+    <button onclick="backMain()">← Back</button>
+  </div>
+
 </div>
-
-<div id="setup" class="panel hidden">
-  <h2>Account Setup</h2>
-  <input id="nameInput" placeholder="Enter your name">
-  <button onclick="createAccount()">Create Account</button>
-</div>
-
-<div id="main" class="panel hidden">
-  <img src="/dd-games/assets/logo-transparent.png" width="250" height="250">
-  <h1 id="welcome"></h1>
-  <div id="time"></div>
-  <div id="weather"></div>
-  <br>
-  <button id="launchbutton" onclick="launchSite()">Launch Site</button>
-  <button onclick="openAccount()">Account</button>
-</div>
-
-<div id="account" class="panel hidden">
-  <h2>Account Info</h2>
-  <p>User ID: <span id="uid"></span></p>
-  <p>Device: <span id="device"></span></p>
-  <p>OS: <span id="os"></span></p>
-  <p>Browser: <span id="browser"></span></p>
-  <p>IP: <span id="ipSpan"></span></p>
-
-  <input id="editName">
-  <button onclick="saveName()">Save Name</button>
-  <button onclick="backMain()">Back</button>
-</div>
-
-<div id="noAccess" class="panel hidden">
-  <h1>Access Pending</h1>
-  <div>You currently do not have Access to the site. Please request Access via this form. Any info needed can be found on the Account page.</div>
-  <br>
-  <button onclick="RequestForm()">Request Access</button>
-  <button onclick="backMain()">Go Back</button>
-</div>
-
-</div>
-
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -119,20 +153,20 @@ const supabase = createClient(
   "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
 );
 
-const loading = el("loading");
-const setup = el("setup");
-const main = el("main");
-const account = el("account");
-const noAccess = el("noAccess");
+const GUEST_ID = "00000000-0000-0000-0000-000000000000";
 
+// ── Panels ───────────────────────────────────────────────
+const PANELS = ["loading","setup","linkEntry","main","account","generateCode","noAccess"];
 function el(id){ return document.getElementById(id); }
 
-function show(el){
-  [loading,setup,main,account,noAccess].forEach(e=>e.classList.add("hidden"));
-  el.classList.remove("hidden");
+window.showPanel = function(id){
+  PANELS.forEach(p => el(p).classList.add("hidden"));
+  el(id).classList.remove("hidden");
 }
 
-/* DEVICE ID — MATCHES management.js */
+// ── Helpers ──────────────────────────────────────────────
+function isGuest(){ return localStorage.getItem("device_id") === GUEST_ID; }
+
 function getDeviceID(){
   let id = localStorage.getItem("device_id");
   if(!id){
@@ -142,7 +176,6 @@ function getDeviceID(){
   return id;
 }
 
-/* DEVICE INFO */
 function getInfo(){
   return {
     browser: navigator.userAgent,
@@ -152,146 +185,287 @@ function getInfo(){
   };
 }
 
-const deviceID = getDeviceID();
+let deviceID = getDeviceID();
 const info = getInfo();
 let userRow = null;
 let ipAddr = "";
 
-/* START */
-setTimeout(init, Math.random()*4000+1000);
+// ── Init ─────────────────────────────────────────────────
+setTimeout(init, Math.random() * 4000 + 1000);
 
 async function init(){
+  // Guest shortcut — load guest row from Supabase (read only)
+  if(isGuest()){
+    const { data } = await supabase
+      .from("users").select("*")
+      .eq("user_id", GUEST_ID).maybeSingle();
+    userRow = data || { Name:"Guest", Access:false, blocked:false, Premium:false, Playtime:0 };
+    showMain();
+    return;
+  }
+
   const ipRes = await fetch("https://api.ipify.org?format=json");
   ipAddr = (await ipRes.json()).ip;
 
-  let { data } = await supabase
-    .from("users")
-    .select("*")
-    .eq("user_id", deviceID)
-    .maybeSingle();
+  const { data } = await supabase
+    .from("users").select("*")
+    .eq("user_id", deviceID).maybeSingle();
 
   if(!data){
-    await supabase.from("users").insert({
-      user_id: deviceID,
-      ip: ipAddr,
-      browser:info.browser,
-      os:info.os,
-      device:info.device,
-      page:info.page,
-      last_seen:new Date(),
-      visit_count:1,
-      blocked:false,
-      Name:""
-    });
-    show(setup);
+    showPanel("setup");
     return;
   }
 
   userRow = data;
 
   if(userRow.blocked){
-    alert("You are banned! You can check your account info but you won't be able to play any games!")
-  };
+    alert("You are banned! You can check your account info but you won't be able to play any games!");
+  }
 
   await supabase.from("users").update({
     ip: ipAddr,
-    browser:info.browser,
-    os:info.os,
-    device:info.device,
-    page:info.page,
-    last_seen:new Date(),
-    visit_count:(userRow.visit_count||0)+1
-  }).eq("user_id",deviceID);
+    browser: info.browser,
+    os: info.os,
+    device: info.device,
+    page: info.page,
+    last_seen: new Date(),
+    visit_count: (userRow.visit_count || 0) + 1
+  }).eq("user_id", deviceID);
 
-  if(!userRow.Name || userRow.Name.trim()===""){
-    show(setup);
+  if(!userRow.Name || userRow.Name.trim() === ""){
+    showPanel("setup");
   } else {
     showMain();
   }
 }
 
-/* CREATE ACCOUNT */
+// ── Create Account ───────────────────────────────────────
 window.createAccount = async function(){
-  const msgs=["Polishing Games...","Refreshing Data...","Creating Account...","Almost Done..."];
-  let i=0;
-  show(loading);
-  const t=setInterval(()=>{
-    loaderText.textContent=msgs[i++%msgs.length];
-  },800);
+  const name = el("nameInput").value.trim();
+  if(!name){ alert("Please enter a name."); return; }
 
-  await new Promise(r=>setTimeout(r,6000));
+  const msgs = ["Polishing Games...","Refreshing Data...","Creating Account...","Almost Done..."];
+  let i = 0;
+  showPanel("loading");
+  const t = setInterval(() => { el("loaderText").textContent = msgs[i++ % msgs.length]; }, 800);
+  await new Promise(r => setTimeout(r, 3000));
   clearInterval(t);
 
-  const name=nameInput.value;
-  await supabase.from("users").update({Name:name}).eq("user_id",deviceID);
-  userRow.Name=name;
+  const ipRes = await fetch("https://api.ipify.org?format=json");
+  ipAddr = (await ipRes.json()).ip;
+
+  const { data: newUser } = await supabase.from("users").insert({
+    user_id: deviceID,
+    ip: ipAddr,
+    browser: info.browser,
+    os: info.os,
+    device: info.device,
+    page: info.page,
+    last_seen: new Date(),
+    visit_count: 1,
+    blocked: false,
+    Name: name,
+    Playtime: 0,
+    Access: true,
+    Premium: true   // default true per school situation
+  }).select().single();
+
+  userRow = newUser;
   showMain();
 }
 
-/* MAIN */
+// ── Guest ────────────────────────────────────────────────
+window.continueAsGuest = function(){
+  localStorage.setItem("device_id", GUEST_ID);
+  userRow = { Name:"Guest", Access:false, blocked:false, Premium:false, Playtime:0 };
+  showMain();
+}
+
+// ── Main screen ──────────────────────────────────────────
 function showMain(){
-  show(main);
-  welcome.textContent="Welcome, "+userRow.Name;
+  showPanel("main");
+  el("welcome").textContent = "Welcome, " + userRow.Name;
 
-  setInterval(()=>{
-    time.textContent=new Date().toLocaleString();
-  },1000);
+  // Guests see "Create Account" button instead of "Account"
+  el("accountBtn").textContent = isGuest() ? "Create Account" : "Account";
 
+  setInterval(() => { el("time").textContent = new Date().toLocaleString(); }, 1000);
   loadWeather();
 }
 
-/* WEATHER */
 async function loadWeather(){
-  const res = await fetch("https://api.codetabs.com/v1/weather");
-  const w = await res.json();
-  weather.textContent =
-    `${w.city}, ${w.country}: ${Math.round(w.tempC)}°C (${Math.round(w.tempF)}°F)`;
+  try {
+    const res = await fetch("https://api.codetabs.com/v1/weather");
+    const w = await res.json();
+    el("weather").textContent =
+      `${w.city}, ${w.country}: ${Math.round(w.tempC)}°C (${Math.round(w.tempF)}°F)`;
+  } catch(e){}
 }
 
-/* ACCOUNT */
-window.openAccount=function(){
-  show(account);
-  uid.textContent=deviceID;
-  device.textContent=info.device;
-  os.textContent=info.os;
-  browser.textContent=info.browser;
-  ipSpan.textContent=ipAddr;
-  editName.value=userRow.Name;
-  editName.placeholder=userRow.Name;
+// ── Account button ───────────────────────────────────────
+window.openAccount = function(){
+  if(isGuest()){
+    // Clear guest ID so getDeviceID() generates a fresh UUID
+    localStorage.removeItem("device_id");
+    deviceID = getDeviceID();
+    showPanel("setup");
+    return;
+  }
+  showPanel("account");
+  el("uid").textContent = deviceID;
+  el("deviceSpan").textContent = info.device;
+  el("osSpan").textContent = info.os;
+  el("browserSpan").textContent = info.browser;
+  el("ipSpan").textContent = ipAddr;
+  el("editName").value = userRow.Name;
+  el("editName").placeholder = userRow.Name;
 }
 
-window.saveName=async function(){
-  const newName=editName.value;
-  await supabase.from("users").update({Name:newName}).eq("user_id",deviceID);
-  userRow.Name=newName;
+window.saveName = async function(){
+  const newName = el("editName").value.trim();
+  if(!newName) return;
+  await supabase.from("users").update({ Name: newName }).eq("user_id", deviceID);
+  userRow.Name = newName;
   showMain();
 }
 
-window.backMain=function(){ showMain(); }
+window.backMain = function(){ showMain(); }
 
-/* LAUNCH */
-window.launchSite=function(){
-  if(!userRow.Access){
-    show(noAccess)
+// ── Launch ───────────────────────────────────────────────
+window.launchSite = function(){
+  if(userRow.blocked){
+    alert("You've been banned from DD Games for breaking the TOS.");
     return;
-  } else if(userRow.blocked) {
-    alert("Wuh oh! You've been banned from DD Games for breaking the TOS.")
-  } else {
+  }
+  if(!userRow.Access){
+    showPanel("noAccess");
+    return;
+  }
   document.body.style.margin = "0";
   document.body.style.height = "100vh";
-
   document.body.innerHTML = `
-    <iframe 
-      src="/dd-games/list.html"
-      style="border:none; width:100vw; height:100vh;"
-    ></iframe>
-  `;
+    <iframe src="/dd-games/list.html"
+      style="border:none;width:100vw;height:100vh;"></iframe>`;
+}
+
+window.RequestForm = function(){
+  window.open("https://forms.cloud.microsoft/r/5tJyGVcM1M");
+}
+
+// ── Generate Link Code ───────────────────────────────────
+let codeCountdownInterval = null;
+
+window.showGenerateCode = async function(){
+  showPanel("generateCode");
+  await generateLinkCode();
+}
+
+window.generateLinkCode = async function(){
+  // Clear any existing countdown
+  if(codeCountdownInterval) clearInterval(codeCountdownInterval);
+
+  // Delete any old codes for this user
+  await supabase.from("link_codes").delete().eq("user_id", deviceID);
+
+  // Generate random 6-digit code
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+  await supabase.from("link_codes").insert({
+    code,
+    user_id: deviceID,
+    expires_at: expiresAt.toISOString()
+  });
+
+  el("generatedCode").textContent = code;
+
+  // Countdown timer display
+  let secondsLeft = 300;
+  el("codeTimer").textContent = "Expires in 5:00";
+
+  codeCountdownInterval = setInterval(() => {
+    secondsLeft--;
+    const m = Math.floor(secondsLeft / 60);
+    const s = (secondsLeft % 60).toString().padStart(2, "0");
+    el("codeTimer").textContent = `Expires in ${m}:${s}`;
+
+    if(secondsLeft <= 0){
+      clearInterval(codeCountdownInterval);
+      el("generatedCode").textContent = "------";
+      el("codeTimer").textContent = "Code expired. Generate a new one.";
+    }
+  }, 1000);
+}
+
+// ── Submit Link Code (new device) ────────────────────────
+window.submitLinkCode = async function(){
+  const code = el("linkCodeInput").value.trim();
+  const errEl = el("linkError");
+  errEl.style.display = "none";
+
+  if(code.length !== 6){ showErr("Please enter a 6-digit code."); return; }
+
+  // Look up the code
+  const { data: linkRow } = await supabase
+    .from("link_codes").select("*")
+    .eq("code", code).maybeSingle();
+
+  if(!linkRow){ showErr("Invalid code. Please try again."); return; }
+  if(new Date() > new Date(linkRow.expires_at)){ showErr("That code has expired. Ask for a new one."); return; }
+
+  const targetID = linkRow.user_id; // Device A's user_id
+
+  // Fetch Device A's current row
+  const { data: targetUser } = await supabase
+    .from("users").select("*")
+    .eq("user_id", targetID).maybeSingle();
+
+  if(!targetUser){ showErr("Could not find the account. Please try again."); return; }
+
+  // Fetch Device B's current row (this device) — only if it's not guest and exists
+  let myPlaytime = 0;
+  let myPremium = false;
+  const currentID = localStorage.getItem("device_id");
+  const isCurrentGuest = currentID === GUEST_ID;
+
+  if(!isCurrentGuest && currentID){
+    const { data: myRow } = await supabase
+      .from("users").select("Playtime, Premium")
+      .eq("user_id", currentID).maybeSingle();
+
+    if(myRow){
+      myPlaytime = myRow.Playtime || 0;
+      myPremium = myRow.Premium || false;
+
+      // Delete Device B's row (it's being absorbed)
+      await supabase.from("users").delete().eq("user_id", currentID);
+    }
+  }
+
+  // Merge onto Device A: add playtimes, OR premiums
+  const mergedPlaytime = (targetUser.Playtime || 0) + myPlaytime;
+  const mergedPremium = targetUser.Premium || myPremium;
+
+  await supabase.from("users").update({
+    Playtime: mergedPlaytime,
+    Premium: mergedPremium
+  }).eq("user_id", targetID);
+
+  // Delete the used code
+  await supabase.from("link_codes").delete().eq("code", code);
+
+  // Write Device A's ID to this device's localStorage
+  localStorage.setItem("device_id", targetID);
+
+  // Confirm and reload
+  alert(`Account linked! Signing you in as ${targetUser.Name}.`);
+  location.reload();
+
+  function showErr(msg){
+    errEl.textContent = msg;
+    errEl.style.display = "block";
   }
 }
-window.RequestForm=function(){
-  window.open(URL="https://forms.cloud.microsoft/r/5tJyGVcM1M")
-}
 </script>
-
 </body>
 </html>
