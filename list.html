@@ -273,14 +273,18 @@ function renderGames(isPremiumUser) {
   item.appendChild(lock);
 
   item.onclick = () => {
-    // Send guest to account setup, others to premium info
     const id = localStorage.getItem("device_id");
     const GUEST_ID = "00000000-0000-0000-0000-000000000000";
     if(!id || id === GUEST_ID){
       window.location.href = "/dd-games/main.html";
     } else {
-      window.location.href = game.link;
+      window.location.href = "/dd-games/assets/premium-info.html";
     }
+  };
+
+} else {
+  item.onclick = () => {
+    window.location.href = game.link;
   };
 }
 
