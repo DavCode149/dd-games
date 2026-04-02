@@ -2,43 +2,385 @@
 <html>
 <head>
 <title>DD Games Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-body{
-  margin:0;font-family:Arial;background:#0f172a;color:white;
-  display:flex;height:100vh
+:root {
+  --bg-deep:    #080c14;
+  --bg-side:    #0d1220;
+  --bg-main:    #0f172a;
+  --bg-msg:     #131c30;
+  --bg-input:   #1a2540;
+  --bg-hover:   #1e2d4a;
+  --accent:     #3b82f6;
+  --accent-dim: #1d4ed8;
+  --accent-glow:#3b82f640;
+  --text:       #e2e8f0;
+  --text-muted: #64748b;
+  --text-name:  #60a5fa;
+  --border:     #1e2d4a;
+  --sep-line:   #1e3a5f;
+  --online:     #22c55e;
+  --radius:     10px;
 }
-#sidebar{
-  width:220px;background:#020617;display:flex;flex-direction:column
-}
-#sidebar h3{margin:10px}
-#convoList{flex:1;overflow-y:auto}
-.convo{
-  padding:10px;cursor:pointer;border-bottom:1px solid #1e293b
-}
-.convo:hover{background:#1e293b}
-.convo.active{background:#2563eb}
-#main{flex:1;display:flex;flex-direction:column}
 
-#top{display:flex;gap:10px;padding:10px;background:#020617;align-items:center}
-#messages{flex:1;overflow-y:auto;padding:10px}
-.msg{background:#1e293b;padding:6px 10px;border-radius:8px;margin-bottom:5px}
-.name{color:#38bdf8;font-weight:bold}
-#typing{font-size:12px;color:#94a3b8;margin-left:auto}
-#inputBar{display:flex;border-top:2px solid #1e293b}
-input,select,button{padding:8px;border-radius:6px;border:none}
-img,video{max-width:300px;border-radius:8px;display:block;margin-top:5px}
-.hidden{display:none}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-deep);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: 230px;
+  background: var(--bg-side);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+#sidebarHeader {
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#sidebarHeader .logo {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+#sidebarHeader h3 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+#convoList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 6px;
+}
+
+#convoList::-webkit-scrollbar { width: 4px; }
+#convoList::-webkit-scrollbar-track { background: transparent; }
+#convoList::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.convo {
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 2px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-muted);
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.convo:hover { background: var(--bg-hover); color: var(--text); }
+.convo.active {
+  background: var(--accent-glow);
+  color: var(--text);
+  border: 1px solid #3b82f620;
+}
+
+/* ── MAIN ── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg-main);
+}
+
+#top {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-side);
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  min-height: 52px;
+}
+
+#top button {
+  background: var(--bg-hover);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+#top button:hover { background: var(--accent-dim); border-color: var(--accent); }
+
+#channelLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+#typing {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-left: auto;
+}
+
+#userDropdown {
+  background: var(--bg-hover);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+}
+
+/* ── MESSAGES ── */
+#messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#messages::-webkit-scrollbar { width: 5px; }
+#messages::-webkit-scrollbar-track { background: transparent; }
+#messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── DAY SEPARATOR ── */
+.day-separator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0 8px;
+  user-select: none;
+}
+
+.day-separator::before,
+.day-separator::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--sep-line);
+}
+
+.day-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--bg-main);
+  padding: 2px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--sep-line);
+  white-space: nowrap;
+}
+
+/* ── MESSAGE ── */
+.msg-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 0;
+}
+
+.msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background 0.1s;
+  position: relative;
+}
+
+.msg:hover { background: var(--bg-msg); }
+
+.msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-dim), #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Continuation messages (same sender, same minute) — no avatar */
+.msg.continuation {
+  padding-left: 52px;
+}
+
+.msg-body { flex: 1; min-width: 0; }
+
+.msg-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.name {
+  color: var(--text-name);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: default;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transition: opacity 0.15s;
+  user-select: none;
+}
+
+.msg:hover .timestamp { opacity: 1; }
+
+/* Inline timestamp for continuation messages */
+.msg.continuation .inline-ts {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0;
+  transition: opacity 0.15s;
+  width: 30px;
+  text-align: right;
+  line-height: 1;
+}
+.msg.continuation:hover .inline-ts { opacity: 1; }
+
+.msg-content {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.msg-content b { color: #f1f5f9; }
+.msg-content i { color: #94a3b8; }
+
+.read-receipt {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 4px;
+  opacity: 0.7;
+}
+
+img, video {
+  max-width: 300px;
+  border-radius: 8px;
+  display: block;
+  margin-top: 5px;
+  border: 1px solid var(--border);
+}
+
+/* ── INPUT BAR ── */
+#inputBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px 12px;
+  background: var(--bg-side);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+#input {
+  flex: 1;
+  background: var(--bg-input);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+#input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+#input::placeholder { color: var(--text-muted); }
+#input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+#sendBtn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+#sendBtn:hover { background: #2563eb; }
+#sendBtn:active { transform: scale(0.97); }
+
+.hidden { display: none !important; }
 </style>
 </head>
 <body>
 
 <div id="sidebar">
-  <h3>Chats</h3>
+  <div id="sidebarHeader">
+    <div class="logo">💬</div>
+    <h3>Messages</h3>
+  </div>
   <div id="convoList"></div>
 </div>
 
 <div id="main">
   <div id="top">
+    <span id="channelLabel">🌍 Public</span>
     <button onclick="openCreate()">➕ New DM</button>
     <select id="userDropdown" class="hidden"></select>
     <span id="typing"></span>
@@ -47,34 +389,34 @@ img,video{max-width:300px;border-radius:8px;display:block;margin-top:5px}
   <div id="messages"></div>
 
   <div id="inputBar">
-    <input id="input" placeholder="Message..." />
-    <button onclick="sendMsg()">Send</button>
+    <input id="input" placeholder="Send a message..." />
+    <button id="sendBtn" onclick="sendMsg()">Send</button>
   </div>
 </div>
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-const supabase=createClient(
+const supabase = createClient(
   "https://lqfcntoldutgkzaboqfk.supabase.co",
   "sb_publishable_Zs0J8nka95CzLZJ7BWqEAg_sqD5Wr0d"
 );
 
-/* DEVICE */
+/* ── DEVICE / GUEST CHECK ── */
 const GUEST_ID = "00000000-0000-0000-0000-000000000000";
 let myID = localStorage.getItem("device_id");
 if(!myID){ myID = crypto.randomUUID(); localStorage.setItem("device_id", myID); }
 
-// Block guests from chat
 if(myID === GUEST_ID){
   document.body.innerHTML = `
     <div style="display:flex;height:100vh;justify-content:center;align-items:center;
-      background:#0f172a;color:white;font-family:Arial;text-align:center;">
+      background:#080c14;color:#e2e8f0;font-family:'Outfit',sans-serif;text-align:center;">
       <div>
-        <h2>Chat is for registered users only</h2>
-        <p>Create a free account to join the conversation.</p>
+        <div style="font-size:48px;margin-bottom:16px;">💬</div>
+        <h2 style="font-size:20px;margin-bottom:8px;">Chat is for registered users</h2>
+        <p style="color:#64748b;margin-bottom:20px;">Create a free account to join the conversation.</p>
         <button onclick="window.location.href='/dd-games/main.html'"
-          style="padding:10px 20px;border-radius:8px;border:none;
-          background:#2563eb;color:white;cursor:pointer;font-size:16px;">
+          style="padding:10px 24px;border-radius:8px;border:none;
+          background:#3b82f6;color:white;cursor:pointer;font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;">
           Create Account
         </button>
       </div>
@@ -82,95 +424,95 @@ if(myID === GUEST_ID){
   throw "";
 }
 
-/* ME */
-const { data:me }=await supabase.from("users")
-.select('"Name",premium,muted,blocked')
-.eq("user_id",myID)
-.maybeSingle();
+/* ── LOAD ME ── */
+const { data:me } = await supabase.from("users")
+  .select('"Name",premium,muted,blocked')
+  .eq("user_id", myID).maybeSingle();
 
-if(!me||me.blocked){document.body.innerHTML="Blocked";throw"";}
-if(!me.premium){window.location.href="/dd-games/assets/premium-info.html";}
+if(!me || me.blocked){ document.body.innerHTML = "<div style='display:flex;height:100vh;align-items:center;justify-content:center;background:#080c14;color:#ef4444;font-family:Outfit,sans-serif;font-size:18px;'>🚫 Access denied.</div>"; throw ""; }
+if(!me.premium){ window.location.href = "/dd-games/assets/premium-info.html"; }
 
-const input=document.getElementById("input");
-if(me.muted){input.disabled=true;input.placeholder="Muted";}
+const input = document.getElementById("input");
+if(me.muted){ input.disabled = true; input.placeholder = "You are muted"; }
 
-/* PUBLIC CONVO */
+/* ── PUBLIC CONVO ── */
 let { data:publicConvo } = await supabase
-.from("conversations").select("*").eq("is_public",true).maybeSingle();
+  .from("conversations").select("*").eq("is_public", true).maybeSingle();
 
 if(!publicConvo){
-  const { data:newPub }=await supabase.from("conversations")
-  .insert({is_public:true}).select().single();
-  publicConvo=newPub;
+  const { data:newPub } = await supabase.from("conversations")
+    .insert({is_public:true}).select().single();
+  publicConvo = newPub;
 }
 
-let currentID=publicConvo.id;
+let currentID = publicConvo.id;
+let currentLabel = "🌍 Public";
 
-/* USERS */
-const { data:users }=await supabase.from("users")
-.select('user_id,"Name"').eq("premium",true);
+/* ── USERS ── */
+const { data:users } = await supabase.from("users")
+  .select('user_id,"Name"').eq("premium", true);
 
-/* DROPDOWN */
-const dropdown=document.getElementById("userDropdown");
+const dropdown = document.getElementById("userDropdown");
+
 function buildDropdown(){
-  dropdown.innerHTML="<option disabled selected>Select user</option>";
-  users.forEach(u=>{
-    if(u.user_id===myID) return;
-    const opt=document.createElement("option");
-    opt.value=u.user_id;
-    opt.textContent=u.Name||u.user_id;
+  dropdown.innerHTML = "<option disabled selected>Select user…</option>";
+  (users || []).forEach(u => {
+    if(u.user_id === myID) return;
+    const opt = document.createElement("option");
+    opt.value = u.user_id;
+    opt.textContent = u.Name || u.user_id;
     dropdown.appendChild(opt);
   });
 }
 buildDropdown();
 
-window.openCreate=()=>dropdown.classList.toggle("hidden");
+window.openCreate = () => dropdown.classList.toggle("hidden");
 
-/* GET OR CREATE DM */
+/* ── DM ── */
 async function getDM(other){
-  const { data:mine }=await supabase.from("conversation_members")
-  .select("conversation_id").eq("user_id",myID);
+  const { data:mine } = await supabase.from("conversation_members")
+    .select("conversation_id").eq("user_id", myID);
 
-  for(const c of mine||[]){
-    const { data:m }=await supabase.from("conversation_members")
-    .select("user_id").eq("conversation_id",c.conversation_id);
-    if(m?.length===2 && m.some(x=>x.user_id===other))
+  for(const c of mine || []){
+    const { data:m } = await supabase.from("conversation_members")
+      .select("user_id").eq("conversation_id", c.conversation_id);
+    if(m?.length === 2 && m.some(x => x.user_id === other))
       return c.conversation_id;
   }
 
-  const { data:newC }=await supabase.from("conversations")
-  .insert({is_public:false}).select().single();
-
+  const { data:newC } = await supabase.from("conversations")
+    .insert({is_public:false}).select().single();
   await supabase.from("conversation_members").insert([
-    {conversation_id:newC.id,user_id:myID},
-    {conversation_id:newC.id,user_id:other}
+    {conversation_id:newC.id, user_id:myID},
+    {conversation_id:newC.id, user_id:other}
   ]);
-
   return newC.id;
 }
 
-dropdown.onchange=async()=>{
-  currentID=await getDM(dropdown.value);
+dropdown.onchange = async () => {
+  const otherID = dropdown.value;
+  const otherName = dropdown.options[dropdown.selectedIndex].textContent;
+  currentID = await getDM(otherID);
+  currentLabel = "💬 " + otherName;
+  document.getElementById("channelLabel").textContent = currentLabel;
   dropdown.classList.add("hidden");
   await loadConvos();
   load();
 };
 
-/* CENSOR */
-const bannedWords=["Nigger","nigger", "Nigga", "nigga", "Sex", "sex"];
+/* ── CENSOR ── */
+const bannedWords = ["Nigger","nigger","Nigga","nigga","Sex","sex"];
 function censor(t){
-  bannedWords.forEach(w=>{
-    t=t.replace(new RegExp(w,"gi"),"#".repeat(w.length));
-  });
+  bannedWords.forEach(w => { t = t.replace(new RegExp(w,"gi"), "#".repeat(w.length)); });
   return t;
 }
 
-/* RENDER */
-function render(txt){
-  txt=txt.replace(/\*\*(.*?)\*\*/g,"<b>$1</b>")
-         .replace(/\*(.*?)\*/g,"<i>$1</i>")
-         .replace(/\n/g,"<br>");
-
+/* ── RENDER CONTENT ── */
+function renderContent(txt){
+  txt = txt
+    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
+    .replace(/\*(.*?)\*/g, "<i>$1</i>")
+    .replace(/\n/g, "<br>");
   if(txt.match(/\.(gif|png|jpg|jpeg|webp)$/i))
     return `<img src="${txt}">`;
   if(txt.match(/\.(mp4|webm)$/i))
@@ -178,123 +520,219 @@ function render(txt){
   return txt;
 }
 
-/* SEND */
-window.sendMsg = async () => {
-  if (me.muted) return;
+/* ── FORMAT HELPERS ── */
+function formatTime(date){
+  return date.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+}
 
-  const t = input.value.trim();
-  if (!t) return;
+function formatDayLabel(date){
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const msgDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const diff = (today - msgDay) / 86400000;
+  if(diff === 0) return "Today";
+  if(diff === 1) return "Yesterday";
+  return date.toLocaleDateString([], {weekday:"long", month:"long", day:"numeric"});
+}
 
-  if (!currentID) {
-    alert("No conversation selected");
-    return;
-  }
+function sameDay(a, b){
+  return a.getFullYear()===b.getFullYear() &&
+         a.getMonth()===b.getMonth() &&
+         a.getDate()===b.getDate();
+}
 
-  const { error } = await supabase
-    .from("messages")
-    .insert({
-      conversation_id: currentID,
-      user_id: myID,
-      content: censor(t),
-      read_by: [myID]
-    });
+function sameMinute(a, b){
+  return sameDay(a,b) &&
+         a.getHours()===b.getHours() &&
+         a.getMinutes()===b.getMinutes();
+}
 
-  if (error) {
-    console.error("SEND ERROR:", error);
-    alert("Message failed: " + error.message);
-    return;
-  }
+/* ── AVATAR INITIAL ── */
+function initial(name){
+  return (name || "?")[0].toUpperCase();
+}
 
-  input.value = "";
-  load()
-};
-
-/* NAME CACHE */
-const cache={};
+/* ── NAME CACHE ── */
+const cache = {};
 async function nameOf(id){
   if(cache[id]) return cache[id];
-  const { data }=await supabase.from("users")
-  .select('"Name"').eq("user_id",id).maybeSingle();
-  cache[id]=data?.Name||"User";
+  const { data } = await supabase.from("users")
+    .select('"Name"').eq("user_id", id).maybeSingle();
+  cache[id] = data?.Name || "User";
   return cache[id];
 }
 
-/* LOAD CONVERSATIONS */
-const convoList=document.getElementById("convoList");
+/* ── SEND ── */
+window.sendMsg = async () => {
+  if(me.muted) return;
+  const t = input.value.trim();
+  if(!t) return;
+  if(!currentID){ alert("No conversation selected"); return; }
+
+  const { error } = await supabase.from("messages").insert({
+    conversation_id: currentID,
+    user_id: myID,
+    content: censor(t),
+    read_by: [myID]
+  });
+
+  if(error){ console.error("SEND ERROR:", error); alert("Message failed: " + error.message); return; }
+  input.value = "";
+  load();
+};
+
+input.addEventListener("keydown", e => {
+  if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); sendMsg(); }
+});
+
+/* ── LOAD CONVERSATIONS ── */
+const convoList = document.getElementById("convoList");
 
 async function loadConvos(){
-  convoList.innerHTML="";
-  addConvo(publicConvo.id,"🌍 Public");
+  convoList.innerHTML = "";
+  addConvo(publicConvo.id, "🌍 Public");
 
-  const { data:mine }=await supabase.from("conversation_members")
-  .select("conversation_id").eq("user_id",myID);
+  const { data:mine } = await supabase.from("conversation_members")
+    .select("conversation_id").eq("user_id", myID);
 
-  for(const c of mine||[]){
-    if(c.conversation_id===publicConvo.id) continue;
-
-    const { data:members }=await supabase.from("conversation_members")
-    .select("user_id").eq("conversation_id",c.conversation_id);
-
-    const other=members.find(m=>m.user_id!==myID);
-    const name=await nameOf(other.user_id);
-    addConvo(c.conversation_id,"💬 "+name);
+  for(const c of mine || []){
+    if(c.conversation_id === publicConvo.id) continue;
+    const { data:members } = await supabase.from("conversation_members")
+      .select("user_id").eq("conversation_id", c.conversation_id);
+    const other = members.find(m => m.user_id !== myID);
+    if(!other) continue;
+    const name = await nameOf(other.user_id);
+    addConvo(c.conversation_id, "💬 " + name);
   }
 }
 
-function addConvo(id,label){
-  const div=document.createElement("div");
-  div.className="convo"+(id===currentID?" active":"");
-  div.textContent=label;
-  div.onclick=()=>{
-    currentID=id;
+function addConvo(id, label){
+  const div = document.createElement("div");
+  div.className = "convo" + (id === currentID ? " active" : "");
+  div.textContent = label;
+  div.onclick = () => {
+    currentID = id;
+    currentLabel = label;
+    document.getElementById("channelLabel").textContent = label;
     loadConvos();
     load();
   };
   convoList.appendChild(div);
 }
 
-/* LOAD MESSAGES */
-const box=document.getElementById("messages");
+/* ── LOAD MESSAGES ── */
+const box = document.getElementById("messages");
+
 async function load(){
-  const { data }=await supabase.from("messages")
-  .select("*").eq("conversation_id",currentID)
-  .order("created_at");
+  const { data } = await supabase.from("messages")
+    .select("*").eq("conversation_id", currentID)
+    .order("created_at");
 
   if(!data) return;
 
-  box.innerHTML="";
+  box.innerHTML = "";
+
+  let lastDate = null;
+  let lastSenderID = null;
+  let lastMsgTime = null;
+
   for(const m of data){
-    const div=document.createElement("div");
-    div.className="msg";
-    const n=await nameOf(m.user_id);
-    const read=m.read_by?.length>1?" ✔✔":" ✔";
-    div.innerHTML=`<span class="name">${n}</span>: ${render(m.content)} ${read}`;
-    box.appendChild(div);
+    const date = new Date(m.created_at);
+    const senderName = await nameOf(m.user_id);
+    const read = m.read_by?.length > 1 ? " ✔✔" : " ✔";
+
+    // ── Day separator ──
+    if(!lastDate || !sameDay(lastDate, date)){
+      const sep = document.createElement("div");
+      sep.className = "day-separator";
+      const label = document.createElement("span");
+      label.className = "day-label";
+      label.textContent = formatDayLabel(date);
+      sep.appendChild(label);
+      box.appendChild(sep);
+      lastSenderID = null; // force new header after separator
+    }
+
+    // Is this a continuation? (same sender, same minute)
+    const isContinuation = lastSenderID === m.user_id &&
+                           lastMsgTime && sameMinute(lastMsgTime, date);
+
+    const msgEl = document.createElement("div");
+    msgEl.className = "msg" + (isContinuation ? " continuation" : "");
+
+    if(isContinuation){
+      // Small hover timestamp on left
+      const inlineTs = document.createElement("span");
+      inlineTs.className = "inline-ts";
+      inlineTs.textContent = formatTime(date);
+      msgEl.appendChild(inlineTs);
+
+      const body = document.createElement("div");
+      body.className = "msg-body";
+      body.innerHTML = `<div class="msg-content">${renderContent(m.content)}<span class="read-receipt">${read}</span></div>`;
+      msgEl.appendChild(body);
+
+    } else {
+      // Full message with avatar + name
+      const avatar = document.createElement("div");
+      avatar.className = "msg-avatar";
+      avatar.textContent = initial(senderName);
+      avatar.style.background = avatarColor(m.user_id);
+      msgEl.appendChild(avatar);
+
+      const body = document.createElement("div");
+      body.className = "msg-body";
+      body.innerHTML = `
+        <div class="msg-meta">
+          <span class="name">${senderName}</span>
+          <span class="timestamp">${formatTime(date)}</span>
+        </div>
+        <div class="msg-content">${renderContent(m.content)}<span class="read-receipt">${read}</span></div>
+      `;
+      msgEl.appendChild(body);
+    }
+
+    box.appendChild(msgEl);
+    lastDate = date;
+    lastSenderID = m.user_id;
+    lastMsgTime = date;
   }
-  box.scrollTop=box.scrollHeight;
+
+  box.scrollTop = box.scrollHeight;
 }
 
+/* ── AVATAR COLOR (deterministic from user_id) ── */
+function avatarColor(id){
+  const colors = [
+    "linear-gradient(135deg,#1d4ed8,#7c3aed)",
+    "linear-gradient(135deg,#0369a1,#0891b2)",
+    "linear-gradient(135deg,#7c3aed,#db2777)",
+    "linear-gradient(135deg,#047857,#0369a1)",
+    "linear-gradient(135deg,#b45309,#dc2626)",
+    "linear-gradient(135deg,#6d28d9,#2563eb)",
+  ];
+  let hash = 0;
+  for(let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) & 0xffffffff;
+  return colors[Math.abs(hash) % colors.length];
+}
+
+/* ── INIT ── */
 await loadConvos();
 load();
 
-/* REALTIME */
+/* ── REALTIME ── */
 supabase.channel("chat")
-.on("postgres_changes",{event:"INSERT",table:"messages"},p=>{
-  if(p.new.conversation_id !== currentID) return;
+  .on("postgres_changes", {event:"INSERT", table:"messages"}, p => {
+    if(p.new.conversation_id !== currentID) return;
+    if(p.new.user_id !== myID) load();
+    loadConvos();
+  }).subscribe();
 
-  // ✅ ignore my own message echo
-  if(p.new.user_id !== myID){
-    load();
-  }
-
-  loadConvos();
-}).subscribe();
-
-/* AUTO DELETE 6 HOURS */
-setInterval(async()=>{
-  const t=new Date(Date.now()-21600000).toISOString();
-  await supabase.from("messages").delete().lt("created_at",t);
-},60000);
+/* ── AUTO DELETE 6H ── */
+setInterval(async () => {
+  const t = new Date(Date.now() - 21600000).toISOString();
+  await supabase.from("messages").delete().lt("created_at", t);
+}, 60000);
 </script>
 </body>
 </html>
