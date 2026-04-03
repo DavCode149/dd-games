@@ -106,7 +106,6 @@ hr { border-color:#ffffff33; margin:16px 0; }
     <div id="weather"></div>
     <br>
     <button onclick="launchSite()">Launch Site</button>
-    <!-- guests see Create Account, registered users see Account -->
     <button id="accountBtn" onclick="openAccount()">Account</button>
   </div>
 
@@ -138,23 +137,23 @@ hr { border-color:#ffffff33; margin:16px 0; }
   </div>
 
   <!-- MERGE WARNING -->
-<div id="mergeWarning" class="panel hidden">
-  <h2>⚠️ Merge Accounts</h2>
-  <p style="color:#fca5a5;font-weight:bold;">This cannot be undone.</p>
-  <p>Merging will do the following:</p>
-  <ul style="text-align:left;line-height:1.8;">
-    <li>Your <b>Playtime</b> from both accounts will be added together</li>
-    <li>If either account has <b>Premium</b>, the merged account keeps it</li>
-    <li>Your <b>Name, Access</b> and all other data stays as <b>your</b> account</li>
-    <li>The <b>other account will be permanently deleted</b></li>
-  </ul>
-  <p>To proceed, generate a code on the <b>other account</b> via its Account Info → Link Another Device, then enter it below.</p>
-  <input id="mergeCodeInput" placeholder="000000" maxlength="6"
-    style="text-align:center;font-size:28px;letter-spacing:6px;width:160px;">
-  <br>
-  <button onclick="submitMergeCode()" style="background:#c0392b;">⚠️ Merge Accounts</button>
-  <button class="secondary" onclick="showPanel('account')">← Cancel</button>
-  <p id="mergeError" style="color:#f87171;margin-top:8px;display:none;"></p>
+  <div id="mergeWarning" class="panel hidden">
+    <h2>⚠️ Merge Accounts</h2>
+    <p style="color:#fca5a5;font-weight:bold;">This cannot be undone.</p>
+    <p>Merging will do the following:</p>
+    <ul style="text-align:left;line-height:1.8;">
+      <li>Your <b>Playtime</b> from both accounts will be added together</li>
+      <li>If either account has <b>Premium</b>, the merged account keeps it</li>
+      <li>Your <b>Name, Access</b> and all other data stays as <b>your</b> account</li>
+      <li>The <b>other account will be permanently deleted</b></li>
+    </ul>
+    <p>To proceed, generate a code on the <b>other account</b> via its Account Info → Link Another Device, then enter it below.</p>
+    <input id="mergeCodeInput" placeholder="000000" maxlength="6"
+      style="text-align:center;font-size:28px;letter-spacing:6px;width:160px;">
+    <br>
+    <button onclick="submitMergeCode()" style="background:#c0392b;">⚠️ Merge Accounts</button>
+    <button class="secondary" onclick="showPanel('account')">← Cancel</button>
+    <p id="mergeError" style="color:#f87171;margin-top:8px;display:none;"></p>
   </div>
 
   <!-- NO ACCESS -->
@@ -176,7 +175,6 @@ const supabase = createClient(
 
 const GUEST_ID = "00000000-0000-0000-0000-000000000000";
 
-// ── Panels ───────────────────────────────────────────────
 const PANELS = ["loading","setup","linkEntry","main","account","generateCode","noAccess","mergeWarning"];
 function el(id){ return document.getElementById(id); }
 
@@ -185,15 +183,11 @@ window.showPanel = function(id){
   el(id).classList.remove("hidden");
 }
 
-// ── Helpers ──────────────────────────────────────────────
 function isGuest(){ return localStorage.getItem("device_id") === GUEST_ID; }
 
 function getDeviceID(){
   let id = localStorage.getItem("device_id");
-  if(!id){
-    id = crypto.randomUUID();
-    localStorage.setItem("device_id", id);
-  }
+  if(!id){ id = crypto.randomUUID(); localStorage.setItem("device_id", id); }
   return id;
 }
 
@@ -211,16 +205,14 @@ const info = getInfo();
 let userRow = null;
 let ipAddr = "";
 
-// ── Init ─────────────────────────────────────────────────
 setTimeout(init, Math.random() * 4000 + 1000);
 
 async function init(){
-  // Guest shortcut — load guest row from Supabase (read only)
   if(isGuest()){
     const { data } = await supabase
       .from("users").select("*")
       .eq("user_id", GUEST_ID).maybeSingle();
-    userRow = data || { Name:"Guest", Access:false, blocked:false, Premium:false, Playtime:0 };
+    userRow = data || { Name:"Guest", Access:false, blocked:false, premium:false, Playtime:0 };
     showMain();
     return;
   }
@@ -232,10 +224,7 @@ async function init(){
     .from("users").select("*")
     .eq("user_id", deviceID).maybeSingle();
 
-  if(!data){
-    showPanel("setup");
-    return;
-  }
+  if(!data){ showPanel("setup"); return; }
 
   userRow = data;
 
@@ -260,7 +249,6 @@ async function init(){
   }
 }
 
-// ── Create Account ───────────────────────────────────────
 window.createAccount = async function(){
   const name = el("nameInput").value.trim();
   if(!name){ alert("Please enter a name."); return; }
@@ -275,7 +263,7 @@ window.createAccount = async function(){
   const ipRes = await fetch("https://api.ipify.org?format=json");
   ipAddr = (await ipRes.json()).ip;
 
-  const { data: newUser } = await supabase.from("users").insert({
+  const { data: newUser, error: insertError } = await supabase.from("users").insert({
     user_id: deviceID,
     ip: ipAddr,
     browser: info.browser,
@@ -288,28 +276,30 @@ window.createAccount = async function(){
     Name: name,
     Playtime: 0,
     Access: true,
-    Premium: true   // default true per school situation
+    premium: true
   }).select().single();
+
+  if(insertError || !newUser){
+    console.error("Insert failed:", insertError);
+    alert("Account creation failed: " + (insertError?.message || "Unknown error"));
+    showPanel("setup");
+    return;
+  }
 
   userRow = newUser;
   showMain();
 }
 
-// ── Guest ────────────────────────────────────────────────
 window.continueAsGuest = function(){
   localStorage.setItem("device_id", GUEST_ID);
-  userRow = { Name:"Guest", Access:false, blocked:false, Premium:false, Playtime:0 };
+  userRow = { Name:"Guest", Access:false, blocked:false, premium:false, Playtime:0 };
   showMain();
 }
 
-// ── Main screen ──────────────────────────────────────────
 function showMain(){
   showPanel("main");
   el("welcome").textContent = "Welcome, " + userRow.Name;
-
-  // Guests see "Create Account" button instead of "Account"
   el("accountBtn").textContent = isGuest() ? "Create Account" : "Account";
-
   setInterval(() => { el("time").textContent = new Date().toLocaleString(); }, 1000);
   loadWeather();
 }
@@ -323,10 +313,8 @@ async function loadWeather(){
   } catch(e){}
 }
 
-// ── Account button ───────────────────────────────────────
 window.openAccount = function(){
   if(isGuest()){
-    // Clear guest ID so getDeviceID() generates a fresh UUID
     localStorage.removeItem("device_id");
     deviceID = getDeviceID();
     showPanel("setup");
@@ -352,7 +340,6 @@ window.saveName = async function(){
 
 window.backMain = function(){ showMain(); }
 
-// ── Launch ───────────────────────────────────────────────
 window.launchSite = function(){
   if(userRow.blocked){
     alert("You've been banned from DD Games for breaking the TOS.");
@@ -373,7 +360,6 @@ window.RequestForm = function(){
   window.open("https://forms.cloud.microsoft/r/5tJyGVcM1M");
 }
 
-// ── Generate Link Code ───────────────────────────────────
 let codeCountdownInterval = null;
 
 window.showGenerateCode = async function(){
@@ -382,15 +368,12 @@ window.showGenerateCode = async function(){
 }
 
 window.generateLinkCode = async function(){
-  // Clear any existing countdown
   if(codeCountdownInterval) clearInterval(codeCountdownInterval);
 
-  // Delete any old codes for this user
   await supabase.from("link_codes").delete().eq("user_id", deviceID);
 
-  // Generate random 6-digit code
   const code = Math.floor(100000 + Math.random() * 900000).toString();
-  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
   await supabase.from("link_codes").insert({
     code,
@@ -400,7 +383,6 @@ window.generateLinkCode = async function(){
 
   el("generatedCode").textContent = code;
 
-  // Countdown timer display
   let secondsLeft = 300;
   el("codeTimer").textContent = "Expires in 5:00";
 
@@ -409,7 +391,6 @@ window.generateLinkCode = async function(){
     const m = Math.floor(secondsLeft / 60);
     const s = (secondsLeft % 60).toString().padStart(2, "0");
     el("codeTimer").textContent = `Expires in ${m}:${s}`;
-
     if(secondsLeft <= 0){
       clearInterval(codeCountdownInterval);
       el("generatedCode").textContent = "------";
@@ -418,7 +399,6 @@ window.generateLinkCode = async function(){
   }, 1000);
 }
 
-// ── Submit Link Code (new device) ────────────────────────
 window.submitLinkCode = async function(){
   const code = el("linkCodeInput").value.trim();
   const errEl = el("linkError");
@@ -448,22 +428,22 @@ window.submitLinkCode = async function(){
 
   if(!isCurrentGuest && currentID){
     const { data: myRow } = await supabase
-      .from("users").select("Playtime, Premium")
+      .from("users").select('"Playtime", premium')
       .eq("user_id", currentID).maybeSingle();
 
     if(myRow){
       myPlaytime = myRow.Playtime || 0;
-      myPremium = myRow.Premium || false;
+      myPremium = myRow.premium || false;
       await supabase.from("users").delete().eq("user_id", currentID);
     }
   }
 
   const mergedPlaytime = (targetUser.Playtime || 0) + myPlaytime;
-  const mergedPremium = targetUser.Premium || myPremium;
+  const mergedPremium = targetUser.premium || myPremium;
 
   await supabase.from("users").update({
     Playtime: mergedPlaytime,
-    Premium: mergedPremium
+    premium: mergedPremium
   }).eq("user_id", targetID);
 
   await supabase.from("link_codes").delete().eq("code", code);
@@ -479,14 +459,12 @@ window.submitLinkCode = async function(){
   }
 }
 
-// ── Merge Warning ─────────────────────────────────────────
 window.showMergeWarning = function(){
   el("mergeCodeInput").value = "";
   el("mergeError").style.display = "none";
   showPanel("mergeWarning");
 }
 
-// ── Submit Merge Code ─────────────────────────────────────
 window.submitMergeCode = async function(){
   const code = el("mergeCodeInput").value.trim();
   const errEl = el("mergeError");
@@ -512,18 +490,18 @@ window.submitMergeCode = async function(){
   if(!otherUser){ showMergeErr("Could not find the other account. Please try again."); return; }
 
   const mergedPlaytime = (userRow.Playtime || 0) + (otherUser.Playtime || 0);
-  const mergedPremium = userRow.Premium || otherUser.Premium;
+  const mergedPremium = userRow.premium || otherUser.premium;
 
   await supabase.from("users").update({
     Playtime: mergedPlaytime,
-    Premium: mergedPremium
+    premium: mergedPremium
   }).eq("user_id", deviceID);
 
   await supabase.from("users").delete().eq("user_id", otherID);
   await supabase.from("link_codes").delete().eq("code", code);
 
   userRow.Playtime = mergedPlaytime;
-  userRow.Premium = mergedPremium;
+  userRow.premium = mergedPremium;
 
   alert(`✅ Accounts merged! ${otherUser.Name}'s account has been absorbed into yours.\n\nPlaytime added: ${otherUser.Playtime || 0} min\nPremium: ${mergedPremium ? "Yes" : "No"}`);
   showPanel("account");
