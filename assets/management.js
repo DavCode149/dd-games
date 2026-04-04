@@ -27,8 +27,6 @@ function getDeviceInfo(){
 }
 
 // ── Premium page detection ───────────────────────────────
-// Pages mark themselves with <body data-premium="true">
-// We read it AFTER the DOM is ready via document.body.dataset.premium
 function pageIsPremium(){
   return document.body.dataset.premium === "true";
 }
@@ -42,7 +40,6 @@ if(deviceID === GUEST_ID){
     window.location.href = PREMIUM_PAGE_URL;
     throw new Error("Guests cannot access premium pages");
   }
-  // No tracking, no DB writes for guests — stop here
   throw new Error("Guest mode — skipping management");
 }
 
@@ -72,7 +69,7 @@ if(!existingUser){
     Name: "",
     Playtime: 0,
     Access: true,
-    Premium: true   // default true
+    premium: true
   });
 
 } else {
@@ -84,9 +81,7 @@ if(!existingUser){
   }
 
   // ── Premium page check ─────────────────────────────────
-  // pageIsPremium() reads data-premium="true" from <body>
-  // Premium is false only if explicitly set false in DB
-  if(pageIsPremium() && existingUser.Premium !== true){
+  if(pageIsPremium() && existingUser.premium !== true){
     window.location.href = PREMIUM_PAGE_URL;
     throw new Error("Premium required");
   }
@@ -114,7 +109,7 @@ if(!existingUser){
 setInterval(async () => {
   const { data, error } = await supabase
     .from("users")
-    .select('"Playtime", blocked, "Premium"')
+    .select('"Playtime", blocked, premium')
     .eq("user_id", deviceID).maybeSingle();
 
   if(error){ console.error("Playtime fetch error:", error); return; }
@@ -125,7 +120,7 @@ setInterval(async () => {
     return;
   }
 
-  if(pageIsPremium() && data.Premium !== true){
+  if(pageIsPremium() && data.premium !== true){
     window.location.href = PREMIUM_PAGE_URL;
     return;
   }
