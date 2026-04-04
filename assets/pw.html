@@ -56,6 +56,10 @@
     font-size: 15px;
     cursor: pointer;
   }
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
   .error {
     color: #c53030;
     font-size: 13px;
@@ -97,10 +101,9 @@
   }
 </style>
 
-<!-- Firebase -->
+<!-- Firebase (kept for alt password logging) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyAT-oK3scrUg7Jt1tEQk6b7IP2-ah1OcCc",
@@ -122,7 +125,7 @@
   <h1>Access Restricted</h1>
   <p>Please enter the password to continue.</p>
   <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off">
-  <button onclick="checkPassword()">Continue</button>
+  <button id="continueBtn" onclick="checkPassword()">Continue</button>
   <div id="error" class="error">Password Incorrect</div>
 </div>
 
@@ -137,43 +140,25 @@
     </div>
   </div>
 </div>
-<script>
-function loadListPage() {
-  fetch("/dd-games/main.html")
-    .then(res => res.text())
-    .then(html => {
-      document.open();
-      document.write(html);
-      document.close();
-    })
-    .catch(() => {
-      alert("Failed to load main.html");
-    });
-}
-</script>
-<script>
-  // 🔐 Obfuscated passwords (base64)
-  const CORRECT_PASSWORD = atob("YnJlYWNoZWQ=");
-  const ALT_PASSWORD = atob("bG9wc2lkZWQ=");
 
-  const REDIRECT_URL = "/dd-games/main.html";
-  const ALT_REDIRECT_URL = "/dd-games/main.html";
-
+<script>
+  const SUPABASE_URL = "https://lqfcntoldutgkzaboqfk.supabase.co";
   const TOS_KEY = "tosAccepted";
+  const ACCESS_TOKEN_KEY = "ddAccessToken";
 
-  async function getIP() {
-    const res = await fetch("https://api.ipify.org?format=json");
-    return (await res.json()).ip;
+  // ── Load main page ──────────────────────────────────────
+  function loadListPage() {
+    fetch("/dd-games/main.html")
+      .then(res => res.text())
+      .then(html => {
+        document.open();
+        document.write(html);
+        document.close();
+      })
+      .catch(() => alert("Failed to load main.html"));
   }
 
-  function logAltPassword() {
-    getIP().then(ip => {
-      const entry = { ip, time: new Date().toISOString() };
-      db.ref("altLogs").push(entry);
-      db.ref("altCount").transaction(n => (n || 0) + 1);
-    });
-  }
-
+  // ── TOS ─────────────────────────────────────────────────
   function showTOS() {
     fetch("/dd-games/TOS.md")
       .then(res => res.text())
@@ -197,32 +182,67 @@ function loadListPage() {
     document.body.innerHTML = "<h1>Access denied</h1>";
   }
 
-  function checkPassword() {
+  // ── Firebase alt log ────────────────────────────────────
+  async function logAltPassword() {
+    const res = await fetch("https://api.ipify.org?format=json");
+    const { ip } = await res.json();
+    const entry = { ip, time: new Date().toISOString() };
+    db.ref("altLogs").push(entry);
+    db.ref("altCount").transaction(n => (n || 0) + 1);
+  }
+
+  // ── Password check (server-side) ────────────────────────
+  async function checkPassword() {
     const input = document.getElementById("passwordInput").value.trim();
     const error = document.getElementById("error");
+    const btn = document.getElementById("continueBtn");
 
-    if (input === CORRECT_PASSWORD) {
-      if (localStorage.getItem(TOS_KEY) === "true") {
-        loadListPage();
-      } else {
-        showTOS();
-      }
+    error.style.display = "none";
+    if(!input) return;
 
-    } else if (input === ALT_PASSWORD) {
-      logAltPassword();
-      if (localStorage.getItem(TOS_KEY) === "true") {
-        window.location.href = ALT_REDIRECT_URL;
-      } else {
-        showTOS();
-      }
+    // Disable button while waiting so it can't be spammed
+    btn.disabled = true;
+    btn.textContent = "Checking...";
 
-    } else {
+    let data;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/check-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: input })
+      });
+      data = await res.json();
+    } catch(e) {
+      error.textContent = "Connection error. Please try again.";
       error.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Continue";
+      return;
+    }
+
+    if(!data.success) {
+      error.textContent = "Password Incorrect";
+      error.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Continue";
+      return;
+    }
+
+    // Store the signed server token — not the password
+    localStorage.setItem(ACCESS_TOKEN_KEY, data.token);
+
+    // Log if alt password was used
+    if(data.alt) await logAltPassword();
+
+    if(localStorage.getItem(TOS_KEY) === "true") {
+      loadListPage();
+    } else {
+      showTOS();
     }
   }
 
   document.getElementById("passwordInput").addEventListener("keypress", e => {
-    if (e.key === "Enter") checkPassword();
+    if(e.key === "Enter") checkPassword();
   });
 </script>
 
